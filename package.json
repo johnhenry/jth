@@ -18,7 +18,7 @@
   "homepage": "https://github.com/johnhenry/jth#readme",
   "devDependencies": {
     "jth-tools": "^0.0.0",
-    "jth-stat": "^0.0.0",
+    "jth-stats": "^0.0.0",
     "jth-cli": "^0.0.0"
   }
 }

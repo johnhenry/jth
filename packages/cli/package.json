@@ -18,12 +18,10 @@
     "jth": "./src/index.mjs"
   },
   "dependencies": {
-    "yargs": "^17.5.1",
-    "jth-core": "^0.0.0"
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "pop-quiz": "^0.0.4",
-    "jth-tools": "^0.0.0"
+    "pop-quiz": "^0.0.4"
   },
   "keywords": [],
   "author": "John Henry",
