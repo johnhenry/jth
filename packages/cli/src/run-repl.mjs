@@ -1,6 +1,6 @@
 // https://stackoverflow.com/a/38739914/1290781
 import repl from "node:repl";
-import { transform, preamble } from "../../core/src/index.mjs";
+import { transform, preamble } from "jth-core";
 import { spawn } from "node:child_process";
 export const runRepl = () => {
   // https://stackoverflow.com/a/38739914/1290781

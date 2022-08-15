@@ -19,6 +19,6 @@
   "devDependencies": {
     "jth-tools": "^0.0.0",
     "jth-stats": "^0.0.0",
-    "jth-cli": "^0.0.0"
+    "jth-cli": "^0.0.1"
   }
 }
