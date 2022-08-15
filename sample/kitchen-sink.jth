@@ -1,0 +1,89 @@
+import { reverse$, dupe$, mapAsync$, drop$, first$, collect$, if$, and$, or$, filter$, map$, to$, fromTo$, toInc$, fromToInc$, ifExe$ } from "jth-tools";
+import { sum$, product$, mean$, count$, modes$, mode$, sort$ , sortD$, randomize$, populationStandardDeviation$, sampleStandardDeviation$, fiveNumberSummary$, sampleVariance$, populationVariance$} from "jth-stats";
+
+1 2 3 4 5 6 (stack=>stack.map(x=>x**x)) !! (stack=>stack.map(x=>x+1)) !! @!! -> x;
+
+1 2 3 4 5 fiveNumberSummary$ !! @!!;
+
+
+'hello world' @!; /* prints "hello world" */
+Math.random() @!;
+"" @!;
+1 2 3 4 5 6 randomize$ -> r;
+r .! !{3} @!!;
+"" @!;
+1 2 3 sum$!{2} @!!;
+1 2 3 dupe$!! @!!;
+"" @!;
+
+dupe$ product$ :!! -> [square$];
+2 3 [dupe$ product$ :!!]! @!!;
+2 3 dupe$ product$ :!{2} ! @!!;
+2 3 square$! @!!;
+
+dupe$ sum$ :!! -> [double$];
+double$ square$ :!! -> [doublesquare$];
+4 3 doublesquare$!! @!!;
+
+"" @!;
+3 4 5 (async(x)=>x**4) mapAsync$!! @!! -> carol;
+1 2 3 dupe$!! @!! -> dave;
+[1 2 3] @!! -> eva;
+3 square$ !! @!! -> [fiona];
+
+"" @!;
+1 2 3 -> start;
+7 8 9 -> end;
+start .! 4 5 6 end .! @!!;
+"" @!;
+1 2 3 4 5 -> list;
+list @!;
+list .! count$!! -> [l];
+
+list .! sum$!! ->[sum];
+list .! product$!! ->[product];
+list .! mean$!! ->[mean];
+"sum" sum "product" product "mean" mean @!!;
+"sum" list .! sum$!{l}
+  "product" list .! product$!{l}
+  "mean" list .! mean$!{l}
+  @!!;
+"sum" list .sum$!{l}
+  "product" list .product$!{l}
+  "mean" list .mean$!{l}
+  @!!;
+
+"" @!;
+
+"" @!;
+1 [2 3 4 5 6 product$!!] sum$!! @!!;
+1 [2 3 4 5 6 product$!!]. sum$!! @!!;
+[2 3 product$!!] [4 5 product$!!] sum$!! @!!;
+
+1 2 3 -> [a,b,c];
+
+c b a @!!;
+
+
+3 4 5 6 7 4 false if$ !! @!!;
+
+0 0 0 6 7 0 false or$ !! 12 3 @!!;
+
+3 4 5 6 7 4 (x=>x>5) mapAsync$ !! @!!;
+
+
+0 1 2 3 4 5 8 to$!! @!!;
+0 1 2 3 4 5 8 fromTo$!! @!!;
+0 1 2 3 4 5 8 toInc$!! @!!;
+0 1 2 3 4 5 8 fromToInc$!! @!!;
+
+5 -5 to$!! @!!;
+5 -5 fromTo$!! @!!;
+5 -5 toInc$!! @!!;
+5 -5 fromToInc$!! @!!;
+
+1 2 3 4 5 sampleVariance$!! @!!;
+
+1 2 3 4 5 populationVariance$!! @!!;
+
+1 2 3 4 5 sampleVariance$ populationVariance$ false ifExe$!! @!!->[variance];

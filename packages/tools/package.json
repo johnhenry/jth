@@ -1,0 +1,22 @@
+{
+  "name": "jth-tools",
+  "version": "0.0.0",
+  "description": "basic tools for jth",
+  "main": "./index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnhenry/jth.git"
+  },
+  "scripts": {
+    "test": "node ./quiz.mjs"
+  },
+  "keywords": [],
+  "author": "John Henry",
+  "license": "ISC",
+  "dependencies": {
+    "pop-quiz": "^0.0.4"
+  },
+  "devDependencies": {
+    "pop-quiz": "^0.0.4"
+  }
+}

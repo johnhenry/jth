@@ -1,0 +1,22 @@
+{
+  "name": "jth-stats",
+  "version": "0.0.0",
+  "description": "jth is an alternative syntax for javascript centerered around squential data processing.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnhenry/jth.git"
+  },
+  "scripts": {
+    "test": "node ./quiz.mjs"
+  },
+  "main": "./index.mjs",
+  "dependencies": {
+    "split-string": "^6.1.0"
+  },
+  "devDependencies": {
+    "pop-quiz": "^0.0.4"
+  },
+  "keywords": [],
+  "author": "John Henry",
+  "license": "ISC"
+}
