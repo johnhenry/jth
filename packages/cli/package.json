@@ -1,6 +1,6 @@
 {
   "name": "jth-cli",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "jth is an alternative syntax for javascript centerered around squential data processing.",
   "repository": {
     "type": "git",
@@ -12,13 +12,15 @@
     "sample:build": "npm run -s jth -- compile sample dist.sample",
     "sample:build:run": "npm run sample:build -s && node dist.sample/index.mjs",
     "repl": "npm run -s jth -- repl",
-    "test": "node ./quiz.mjs"
+    "test": "node ./quiz.mjs",
+    "link": "npm link jth-core",
+    "unlink": "npm unlink --no-save jth-core"
   },
   "bin": {
     "jth": "./src/index.mjs"
   },
   "dependencies": {
-    "jth-core": "^0.0.0",
+    "jth-core": "^0.1.0",
     "yargs": "^17.5.1"
   },
   "devDependencies": {

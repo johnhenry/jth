@@ -1,13 +1,15 @@
 {
   "name": "jth-core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "jth is an alternative syntax for javascript centerered around squential data processing.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnhenry/jth.git"
   },
   "scripts": {
-    "test": "node ./quiz.mjs"
+    "test": "node ./quiz.mjs",
+    "link": "exit 0",
+    "unlink": "exit 0"
   },
   "main": "./src/index.mjs",
   "dependencies": {

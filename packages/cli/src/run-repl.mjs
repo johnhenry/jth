@@ -2,8 +2,9 @@
 import repl from "node:repl";
 import { transform, preamble } from "jth-core";
 import { spawn } from "node:child_process";
+const PRE = preamble().join("\n");
 export const runRepl = () => {
-  // https://stackoverflow.com/a/38739914/1290781
+  throw new Error("Temporarily disabled");
   const child = spawn("node", ["-i"], {
     stdio: ["pipe", "pipe", null],
     shell: true,
@@ -37,15 +38,14 @@ export const runRepl = () => {
   //   outerCallback(err);
   // });
   let first = true;
-  const evaluate = (cmd, context, filename, callback) => {
+  const evaluate = async (cmd, context, filename, callback) => {
     outerCallback = callback;
-    transform(cmd, undefined, false).then((c) => {
-      if (first) {
-        child.stdin.write(Buffer.from(preamble().join("\n")));
-        first = false;
-      }
-      child.stdin.write(c);
-    });
+    const c = await transform(cmd, false);
+    if (first) {
+      child.stdin.write(PRE);
+      first = false;
+    }
+    child.stdin.write(c);
   };
 
   const server = repl.start({

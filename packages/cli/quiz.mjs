@@ -35,7 +35,7 @@ try {
         "(using --c flag)"
       );
       yield equal(
-        exec(`run -c '["hello world"] @!;'`),
+        exec(`run -c '"hello world" @!;'`),
         "hello world",
         "(with -c shorthand)"
       );

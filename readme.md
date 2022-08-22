@@ -1,13 +1,22 @@
-# <picture> <img src="./logo.svg" alt="jth" style="height:32px">
+# <img src="./logo.svg" alt="jth" style="height:32px" height="32">
 
 ⚠️WARNING⚠️
-Jth is still very much a work in progress.
+**Jth** is still _very much_ a work in progress.
 
 - Many ideas around how the language _should_ work
   are up in the air.
 - Many bugs exist in the implementation.
 
 <hr >
+
+Latest Version: [0.1.0](https://github.com/johnhenry/jth/tree/main/docs/changelog.md#0.1.0)
+
+| Sub-Repositories                                                        | Version |
+| ----------------------------------------------------------------------- | ------- |
+| [Jth Core](https://github.com/johnhenry/jth/tree/main/packages/core/)   | 0.1.0   |
+| [Jth CLI](https://github.com/johnhenry/jth/tree/main/packages/cli/)     | 0.1.0   |
+| [Jth Tools](https://github.com/johnhenry/jth/tree/main/packages/tools/) | 0.0.0   |
+| [Jth Stats](https://github.com/johnhenry/jth/tree/main/packages/stats/) | 0.0.0   |
 
 **Jth** (rhymes with "eighth")
 is an alternative syntax for javascript
@@ -55,15 +64,12 @@ node index.mjs
 
 Learn more about jth here:
 
-- [Introduction](./docs/introduction.md)
-- [Tooling](./docs/tooling.md)
+- [Introduction](https://github.com/johnhenry/jth/tree/main/docs/introduction.md)
+- [Tooling](https://github.com/johnhenry/jth/tree/main/docs/tooling.md)
+- [Change Log](https://github.com/johnhenry/jth/tree/main/docs/changelog.md)
+- [Road Map](https://github.com/johnhenry/jth/tree/main/docs/roadmap.md)
 
 ## Related Repositories
-
-- [Jth core](https://github.com/johnhenry/jth/tree/main/packages/core/) -- core functionality for converting jth to javascript
-- [Jth cli](https://github.com/johnhenry/jth/tree/main/packages/cli/) -- cli for running and compling jth code
-- [Jth Tools](https://github.com/johnhenry/jth/tree/main/packages/tools/) -- tools for manipulating stacks in jth
-- [Jth Stats](https://github.com/johnhenry/jth/tree/main/packages/stats/) -- statistical tools for manipulating stacks in jth
 
 ## See Also
 
@@ -73,7 +79,7 @@ Learn more about jth here:
 - https://en.wikipedia.org/wiki/Joy_(programming_language)
 - https://en.wikipedia.org/wiki/Factor_(programming_language)
 
-### Languages that Compile to JavaScript
+### Other languages that are ineroperabable with javascript
 
 - https://coffeescript.org/
 - https://github.com/santoshrajan/lispyscript

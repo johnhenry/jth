@@ -8,7 +8,9 @@
     "url": "git+https://github.com/johnhenry/jth.git"
   },
   "scripts": {
-    "test": "node ./quiz.mjs"
+    "test": "node ./quiz.mjs",
+    "link": "exit 0",
+    "unlink": "exit 0"
   },
   "keywords": [],
   "author": "John Henry",

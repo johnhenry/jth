@@ -75,25 +75,26 @@ stack .! @!!; /*prints individual items */
 
 ### Substacks
 
-`[` and `]` can denote a "substack" (or "subprogram").
+`[` and `]` can denote a _sub-program_.
 
-Stack functions applied within a substack are scoped to the items within said.
-This is an array whose items are immediately expanded into the stack.
-
-The following program:
+Alone they are a single object.
 
 ```javascript
-1 [2 3 @!!];
+// [3 4 5] count$! @!;/*prints 1*/
 ```
 
-prints "2 3" but not "1" as `@!!` is only applied within the substack.
-
-Add a `.` immediately after a substack (no space) to prevent expansion.
+They can be expaned into the current stack:
 
 ```javascript
-1 [2 3]. -> [scalar, array];
-scalar @!; /* prints 1 */
-array[1] @!; /* prints 3 */
+// [3 4 5] . ! @!;/*prints 3 4 5*/
+// [3 4 5]. @!;/*prints 3 4 5*/
+```
+
+They can be executed:
+
+```javascript
+// [3 4 product$!!] . ! @!;/*prints [12]*/
+// [3 4 product$!!]! @!;/*prints [12]*/
 ```
 
 ## stack functions and composition.
@@ -123,12 +124,12 @@ import { sum$, dupe$ } from "...";
 1 2 3 dupe$! @!; /* prints 1 2 3 3 */
 ```
 
-You can also compose functions using `:`.
+You can also compose functions using `!`.
 
 ```javascript
-import { sum$, dupe$ } from "...";
+import { sum$, dupe$, product$ } from "...";
 1 2 3 sum$! @!; /* prints 6 */
-dupe$ product$ :!! -> [square$];
+dupe$!product$ -> [square$];
 3 square$!; /* prints "9" */
 ```
 
@@ -143,23 +144,10 @@ The syntax for importing and exporting objects is identical to that of javascrip
 
 ### Expressions
 
-Most expressions are compatible with javascript, but inculding spaces will generally cause an error. (working to fix) . Spaces witin quotes are fine.
-
-Otherwise, feel free to use drop in javascript syntax where appropriate.
+Javascript expressions wrapped in ` (``) `are evaluated as-is.
 
 The following programs maps two random numbes to truth values and prints them.
 
 ```javascript
-Math.random() Math.random() stack=>stack.map(x=>x>0.5?true:false) !! @!!;
-```
-
-### js code
-
-Wrapping a line with `js{};` allows you to inject directly into a program.
-Warning: EXPERIMENTAL
-
-```javascript
-js{for(let i = 0; i < 10; i++)}
-i @!;
-js{}}
+(Math.random()) (Math.random()) stack=>stack.map(x=>x>0.5?true:false) !! @!!;
 ```

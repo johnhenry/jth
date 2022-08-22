@@ -1,6 +1,6 @@
 {
   "name": "jth-lang",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "jth-lang",
   "repository": {
     "type": "git",
@@ -12,13 +12,19 @@
     "url": "https://github.com/johnhenry/jth/issues"
   },
   "scripts": {
-    "test": "sh ./scripts/test.sh",
-    "publish": "sh ./scripts/publish.sh"
+    "packages:test": "sh ./scripts/test.sh",
+    "packages:publish": "sh ./scripts/publish.sh",
+    "packages:link": "sh ./scripts/link.sh",
+    "packages:unlink": "sh ./scripts/unlink.sh",
+    "packages:logo": "sh ./scripts/logo.sh",
+    "link": "npm link jth-cli jth-tools jth-stats",
+    "unlink": "npm unlink --no-save jth-cli jth-tools jth-stats",
+    "kitchen-sink": "jth run ./sample/kitchen-sink.jth"
   },
   "homepage": "https://github.com/johnhenry/jth#readme",
   "devDependencies": {
     "jth-tools": "^0.0.0",
     "jth-stats": "^0.0.0",
-    "jth-cli": "^0.0.1"
+    "jth-cli": "^0.1.0"
   }
 }
