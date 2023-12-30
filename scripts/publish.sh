@@ -4,7 +4,7 @@ do
   if [[ -d $dir ]]
   then
       cd $dir
-      npm publish
+      npm run publish
       cd ../..
   fi
 done

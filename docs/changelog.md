@@ -1,5 +1,25 @@
 # Changelog
 
+⚠️WARNING⚠️ Breaking Changes
+
+## 0.2.0 - Internal Affairs
+
+- Paradigm shift -- eagar execution of functions by default
+  - `!` is no longer used to execute functions
+  - Functions now must be intentionally delayed using [special higher-order functions]()
+- AST trasnfromation removed (temporarily?)
+- Working REPL
+- Batteries included
+  - More functions included by default.
+  - At some point I should sort these out into dedicated libraries,
+    but as of now it's unclear how these should _best_ be separated.
+- jth-tools and jth-stats temporarily paused
+  - All related functions are included in `jth-core/core`
+    until I can better understand how they should be seperated.
+- Operators support
+  - Built in operators (+, -, etc...)
+  - Define operators at runtime
+
 ## 0.1.0 - Here comes the AST!
 
 ⚠️WARNING⚠️ Breaking Changes

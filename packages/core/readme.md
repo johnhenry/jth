@@ -25,8 +25,8 @@ npm install jth-core
 
 ```javascript
 import { transform } from "./core.mjs";
-const jthCode = '"Hello World!" @!;';
-const jsCode = await transform(jthCode);
+const jthCode = '"Hello World!" @;';
+const jsCode = transform(jthCode);
 console.log(jsCode);
 ```
 

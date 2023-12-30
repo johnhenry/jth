@@ -1,9 +1,5 @@
 # Roadmap
 
-## Repl
-
-Fix the repl in the CLI
-
 ## In-line Functions
 
 Currently functions are either defined in javascript and imported OR via compositon.

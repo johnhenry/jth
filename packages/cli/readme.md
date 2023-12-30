@@ -34,7 +34,7 @@ jth run ./hello.jth
 Run jth code
 
 ```
-jth run --code '"Hello World!" @!;'
+jth run --code '"Hello World!" @;'
 ```
 
 ### compile
@@ -46,7 +46,7 @@ jth compile ./hello.jth
 ```
 
 ```
-jth compile --code '"Hello World!" @!;'
+jth compile --code '"Hello World!" @;'
 ```
 
 Compile jth to javascript and send to file.
@@ -56,7 +56,7 @@ jth compile ./hello.jth ./hello.mjs
 ```
 
 ```
-jth compile --code '"Hello World!" @!;' ./hello.mjs
+jth compile --code '"Hello World!" @;' ./hello.mjs
 ```
 
 Compile jth files in a given directory
@@ -79,6 +79,6 @@ Start a repl
 
 ```
 jth repl
->"Hello World!" @!;
->'Hello World!'
+[> "Hello World!" @
+Hello World!
 ```

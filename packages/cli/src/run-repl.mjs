@@ -1,61 +1,146 @@
-// https://stackoverflow.com/a/38739914/1290781
 import repl from "node:repl";
-import { transform, preamble } from "jth-core";
-import { spawn } from "node:child_process";
-const PRE = preamble().join("\n");
-export const runRepl = () => {
-  throw new Error("Temporarily disabled");
-  const child = spawn("node", ["-i"], {
-    stdio: ["pipe", "pipe", null],
-    shell: true,
-  });
-  child.on("exit", (code) => {
-    process.exit(code);
-  });
-  let outerCallback;
-  child.stdout.on("data", (chunk) => {
-    if (!outerCallback) {
-      return;
-    }
-    let string = chunk.toString();
-    if (string.endsWith("\n")) {
-      string = string.slice(0, -1);
-    }
-    const match = /^(?:undefined\n> )?(?:\.{3} )*$/;
-    const match2 = /^(?:.*)\n> $/;
-    if (string && !match.test(string)) {
-      if (match2.test(string)) {
-        const [, out] = string.match(match2);
-        outerCallback(null, out);
-      } else {
-        outerCallback(null, string);
+import vm from "node:vm";
+import { processLine, jsLine } from "jth-core";
+import * as replContext from "jth-core/context";
+const createRepl = (
+  {
+    operatorFunc = "operators",
+    processFunc = "processN",
+    view = true,
+    history = true,
+    countInPrompt = false,
+  } = {
+    operatorFunc: "operators",
+    processFunc: "processN",
+    view: true,
+    history: true,
+    countInPrompt: false,
+  }
+) => {
+  const context = { ...replContext };
+  vm.createContext(context);
+  context["___"] = context["___"] || [];
+  // globalThis["___"] = globalThis["___"] || [];
+  if (history) {
+    history = [];
+  }
+  const globals = new Set();
+
+  const evalute = async (cmd, __CONTEXT__, __FILENAME__, callback) => {
+    try {
+      let { vars, declaration, line, isOperator, imports, exports, opts } =
+        processLine(cmd, { operatorFunc });
+      // read any globals from new line
+      const newGlobals = [];
+      if (vars.length) {
+        for (const v of vars) {
+          if (globals.has(v)) {
+            continue;
+          }
+          globals.add(v);
+          newGlobals.push(v);
+        }
       }
-    } else {
-      outerCallback(null);
+
+      // create line to be evaluatedcou
+      let __CURRENTLINE__ = jsLine(line, {
+        declaration,
+        vars: newGlobals,
+        isOperator,
+        operatorFunc,
+        processFunc,
+        imports,
+        exports,
+        dynamicImport: true,
+        context,
+        opts,
+      });
+      history && history.push([cmd, __CURRENTLINE__]);
+      __CURRENTLINE__ = __CURRENTLINE__ + (view ? "view(...___);" : "");
+
+      // eval
+      const l = new vm.SourceTextModule(__CURRENTLINE__, {
+        context,
+      });
+      await l.link(() => {});
+      await l.evaluate();
+      if (countInPrompt) {
+        replServer.setPrompt(`[${globalThis["___"].length}] `);
+      }
+    } catch (error) {
+      if (/Unexpected token '\)'/.test(error.message)) {
+        return callback(new repl.Recoverable(error));
+      }
+      callback(error);
     }
-  });
-  // child.stderr.on("error", (err) => {
-  //   outerCallback(err);
-  // });
-  let first = true;
-  const evaluate = async (cmd, context, filename, callback) => {
-    outerCallback = callback;
-    const c = await transform(cmd, false);
-    if (first) {
-      child.stdin.write(PRE);
-      first = false;
-    }
-    child.stdin.write(c);
+    callback(null);
   };
 
-  const server = repl.start({
-    useGlobal: true,
-    ignoreUndefined: true,
-    eval: evaluate,
+  const replServer = repl.start({
+    prompt: countInPrompt ? `[${globalThis["___"].length}] ` : "<] ",
+    eval: evalute,
+    replMode: repl.REPL_MODE_SLOPPY,
   });
-  server.on("exit", () => {
-    child.kill();
-  });
-};
 
-export default runRepl;
+  replServer.defineCommand("peek", {
+    help: "View current stack",
+    action() {
+      vm.runInContext("console.log(...___)", context);
+      this.displayPrompt();
+    },
+  });
+  replServer.defineCommand("count", {
+    help: "View current stack",
+    action() {
+      vm.runInContext("console.log(___.length)", context);
+      this.displayPrompt();
+    },
+  });
+
+  replServer.defineCommand("history", {
+    help: "view history",
+    action() {
+      let keys = 0;
+      for (const [key, value] of history) {
+        console.log("----------------");
+        console.log("  ", key.trim());
+        console.log(`${keys++}`);
+        console.log("  ", value);
+      }
+      this.displayPrompt();
+    },
+  });
+  replServer.defineCommand("jth", {
+    help: "view jth history",
+    action() {
+      console.log(
+        Array.from(history)
+          .map(([jth]) => jth.trim() + ";")
+          .join("\n")
+      );
+      this.displayPrompt();
+    },
+  });
+  replServer.defineCommand("js", {
+    help: "view js history",
+    action() {
+      console.log(
+        Array.from(history)
+          .map(([, js]) => js)
+          .join("\n")
+      );
+      this.displayPrompt();
+    },
+  });
+  replServer.defineCommand("clear", {
+    help: "clear console",
+    action() {
+      console.clear();
+      this.displayPrompt();
+    },
+  });
+
+  // server.on("exit", () => {});
+  return replServer;
+};
+export default createRepl;

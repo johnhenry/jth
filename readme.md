@@ -11,12 +11,10 @@
 
 Latest Version: [0.1.0](https://github.com/johnhenry/jth/tree/main/docs/changelog.md#0.1.0)
 
-| Sub-Repositories                                                        | Version |
-| ----------------------------------------------------------------------- | ------- |
-| [Jth Core](https://github.com/johnhenry/jth/tree/main/packages/core/)   | 0.1.0   |
-| [Jth CLI](https://github.com/johnhenry/jth/tree/main/packages/cli/)     | 0.1.0   |
-| [Jth Tools](https://github.com/johnhenry/jth/tree/main/packages/tools/) | 0.0.0   |
-| [Jth Stats](https://github.com/johnhenry/jth/tree/main/packages/stats/) | 0.0.0   |
+| Sub-Repositories                                                      | Version |
+| --------------------------------------------------------------------- | ------- |
+| [Jth Core](https://github.com/johnhenry/jth/tree/main/packages/core/) | 0.2.0   |
+| [Jth CLI](https://github.com/johnhenry/jth/tree/main/packages/cli/)   | 0.2.0   |
 
 **Jth** (rhymes with "eighth")
 is an alternative syntax for javascript
@@ -27,11 +25,20 @@ is compatibale with existing libraries.
 
 ## Quickstart
 
-Install jth cli and run jth code inline:
+Install jth cli and run jth code inline using `jth run`:
 
 ```
 npm install -g jth-cli
-jth run -c '"hello world" @!;'
+jth run -c '"hello world" @;'
+```
+
+Or run the repl with `jth repl`
+
+```
+$ jth repl
+Welcome to the jth repl...
+[> 1 2 +
+3
 ```
 
 ## Slower Quickstart
@@ -45,7 +52,7 @@ npm install -g jth-cli
 Create jth file:
 
 ```
-echo '"hello world" @!;' > index.jth
+echo '"hello world" @;' > index.jth
 ```
 
 Compile jth file
@@ -69,18 +76,36 @@ Learn more about jth here:
 - [Change Log](https://github.com/johnhenry/jth/tree/main/docs/changelog.md)
 - [Road Map](https://github.com/johnhenry/jth/tree/main/docs/roadmap.md)
 
-## Related Repositories
+## See Languages
 
-## See Also
+[Point-Free/Tacit](https://en.wikipedia.org/wiki/Tacit_programming) |
+[Concatenative](<https://en.wikipedia.org/wiki/Factor_(programming_language)>) |
+[Array-based](https://en.wikipedia.org/wiki/Array_programming) |
+[Stack-oriented](https://en.wikipedia.org/wiki/Stack-oriented_programming) |
+[Homoiconicity](https://en.wikipedia.org/wiki/Homoiconicity)
 
-### Languages with Similar Syntax
-
+- https://en.wikipedia.org/wiki/APL_(programming_language)
+- https://en.wikipedia.org/wiki/J_(programming_language)
 - https://en.wikipedia.org/wiki/Forth_(programming_language)
+- https://thinking-forth.sourceforge.net/
 - https://en.wikipedia.org/wiki/Joy_(programming_language)
+  - https://hypercubed.github.io/joy/joy.html
+  - https://news.ycombinator.com/item?id=23049445
 - https://en.wikipedia.org/wiki/Factor_(programming_language)
+  - https://factorcode.org/
+  - https://www.youtube.com/watch?v=f_0QlhYlS8g&ab_channel=GoogleTechTalks
+- https://github.com/cdiggins/cat-language
+  - https://web.archive.org/web/20150205081218/http://cat-language.com/manual.html
+- http://kittenlang.org/
+- https://en.wikipedia.org/wiki/Dc_(computer_program)
+- https://en.wikipedia.org/wiki/PostScript
 
-### Other languages that are ineroperabable with javascript
+#### Javascript Interoperable
 
 - https://coffeescript.org/
 - https://github.com/santoshrajan/lispyscript
 - https://livescript.net/
+
+#### Other Inspirations
+
+- https://en.wikipedia.org/wiki/TI-BASIC_83
