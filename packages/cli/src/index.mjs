@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --experimental-vm-modules --no-warnings
 import {
   readFileSync,
   writeFileSync,
@@ -15,7 +15,9 @@ import { hideBin } from "yargs/helpers";
 import { transform } from "jth-core";
 import walk from "./walk.mjs";
 import runRepl from "./run-repl.mjs";
+import resolveBundle from "../external/resolve-bundle.mjs";
 const NAME = "jth";
+const VERSION = "0.0.2";
 const TARGET_EXTENSION = "mjs";
 const { log } = console;
 const genRandom = () => Math.random().toString().slice(2);
@@ -23,6 +25,7 @@ const switchExtension = (file, ext) => {
   const index = file.lastIndexOf(".") + 1;
   return `${file.substring(0, index)}${ext}`;
 };
+// TODO: should I use this to resolve imports? https://stackoverflow.com/a/62272600/1290781
 
 yargs(hideBin(process.argv))
   .scriptName(NAME)
@@ -34,8 +37,14 @@ yargs(hideBin(process.argv))
       yargs
         .option("code", {
           alias: "c",
-          describe: "evaluate code instead of file",
+          describe: "evaluate inline code instead of file",
           type: "boolean",
+        })
+        .option("use-runtime", {
+          alias: "R",
+          describe: "use runtime",
+          default: "static",
+          type: "string",
         })
         .positional("input", {
           describe: "file or code to run",
@@ -43,10 +52,28 @@ yargs(hideBin(process.argv))
         });
     },
     async function (argv) {
+      const { useRuntime } = argv;
+      let runtime;
+      let customRuntime;
+      switch (useRuntime) {
+        case "static":
+        case "dynamic":
+        case "none":
+          runtime = useRuntime;
+          break;
+        default:
+          runtime = "custom";
+          customRuntime = readFileSync(
+            path.resolve(process.cwd(), argv.input),
+            "utf8"
+          );
+          break;
+      }
       const output = await transform(
         argv.code
           ? argv.input
-          : readFileSync(path.resolve(process.cwd(), argv.input), "utf8")
+          : readFileSync(path.resolve(process.cwd(), argv.input), "utf8"),
+        { runtime, customRuntime }
       );
       const randFile = `${
         argv.code ? "." : path.dirname(argv.input)
@@ -71,6 +98,12 @@ yargs(hideBin(process.argv))
           type: "boolean",
           describe: "compile code instead of file",
         })
+        .option("use-runtime", {
+          alias: "R",
+          describe: "use runtime",
+          default: "static",
+          type: "string",
+        })
         .option("extension", {
           alias: "e",
           describe: "extension of output files",
@@ -80,6 +113,12 @@ yargs(hideBin(process.argv))
           alias: "t",
           describe: "target extension to convert",
           default: "jth",
+        })
+        .option("runtime", {
+          alias: "r",
+          describe: "generate runtime",
+          default: false,
+          type: "boolean",
         })
         .positional("input", {
           describe: "file or code to run",
@@ -91,15 +130,34 @@ yargs(hideBin(process.argv))
         });
     },
     async function (argv) {
+      const { useRuntime } = argv;
+      let runtime;
+      let customRuntime;
+      switch (useRuntime) {
+        case "static":
+        case "dynamic":
+        case "none":
+          runtime = useRuntime;
+          break;
+        default:
+          runtime = "custom";
+          customRuntime = readFileSync(
+            path.resolve(process.cwd(), argv.input),
+            "utf8"
+          );
+          break;
+      }
+
       if (argv.code) {
         // compile code directly to...
+        const result = await transform(argv.input, { runtime, customRuntime });
         if (argv.output) {
           // ...a file
           const outfile = path.resolve(process.cwd(), argv.output);
-          await writeFileSync(outfile, await transform(argv.input));
+          await writeFileSync(outfile, result);
         } else {
           // ...stdout
-          return log(await transform(argv.input));
+          return log(result);
         }
       } else {
         // compile code from...
@@ -127,7 +185,10 @@ yargs(hideBin(process.argv))
             if (infile !== outfile) {
               await mkdirSync(path.dirname(outfile), { recursive: true });
               if (transformContent) {
-                const output = await transform(readFileSync(infile, "utf8"));
+                const output = await transform(readFileSync(infile, "utf8"), {
+                  runtime,
+                  customRuntime,
+                });
                 await writeFileSync(outfile, output);
               } else {
                 await writeFileSync(outfile, readFileSync(infile, "utf8"));
@@ -144,14 +205,30 @@ yargs(hideBin(process.argv))
             );
             outfile = switchExtension(outfile, argv.extension);
             if (input !== outfile) {
-              await writeFileSync(
-                outfile,
-                await transform(readFileSync(input, "utf8"))
-              );
+              if (argv.runtime) {
+                await writeFileSync(outfile, await resolveBundle(input));
+              } else {
+                await writeFileSync(
+                  outfile,
+                  await transform(readFileSync(input, "utf8"), {
+                    runtime,
+                    customRuntime,
+                  })
+                );
+              }
             }
           } else {
             //...stdout.
-            return log(await transform(readFileSync(input, "utf8")));
+            if (argv.runtime) {
+              return log(await resolveBundle(input));
+            } else {
+              return log(
+                await transform(readFileSync(input, "utf8"), {
+                  runtime,
+                  customRuntime,
+                })
+              );
+            }
           }
         }
       }
@@ -160,10 +237,44 @@ yargs(hideBin(process.argv))
   .command(
     "repl",
     `interactive ${NAME} read-evaluate-print loop`,
-    async function (argv) {
-      await runRepl();
+    (yargs) => {
+      yargs
+        .option("view", {
+          alias: "v",
+          type: "boolean",
+          describe: "view output",
+          default: true,
+        })
+        .option("operator-func", {
+          alias: "o",
+          type: "boolean",
+          describe: "name of operator function",
+          default: "operators",
+        })
+        .option("process-func", {
+          alias: "f",
+          type: "string",
+          describe: "name of process function",
+          default: "processN",
+        })
+        .option("count-in-prompt", {
+          alias: "c",
+          type: "boolean",
+          describe: "name of process function",
+          default: false,
+        });
+    },
+    (argv) => {
+      log(
+        `Welcome to the ${NAME} repl v${VERSION}.
+Type ".help" for more information. ${
+          argv.view ? "" : '\nType ".view" to see current.'
+        }`
+      );
+
+      runRepl(argv);
     }
   )
-  //   .demandCommand(1, `try: ${NAME} run -e '"hello world" @!;'`)
+  .demandCommand(1, `try: ${NAME} run -c '"hello world"  @;'`)
   .alias("h", "help")
   .help().argv;
