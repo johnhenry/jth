@@ -9,7 +9,7 @@
 
 <hr >
 
-Core transformation for jth.
+Core transformation and library for jth.
 
 ## Installation
 
@@ -24,7 +24,7 @@ npm install jth-core
 ## In-File Usage
 
 ```javascript
-import { transform } from "./core.mjs";
+import { transform } from "jth-core.mjs";
 const jthCode = '"Hello World!" @;';
 const jsCode = transform(jthCode);
 console.log(jsCode);
@@ -37,5 +37,9 @@ console.log(jsCode);
 - Initial release
 
 ### 0.1.0 - Here comes the AST!
+
+⚠️WARNING⚠️ Breaking Changes See https://github.com/johnhenry/jth/tree/main/docs/changelog.md
+
+### 0.2.0 - Internal Affairs
 
 ⚠️WARNING⚠️ Breaking Changes See https://github.com/johnhenry/jth/tree/main/docs/changelog.md

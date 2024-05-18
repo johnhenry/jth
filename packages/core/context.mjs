@@ -16,7 +16,7 @@ export * from "./range/index.mjs"; // jth-range
 export * from "./logic/index.mjs"; // jth-logic
 import "./logic/operators.mjs"; // jth-logic/operators
 //
-export * from "./misc/index.mjs"; // jth-misc
+export * from "./sequences/index.mjs"; // jth-misc
 //
 import "./hyperoperation-operator/index.mjs"; // jth-hyperoperator
 //
