@@ -2,6 +2,7 @@ import repl from "node:repl";
 import vm from "node:vm";
 import { processLine, jsLine } from "jth-core";
 import * as replContext from "jth-core/context";
+const STACK_NAME = "___";
 const createRepl = (
   {
     operatorFunc = "operators",
@@ -19,7 +20,7 @@ const createRepl = (
 ) => {
   const context = { ...replContext };
   vm.createContext(context);
-  context["___"] = context["___"] || [];
+  context[STACK_NAME] = context[STACK_NAME] || [];
   if (history) {
     history = [];
   }
@@ -55,7 +56,8 @@ const createRepl = (
         opts,
       });
       history && history.push([cmd, __CURRENTLINE__]);
-      __CURRENTLINE__ = __CURRENTLINE__ + (view ? "view(...___);" : "");
+      __CURRENTLINE__ =
+        __CURRENTLINE__ + (view ? `view(...${STACK_NAME});` : "");
 
       // eval
       const l = new vm.SourceTextModule(__CURRENTLINE__, {
@@ -64,7 +66,7 @@ const createRepl = (
       await l.link(() => {});
       await l.evaluate();
       if (countInPrompt) {
-        replServer.setPrompt(`[${context["___"].length}] `);
+        replServer.setPrompt(`[${context[STACK_NAME].length}] `);
       }
     } catch (error) {
       if (/Unexpected token '\)'/.test(error.message)) {
@@ -76,7 +78,7 @@ const createRepl = (
   };
 
   const replServer = repl.start({
-    prompt: countInPrompt ? `[${context["___"]?.length}] ` : "<] ",
+    prompt: countInPrompt ? `[${context[STACK_NAME]?.length}] ` : "<] ",
     eval: evalute,
     replMode: repl.REPL_MODE_SLOPPY,
   });
@@ -84,14 +86,14 @@ const createRepl = (
   replServer.defineCommand("peek", {
     help: "View current stack",
     action() {
-      vm.runInContext("console.log(...___)", context);
+      vm.runInContext(`console.log(...${STACK_NAME})`, context);
       this.displayPrompt();
     },
   });
   replServer.defineCommand("count", {
     help: "View current stack",
     action() {
-      vm.runInContext("console.log(___.length)", context);
+      vm.runInContext(`console.log(${STACK_NAME}.length)`, context);
       this.displayPrompt();
     },
   });
