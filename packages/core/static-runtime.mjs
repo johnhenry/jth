@@ -627,8 +627,6 @@
   };
 
   setObj({
-    _: wait,
-    __: waitAll,
     "@": peek,
     "@@": view,
     "∅": noop,
@@ -654,6 +652,11 @@
     "->>": skipN(Infinity)(),
     Σ: sum,
     Π: product,
+    _: wait,
+    __: waitAll,
+    and: copy,
+    or: copy,
+    not: copy,
   });
 
   // Incrementors
@@ -1105,6 +1108,11 @@
 
   const or = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
 
+  const not = (...stack) => {
+    const item = !stack.pop();
+    return [...stack, item];
+  };
+
   ////////////////
   // Experimental
   ////////////////
@@ -1177,6 +1185,7 @@
   setObj({
     "||": or,
     "&&": and,
+    "!!": not,
   });
 
   const fibonacci = applyLastN(2)((a, b) => [b, a, b + a]);
@@ -1519,6 +1528,7 @@
     fromToInc: fromToInc,
     and: and,
     or: or,
+    not: not,
     when: when,
     dropWhen: dropWhen,
     whenever: whenever,

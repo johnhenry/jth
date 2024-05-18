@@ -1,14 +1,11 @@
 # The Big List of built in-functions
 
+Like most stack-oritented languages, jth has a large number of built-in functions.
+
 ## Homosynchronic functions
 
 Homosynchronic functions wrap other functions
 causing them to be processed in a "special" way.
-
-### limitN
-
-**limitN** limit the items
-upon which a stack function may operate
 
 ### delayN
 
@@ -16,11 +13,36 @@ upon which a stack function may operate
 
 until it is revisited via some mechanism such as **rewindN**
 
+### pause
+
+**pause** delays calling of a function once until it is revisited via some mechanism such as **rewindN**
+
+```jth
+1 3 pause(*);
+```
+
+equavalent to
+
+```jth
+1 3 delayN(1)(*);
+```
+
+### limitN
+
+**limitN** limit the items upon which a stack function may operate
+
+```jth
+1 2 3 4 5 6 7 8 9 10 limit(3)(sum);
+1 2 3 4 5 6 7 27
+```
+
 ### persistN
 
-**persistN** keeps function on stack such that
+**persistN** keeps function on stack such that is may be called again via some mechanism such as **rewindN**
 
-is may be called again via some mechanism such as **rewindN**
+```jth
+1 3 persistN(1)(*);
+```
 
 ### rewindN
 
@@ -46,110 +68,220 @@ aliases:
 - `->N` skips N steps
 - `->>` skips to the end
 
-## Additive Stack Functions
+## Basic
 
-### Basic
+### run (alt: !)
 
-#### noop (alt: ∅)
+### spread (alt: ...)
+
+### noop (alt: ∅)
 
 Does noting to stack
 
-#### peek (alt: @)
+### peek (alt: @)
 
 Logs last item on stack
 
-#### peekAll (alt: @@)
+### peekAll (alt: @@)
 
 Logs entire stack
 
-#### dupe
+### dupe
 
 Duplicates last item on stack
 
-#### copy
+```jth
+1 dupe;
+// results in 1 1
+```
+
+### copy
 
 Duplicates entire stack
 
-### Math
+```jth
+1 2 3 copy;
+// results in 1 2 3 1 2 3
+```
 
-#### sum
+## Logic
 
-Return sum of numbers on stack.
+### and (alt: /&&)
 
-#### product
+Ands last two items on the stack
 
-Return product of numbers on stack.
+### or (alt: /\|\|)
 
-#### difference
+Ors last two items on the stack
 
-Return difference of numbers on stack.
+### not (alt: !!)
 
-#### quotient
+Negates last item on stack
 
-Return quotient of numbers on stack.
+### equal (alt: =)
 
-### Logic
+Test if last to items on stack are equal
 
-## Subtractive Stack Functions
+### coercedEqual (alt: ==)
 
-### Basic
+Test if last to items on stack are equal (coerces)
 
-#### swap
+### lt (alt: >)
+
+Tests if last item is less than penultimate
+
+### lte (alt: >=)
+
+Tests if last item is less than or equal to penultimate
+
+### gt (alt: <)
+
+Test if last item is greater than penultimate
+
+### gte (alt: <=)
+
+Test if last item is greater than or equal to penultimate
+
+### spaceship (alt: <=>)
+
+Compares last two items on stack and returns -1, 0, or 1
+
+## Basic
+
+### swap
 
 Swap last two items on stack
 
-#### reverse
+```jth
+1 2 swap;
+// results in 2 1
+```
+
+### reverse
 
 Reverses all items on stack
 
-#### drop
+```jth
+1 2 3 reverse;
+// results in 3 2 1
+```
+
+### drop
 
 Removes last item from stack
 
-#### dropHalf
+```jth
+1 2 3 drop;
+// results in 1 2
+```
+
+### dropHalf
 
 Removes last half of stack (rounded up)
 
-#### keepHalf
+```jth
+1 2 3 4 5 6 7 8 9 10 dropHalf;
+// results in 1 2 3 4 5
+```
+
+### keepHalf
 
 Removes last half of stack (rounded down)
 
-### Math
+```jth
+1 2 3 4 5 6 7 8 9 10 keepHalf;
+// results in 6 7 8 9 10
+```
 
-#### plus (alt: +)
+## Math
+
+### sum (alt: Σ)
+
+Replaces all numbers on stack with sum
+
+```jth
+1 2 3 sum;
+// results in 6
+```
+
+### product (alt: Π)
+
+Replaces all numbers on stack with product
+
+```jth
+1 2 3 product;
+// results in 6
+```
+
+### plus (alt: +)
 
 Replaces last two items with sum
 
-#### subtract (alt: -)
+```jth
+1 2 +;
+// results in 3
+```
+
+### subtract (alt: -)
 
 Replaces last two items with difference
 
-#### multiply (alt: \*)
+```jth
+2 1 -;
+// results in -1
+```
+
+### multiply (alt: \*)
 
 Replaces last two items with product
 
-#### divide (alt: /)
+```jth
+2 3 *;
+// results in 6
+```
+
+### divide (alt: /)
 
 Replaces last two items with quotient
 
-#### `/+` - addition across stack
+```jth
+6 3 /;
+// results in 0.5
+```
 
-#### `/-` - subtraction across stack
+### exp (alt: \*\*)
 
-#### `/\*` - multiplication across stack
+Replaces last two items with exponentiation result
 
-#### `//` - division across stack
+```jth
+2 3 exp;
+// results in 9
+```
 
-#### `/**` - exponentiation across stack
+### tetration (alt: \*\*\*)
 
-#### `/***` - tetration across stack
+Replaces last two items with tetration result
 
-### Array/Collection/Iterator Functions
+```jth
+2 3 ***;
+// results in 27
+```
+
+### pentration (alt: \*\*\*\*)
+
+Replaces last two items with pentration result
+
+```jth
+2 3 ****;
+// results in 7625597484987
+```
+
+## Array
 
 These functions operate on Arrays and other collectinons when
 they are the last or next-to-last item on the array.
 
-#### push
+### push
 
 Push last item on stack into penultimate if it's an array, set, or map
 
@@ -158,7 +290,7 @@ Push last item on stack into penultimate if it's an array, set, or map
 // results in [1,2,3]
 ```
 
-#### pop
+### pop
 
 Pops item from array and place it on the stack.
 
@@ -167,7 +299,7 @@ Pops item from array and place it on the stack.
 // results in [1,2] 3
 ```
 
-#### unshift
+### unshift
 
 Unshift item preceding array onto array.
 
@@ -176,7 +308,7 @@ Unshift item preceding array onto array.
 // results in [1,2,3]
 ```
 
-#### shift
+### shift
 
 Shift item from array onto stack before it.
 
@@ -185,11 +317,84 @@ Shift item from array onto stack before it.
 // results in 1 [2, 3]
 ```
 
+### suppose
+
+Suppose last item is an array, set, or map and push it onto stack.
+
+```
+0 [1 2 3] suppose;
+// results in 0 1 2 3
+```
+
+## Dict
+
+### getString
+
+### getList
+
+### getAll
+
+### get
+
+### set
+
+## Iterator
+
+### next
+
+### drain
+
+### iter
+
+## Range
+
+### numStack
+
+### numStack
+
+### to
+
+### fromTo
+
+### toInc
+
+### fromToInc
+
+## Staticstcs
+
+### mean
+
+### median
+
+### mode
+
+### modes
+
+### populationVariance
+
+### sampleVariance
+
+### populationStandardDeviation
+
+### sampleStandardDeviation
+
+### percentile
+
+### fiveNumberSummary
+
+### fiveNumberSummaryB
+
 ## Utility Functions
 
 ### applyLastN
 
-### take
+### attackStack
+
+### binaryCollapse
+
+## Misc
+
+### Fibonacci
 
 ## Operators
 
@@ -219,10 +424,13 @@ Shift item from array onto stack before it.
 | /\|\|                | or           | Array-wise or                                 |
 | %                    | mod          | Positive result only modulus                  |
 | %%                   | modulus      | Mixed result moduls (JS Default)              |
-| &&                   | (n/a)        | true if [-1] and [-2] truthy, false otherwise |
-| \|\|                 | (n/a)        | true if [-1] or [-2] truthy, false otherwise  |
+| &&                   | and          | true if [-1] and [-2] truthy, false otherwise |
+| \|\|                 | or           | true if [-1] or [-2] truthy, false otherwise  |
+| !!                   | not          | true if [-1] is falsy, true otherwise         |
 | <<-                  | (n/a)        | Rewind to beginning                           |
 | ->>                  | (n/a)        | Skip to end                                   |
+| \_                   | wait         | resolve promise                               |
+| \_\_                 | waitAll      | resolve all promises                          |
 | **Dynamic Operator** |              |                                               |
 | \*\*\* (3+ times)    | (n/a)        | Hyperperoperator on BigInts                   |
 | /\*\*\* (3+ times)   | (n/a)        | Cumulative Hyperperoperator on BigInts        |
@@ -234,7 +442,7 @@ Shift item from array onto stack before it.
 
 - `=` uses strict equailty (`===`) under the hood. Use `==` for coerced equality.
 - `%` does not return negative numbers. Use `%%` if you want that behavior.
-- `<`, `<=`, `>`, `=>` symbols are reversed
+- `<`, `<=`, `>`, `=>` symbols are "reversed"
   - These mean the opposite of what they do in most languages;
     but since we compare from right to left,
     their meanings generally line up with expectations.

@@ -75,6 +75,7 @@ Learn more about jth here:
 - [Tooling](https://github.com/johnhenry/jth/tree/main/docs/tooling.md)
 - [Change Log](https://github.com/johnhenry/jth/tree/main/docs/changelog.md)
 - [Road Map](https://github.com/johnhenry/jth/tree/main/docs/roadmap.md)
+- [Big List of Built-in Functions](https://github.com/johnhenry/jth/tree/main/docs/big-list-of-built-in-functions.md)
 
 ## See Languages
 

@@ -31,8 +31,6 @@ import {
   waitAll,
 } from "./core.mjs";
 setObj({
-  _: wait,
-  __: waitAll,
   "@": peek,
   "@@": view,
   "∅": noop,
@@ -58,6 +56,11 @@ setObj({
   "->>": skipN(Infinity)(),
   Σ: sum,
   Π: product,
+  _: wait,
+  __: waitAll,
+  and: copy,
+  or: copy,
+  not: copy,
 });
 
 // Incrementors

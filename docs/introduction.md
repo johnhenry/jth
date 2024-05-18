@@ -6,15 +6,15 @@ What better way to start learning a language than with...
 
 This program:
 
-```javascript
+```jth
 "Hello World" @;
 ```
 
 prints "Hello World" to the console. Let's break it down into parts.
 
-- `"Hello World"` is the string that we want to print. Adding it to the line puts it on the stack.
+- `"Hello World"` is the string that we want to print. Adding it to the line puts it onto the stack.
 
-- `@` is used to print the last item on the stack.
+- `@` is used to print the last item on the stack without removing it.
 
 Finally, `;` the marks the end of the line.
 Because jth supports multi-line expressions, lines must end with `;`.
@@ -23,99 +23,110 @@ Because jth supports multi-line expressions, lines must end with `;`.
 
 We can store the stack, or any part of it to a variable using `:::` to use in stacks that follow.
 
-This program:
-
-```javascript
-"Hello World" "How are you today?" @@ ::: [first second];
-second first @@;
+```jth
+1 2 ::: [first second];
+second first @@; /* puts 2 and 1 onto the stack */
 ```
 
-(Note that @ doesn't modify the stack... just displays it)
+Store the eitire stack as an array with `...`
+Use `...` within a stack to spread it onto the stack.
 
-prints "How are you today? Hello world." to the console.
-
-When storing the full stack, it's an array. Expand it with `.` to add its values to the stack (remember to add the `!` operator).
-
-```javascript
-"Hello World" "How are you today?" @ -> stack;
-stack @; /* prints array */
-stack ... @@; /*prints individual items */
+```jth
+1 2 @ ::: [...stack];
+stack; /* puts [1,2] onto the stack */
+stack ...; /*puts 1 and 2 onto the stack */
 ```
 
-### Substacks
+### Arrays
 
-`[` and `]` can denote a _sub-program_.
+Another way to create an array is with `[` and `]`.
 
-Alone they are a single object.
-
-```javascript
-// [3 4 5] count$! @!;/*prints 1*/
+```jth
+[1 2]; /* puts an array [1,2] onto the stack */
 ```
 
-They can be expaned into the current stack:
+Functions within arrays are paused.
 
-```javascript
-// [3 4 5] ... @@;/*prints 3 4 5*/
+```jth
+[1 2 +]; /* puts [2, 3, +] onto stack, rather than [3] */
 ```
 
-They can be executed:
-
-```javascript
-// [3 4 /*] ... <- @@;/*prints 12*/
-// [3 4 /*] ! @;/*prints [12]*/
+```jth
+[1 2 +] ... ; /* puts 1, 2 and + onto the stack */
 ```
 
-## stack functions and composition.
+### Array Execution
 
-As mentioned before, `!` applies a function to the stack before it.
+As the substack was initially paused, it can now be run by stepping back with `<-`.
 
-These functions, "stack functions", take an array as an argument and return an array as an argument.
-
-A number of standard [stack functions](./api.md#stack-functions) are available.
-
-The easiet way to create functions is to create it in javascript:
-
-```javascript
-export const sum$ = (...stack) => {
-  return [stack.reduce((a, b) => a * b, 1)];
-};
-export const dupe$ = (...stack) => {
-  return [...stack, stack[stack.length - 1]];
-};
+```jth
+[1 2 +] ... <-; /* puts 3 onto the stack */
 ```
 
-and import it into an jth file.
+Use `!` (or `run`) to execute an array immediately.
+This creates a promise that resolves to the resulting array.
 
-```javascript
-import { sum$, dupe$ } from "...";
-1 2 3 sum$! @!; /* prints 6 */
-1 2 3 dupe$! @!; /* prints 1 2 3 3 */
+```jth
+[1 2 *] !; /* puts Promise{[3]} on the stack  */
 ```
 
-You can also compose functions using `!`.
+Resolve this promise with `_` (or `wait`).
 
-```javascript
-import { sum$, dupe$, product$ } from "...";
-1 2 3 sum$ @; /* prints 6 */
-hold(dupe$) hold(product$) compose ::: [square$];
-3 square$; /* prints "9" */
+```jth
+[2 3 *] ! _; /* puts [6] onto the stack */
 ```
 
-## Javascript Compatibiltiy
+And like before, we can spread the array onto the stack
 
-### Imports/Exports
+```jth
+[2 3 *] ! _ ...; /* puts 6 onto the stack */
+```
 
-The syntax for importing and exporting objects is identical to that of javascript with two exceptions:
+## Javascipt Values
 
-- lines must end with a semicolon.
-- references to "jth" files are changed to "mjs" files during transformation.
+Values wrapped in parentheses are processed as javascript values.
 
-### Expressions
+```jth
+(Math.random()) (Math.random()) (Math.random()); /* puts two random numbers onto the stack */
+```
 
-Javascript expressions wrapped in ` (``) `are evaluated as-is.
+Functions can be used as well.
+Note a _stack function_'s signature:
 
-The following programs maps two random numbes to truth values and prints them.
+- inputs: all items on the stack before it
+- output: an array representing items to replace the stack with.
+
+```jth
+(Math.random()) (Math.random()) ((...m)=>m.map(x=>x>0.5?true:false));
+```
+
+## Pausing
+
+It might be convenient to define values or functions and use them later;
+but to prevent them from executing, you'll need to pause them either an array:
+
+```jth
+[((...stack) => [...stack, Math.random()]) ((...stack) => stack.map((i) => (i > 0.5 ? true : false)))] ... ::: [random mapper];
+random random mapper;
+```
+
+Or by using the `pause` function.
+
+```jth
+pause(((...stack) => [...stack, Math.random()])) pause((...stack) => stack.map((i) => (i > 0.5 ? true : false))) ::: [random mapper];
+random random mapper;
+```
+
+## Imports
+
+You can also define functions in separate files using and import them.
 
 ```javascript
-(Math.random()) (Math.random()) stack=>stack.map(x=>x>0.5?true:false) !! @!!;
+export const random = (...stack) => [...stack, Math.random()];
+export const mapper = (...stack) => stack.map((i) => (i > 0.5 ? true : false));
+```
+
+```jth
+::import "./randomstack.mjs" {random mapper};
+random random mapper
 ```

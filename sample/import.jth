@@ -2,7 +2,7 @@
 ::import "./imported/1.mjs" defaultImport;
 defaultImport @;
 ::import "./imported/2.mjs" ...importedGroup;
-importedGroup @;
+importedGroup.b importedGroup.c @@;
 ::import "./imported/3.mjs" { namedImport otherNamedImport };
 namedImport otherNamedImport @@;
 ::import "./imported/4.mjs" { namedImport:renamedImport };
