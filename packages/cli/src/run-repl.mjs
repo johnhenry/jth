@@ -20,7 +20,6 @@ const createRepl = (
   const context = { ...replContext };
   vm.createContext(context);
   context["___"] = context["___"] || [];
-  // globalThis["___"] = globalThis["___"] || [];
   if (history) {
     history = [];
   }
@@ -65,7 +64,7 @@ const createRepl = (
       await l.link(() => {});
       await l.evaluate();
       if (countInPrompt) {
-        replServer.setPrompt(`[${globalThis["___"].length}] `);
+        replServer.setPrompt(`[${context["___"].length}] `);
       }
     } catch (error) {
       if (/Unexpected token '\)'/.test(error.message)) {
@@ -77,7 +76,7 @@ const createRepl = (
   };
 
   const replServer = repl.start({
-    prompt: countInPrompt ? `[${globalThis["___"].length}] ` : "<] ",
+    prompt: countInPrompt ? `[${context["___"]?.length}] ` : "<] ",
     eval: evalute,
     replMode: repl.REPL_MODE_SLOPPY,
   });
