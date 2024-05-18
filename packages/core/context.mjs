@@ -20,3 +20,5 @@ export * from "./misc/index.mjs"; // jth-misc
 //
 import "./hyperoperation-operator/index.mjs"; // jth-hyperoperator
 //
+export * from "./dict/index.mjs"; //
+export * from "./async/index.mjs"; //

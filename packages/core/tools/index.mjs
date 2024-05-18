@@ -1,7 +1,21 @@
 // import { CALLING_STACK_FUNCTION } from "../process-n.mjs";
 export const EMPTY_ARGUMENT = Symbol("EMPTY_ARGUMENT");
+/**
+ * @description Create stack function creates a function that applies last n arguments to a function
+ * @param {*} n - Number of arguments to apply
+ * @param {boolean} empty - Whether to apply empty arguments if stack is too short
+ * @param {*} EMPTY - argument signifying empty argument
+ * @returns {function}
+ * |
+ */
 export const applyLastN =
   (n = Infinity, empty = false, EMPTY = EMPTY_ARGUMENT) =>
+  /**
+   *
+   * @param {*} fn - Function to apply arguments to
+   * @param {boolean} dropArgs - Whether to drop arguments from stack
+   * @returns {function} - Stack function
+   */
   (fn = clear, dropArgs = true) =>
   (...rest) => {
     const args = [];
@@ -47,3 +61,27 @@ export const collapseBinary =
     }
     return stack;
   };
+
+const splitArgs = (left, take = 0) => {
+  const taken = left.splice(-take);
+  return [left, taken];
+};
+
+export const stackify = (
+  func,
+  bindObject = undefined,
+  take = Infinity,
+  wrapOutputInArray = true
+) => {
+  if (bindObject !== undefined) {
+    func = func.bind(bindObject);
+  }
+  if (wrapOutputInArray) {
+    return (...args) => {
+      const [left, taken] = splitArgs(args, take);
+      return [...left, func(...taken)];
+    };
+  } else {
+    return (...args) => func(...args);
+  }
+};

@@ -1,5 +1,8 @@
 import { applyLastN, attackStack } from "../tools/index.mjs"; //jth-tools
-
+/**
+ * @category StackFunction
+ * If last element of stack is an array, pop the last element off of it
+ */
 export const next = applyLastN(1)((obj) => {
   if (!obj?.next) {
     return [obj];

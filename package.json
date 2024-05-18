@@ -12,19 +12,20 @@
     "url": "https://github.com/johnhenry/jth/issues"
   },
   "scripts": {
+    "demo:import": "jth run ./sample/import.jth",
+    "demo:kitchen-sink": "jth run ./sample/kitchen-sink.jth",
     "packages:test": "sh ./scripts/test.sh",
     "packages:publish": "sh ./scripts/publish.sh",
     "packages:link": "sh ./scripts/link.sh",
     "packages:unlink": "sh ./scripts/unlink.sh",
     "packages:logo": "sh ./scripts/logo.sh",
-    "link": "npm link jth-cli jth-tools jth-stats",
-    "unlink": "npm unlink --no-save jth-cli jth-tools jth-stats",
-    "kitchen-sink": "jth run ./sample/kitchen-sink.jth"
+    "link": "npm link ./packages/cli ./packages/core",
+    "unlink": "npm unlink --no-save ./packages/cli ./packages/core",
+    "repl": "jth repl"
   },
   "homepage": "https://github.com/johnhenry/jth#readme",
   "devDependencies": {
-    "jth-tools": "^0.0.0",
-    "jth-stats": "^0.0.0",
-    "jth-cli": "^0.1.0"
+    "jth-cli": "file:packages/cli",
+    "jth-core": "file:packages/core"
   }
 }

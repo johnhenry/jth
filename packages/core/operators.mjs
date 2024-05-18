@@ -1,5 +1,17 @@
 const staticOperators = {};
 const dynamicOperators = new Map();
+/**
+ * @description Set an operator
+ * @param {string|RegExp} k - The operator to set
+ * @param {function} v - The function to set
+ * @returns {void}
+ * @example
+ * ```javascript
+ * set("foo", () => "bar");
+ * operators("foo"); // () => "bar"
+ * ```
+ */
+
 export const set = (k, v) => {
   typeof k !== "string" ? dynamicOperators.set(k, v) : (staticOperators[k] = v);
 };

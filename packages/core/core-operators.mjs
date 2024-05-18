@@ -27,9 +27,12 @@ import {
   copy,
   sum,
   product,
+  wait,
+  waitAll,
 } from "./core.mjs";
 setObj({
-  _: copy,
+  _: wait,
+  __: waitAll,
   "@": peek,
   "@@": view,
   "∅": noop,

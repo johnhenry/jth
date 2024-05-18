@@ -1,6 +1,25 @@
 (function () {
   'use strict';
 
+  /**
+   * @description Extracts values from a dictionary and assigns them to the global object.
+   * @example
+   * ```javascript
+   * const values = { a: 1, b: 2, c: 3};
+   * extractGlobal(values);
+   * console.log(a); // 1
+   * console.log(b); // 2
+   * console.log(c); // 3
+   * ```
+   * @param {Dict} values - The dictionary to extract values from
+   * @param {Dict}
+   *  - rename: Dict - A dictionary of keys to rename
+   *  - target: Object - The object to assign the values to
+   *  - allowDefault: boolean - Whether to allow the default key to be assigned
+   * @returns
+   * - number of entries
+   */
+
   const extractGlobal = (
     values = {},
     { rename = {}, target = globalThis, allowDefault = false } = {
@@ -38,7 +57,7 @@
 
   const processN =
     (start = 0, history, herstory) =>
-    (...future) => {
+    async (...future) => {
       const processed = history || [];
       const stack = herstory || [];
       stack.push(...future);
@@ -83,7 +102,9 @@
               }
             }
             // Call function
-            processed.push(..._.call(CALLING_STACK_FUNCTION, ...preProcessed));
+            processed.push(
+              ...(await _.call(CALLING_STACK_FUNCTION, ...preProcessed))
+            );
 
             if (persist) {
               processed.push(
@@ -114,8 +135,22 @@
 
   // import { CALLING_STACK_FUNCTION } from "../process-n.mjs";
   const EMPTY_ARGUMENT = Symbol("EMPTY_ARGUMENT");
+  /**
+   * @description Create stack function creates a function that applies last n arguments to a function
+   * @param {*} n - Number of arguments to apply
+   * @param {boolean} empty - Whether to apply empty arguments if stack is too short
+   * @param {*} EMPTY - argument signifying empty argument
+   * @returns {function}
+   * |
+   */
   const applyLastN =
     (n = Infinity, empty = false, EMPTY = EMPTY_ARGUMENT) =>
+    /**
+     *
+     * @param {*} fn - Function to apply arguments to
+     * @param {boolean} dropArgs - Whether to drop arguments from stack
+     * @returns {function} - Stack function
+     */
     (fn = clear, dropArgs = true) =>
     (...rest) => {
       const args = [];
@@ -161,6 +196,30 @@
       }
       return stack;
     };
+
+  const splitArgs = (left, take = 0) => {
+    const taken = left.splice(-take);
+    return [left, taken];
+  };
+
+  const stackify = (
+    func,
+    bindObject = undefined,
+    take = Infinity,
+    wrapOutputInArray = true
+  ) => {
+    if (bindObject !== undefined) {
+      func = func.bind(bindObject);
+    }
+    if (wrapOutputInArray) {
+      return (...args) => {
+        const [left, taken] = splitArgs(args, take);
+        return [...left, func(...taken)];
+      };
+    } else {
+      return (...args) => func(...args);
+    }
+  };
 
   const noop$1 = (...args) => args;
 
@@ -217,6 +276,15 @@
   //     const result = condenseInputToArray ? func(stack) : func(...stack);
   //     return wrapOutputInArray ? [result] : result;
   //   };
+
+  const wait = async (...stack) => {
+    const last = stack.pop();
+    return [...stack, await last];
+  };
+
+  const waitAll = async (...stack) => {
+    return Promise.all(stack);
+  };
 
   const run = applyLastN(1)((a) => [processN()(...a)]);
   const noop = (...args) => args;
@@ -527,12 +595,24 @@
 
   const staticOperators = {};
   const dynamicOperators = new Map();
-  const set = (k, v) => {
+  /**
+   * @description Set an operator
+   * @param {string|RegExp} k - The operator to set
+   * @param {function} v - The function to set
+   * @returns {void}
+   * @example
+   * ```javascript
+   * set("foo", () => "bar");
+   * operators("foo"); // () => "bar"
+   * ```
+   */
+
+  const set$1 = (k, v) => {
     typeof k !== "string" ? dynamicOperators.set(k, v) : (staticOperators[k] = v);
   };
   const setObj = (obj) => {
     for (const [k, v] of obj instanceof Map ? obj : Object.entries(obj)) {
-      set(k, v);
+      set$1(k, v);
     }
   };
   const operators = (o) => {
@@ -547,7 +627,8 @@
   };
 
   setObj({
-    _: copy,
+    _: wait,
+    __: waitAll,
     "@": peek,
     "@@": view,
     "∅": noop,
@@ -726,6 +807,18 @@
     return [...stack, min, q1, m, q3, max];
   };
 
+  /**
+   * @category StackFunction
+   * @description If penultimate element of stack is an array, push the last element onto it's end
+   * @param {(array|any)?} - Penultimate element of stack
+   * @param {any?} - Last element of stack
+   * @returns {[array|any?]} - Modified stack
+   * @example
+   * ```javascript
+   * const newStack = push([[4, 5], 6]);
+   * console.log(newStack); // [[4, 5, 6]]
+   * ```
+   */
   const push = attackStack((index = 0, n = 1) => (...stack) => {
     if (!stack.length) {
       return stack;
@@ -746,7 +839,18 @@
     }
     return [...stack, ...spare];
   });
-
+  /**
+   * @category StackFunction
+   * @description If penultimate element of stack is an array, unshift the last element onto it's beginning
+   * @param {(array|any)?} - Penultimate element of stack
+   * @param {any?} - Last element of stack
+   * @returns {[array|any?]} - Modified stack
+   * @example
+   * ```javascript
+   * const newStack = unshift([[4, 5], 6]);
+   * console.log(newStack); // [[6, 4, 5]]
+   * ```
+   */
   const unshift = attackStack((index = 0, n = 1) => (...stack) => {
     if (!stack.length) {
       return stack;
@@ -767,7 +871,18 @@
     }
     return [...stack, ...spare];
   });
-
+  /**
+   * @category StackFunction
+   * @description If last element of stack is an array, pop the last element off of it
+   * and push it onto the stack
+   * @param {(array|any)?} - Last element of stack
+   * @returns {[array|any?]} - Modified stack
+   * @example
+   * ```javascript
+   * const newStack = pop([4, 5, 6]);
+   * console.log(newStack); // [[4, 5], 6]
+   * ```
+   */
   const pop = attackStack((index = 0, n = 1) => (...stack) => {
     if (!stack.length) {
       return stack;
@@ -794,6 +909,18 @@
     return [...stack, ...spare];
   });
 
+  /**
+   * @category StackFunction
+   * If last element of stack is an array, shift the first element off of it
+   * and push it onto the stack
+   * @param {(array|any)?} - Last element of stack
+   * @returns {[array|any?]} - Modified stack
+   * @example
+   * ```javascript
+   * const newStack = shift([4, 5, 6]);
+   * console.log(newStack); // [[5, 6], 4]
+   * ```
+   */
   const shift = attackStack((index = 0, n = 1) => (...stack) => {
     if (!stack.length) {
       return stack;
@@ -820,6 +947,28 @@
     return [...stack, ...spare];
   });
 
+  /**
+   * @category StackFunction
+   * If penultimate element of stack is an array, set, or map add the last element of the stack to it
+   * @param {(array|set|map)?} - Penultimate element of stack
+   * @param {any?} - Last element of stack
+   * @returns {[array|set|map?]} - Modified stack
+   * @example array
+   * ```javascript
+   * const newStack = suppose([4, 5], 6);
+   * console.log(newStack); // [[4, 5, 6]]
+   * ```
+   * @example set
+   * ```javascript
+   * const newStack = suppose(new Set([4, 5]), 6);
+   * console.log(newStack); // [Set(3) { 4, 5, 6 }]
+   * ```
+   * @example map
+   * ```
+   * const newStack = suppose(new Map([["a", 1], ["b", 2]]), ["c", 3]);
+   * console.log(newStack); // [Map(3) { 'a' => 1, 'b' => 2, 'c' => 3 }]
+   * ```
+   */
   const suppose = attackStack((index = 0, n = 1) => (...stack) => {
     if (!stack.length) {
       return stack;
@@ -837,6 +986,9 @@
         } else if (arr instanceof Set) {
           arr.add(stack.pop());
         } else if (arr instanceof Map) {
+          // Should I extract a key and value from the item?
+          // I don't know if it makes sense
+          // to attempt to susppose a map at all.
           const item = stack.pop;
           arr.set(item, item);
         }
@@ -845,6 +997,10 @@
     return [...stack, arr, ...spare];
   });
 
+  /**
+   * @category StackFunction
+   * If last element of stack is an array, pop the last element off of it
+   */
   const next = applyLastN(1)((obj) => {
     if (!obj?.next) {
       return [obj];
@@ -1028,6 +1184,7 @@
   //https://github.com/qntm/hyperoperate/edit/main/src/index.js
   // also interesting: https://naruyoko.github.io/ExpantaNum.js/explanation.html
   // All arguments must be BigInts. Return value is a BigInt or a thrown RangeError
+
   const bigH = (n, a, b) => {
     if (n < 0n || a < 0n || b < 0n) {
       throw Error("Can only hyperoperate on non-negative integers");
@@ -1093,6 +1250,24 @@
 
     return result;
   };
+
+  /*
+   * @description  Performs a hyperoperation on two numbers
+   * @param {BigInt} n - The hyperoperation to perform
+   * @param {BigInt} a - The first argument
+   * @param {BigInt} b - The second argument
+   * @returns {BigInt} - The result of the hyperoperation
+   * @throws {RangeError} - If any argument is negative
+   * @throws {RangeError} - If the result is too large to be represented as a BigInt
+   * @throws {RangeError} - If the result causes a stack overflow
+   * @throws {Error} - If any argument is negative
+   * @throws {Error} - If any argument if all three areguments are not of the same type (BigInts or numbers)
+   * @example
+   * ```javascript
+   * hyperoperation(0n)(1n, 2n); // 2n
+   * ```
+   *
+   */
 
   const hyperoperation =
     (n) =>
@@ -1168,14 +1343,78 @@
       throw Error("Can only hyperoperate on three numbers or three BigInts");
     };
 
-  // Hyperoperation
+  // Set hyperoperation as dynamic operator
   // Examples: ***, ****, ***** ...
-  set(/^[*]{3,}$/, (o) => {
+  set$1(/^[*]{3,}$/, (o) => {
     const h = hyperoperation(o.length + 1);
     return attackStack((n) => collapseBinary(n, (a, b) => [h(a, b)]));
   });
 
-  //
+  const getString =
+    (key, bind) =>
+    (...stack) => {
+      const member = stack.pop();
+      return [
+        ...stack,
+        bind && typeof member[key] === "function"
+          ? member[key].bind(object)
+          : member[key],
+      ];
+    };
+
+  const getList =
+    (keys, bind) =>
+    (...stack) => {
+      const member = stack.pop();
+      const object = {};
+      for (const key of keys) {
+        object[key] =
+          bind && typeof member[key] === "function"
+            ? member[key].bind(object)
+            : member[key];
+      }
+      return [...stack, object];
+    };
+
+  const getAll =
+    (bind) =>
+    (...stack) => {
+      const member = stack.pop();
+      const object = {};
+      for (const key in member) {
+        object[key] =
+          bind && typeof member[key] === "function"
+            ? member[key].bind(object)
+            : member[key];
+      }
+      return [...stack, object];
+    };
+
+  const get = (key, bind) => {
+    if (key === undefined) {
+      return getAll(bind);
+    }
+    if (typeof key === "string") {
+      return getString(key, bind);
+    } else {
+      return getList(key, bind);
+    }
+  };
+
+  const set = (...assingments) => {
+    const entries = [];
+    while (assingments.length > 1) {
+      entries.push([assingments.shift(), assingments.shift()]);
+    }
+    const bind = assingments.length ? assingments.pop() : {};
+    return (...stack) => {
+      const target = stack.length > 0 ? Object.assign(stack.pop(), bind) : bind;
+      for (const [key, value] of entries) {
+        target[key] = value;
+      }
+      return [...stack, target];
+    };
+  };
 
   var context = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -1185,6 +1424,11 @@
     unwrap: unwrap,
     wrap: wrap,
     processN: processN,
+    EMPTY_ARGUMENT: EMPTY_ARGUMENT,
+    applyLastN: applyLastN,
+    attackStack: attackStack,
+    collapseBinary: collapseBinary,
+    stackify: stackify,
     noop: noop,
     rewindN: rewindN$1,
     reset: reset,
@@ -1196,6 +1440,8 @@
     skipN: skipN,
     wrapify: wrapify,
     swap: swap,
+    wait: wait,
+    waitAll: waitAll,
     run: run,
     clear: clear$1,
     forbidden: forbidden,
@@ -1281,7 +1527,9 @@
     dropIf: dropIf,
     keepIfElse: keepIfElse,
     dropIfElse: dropIfElse,
-    fibonacci: fibonacci
+    fibonacci: fibonacci,
+    get: get,
+    set: set
   });
 
   extractGlobal(context);

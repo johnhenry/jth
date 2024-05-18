@@ -1,4 +1,6 @@
 #!/usr/bin/env node --experimental-vm-modules --no-warnings
+import pack from "../package.json" with { type: "json" };
+
 import {
   readFileSync,
   writeFileSync,
@@ -17,7 +19,7 @@ import walk from "./walk.mjs";
 import runRepl from "./run-repl.mjs";
 import resolveBundle from "../external/resolve-bundle.mjs";
 const NAME = "jth";
-const VERSION = "0.0.2";
+const VERSION = pack.version;
 const TARGET_EXTENSION = "mjs";
 const { log } = console;
 const genRandom = () => Math.random().toString().slice(2);
@@ -28,7 +30,9 @@ const switchExtension = (file, ext) => {
 // TODO: should I use this to resolve imports? https://stackoverflow.com/a/62272600/1290781
 
 yargs(hideBin(process.argv))
+  .version(VERSION)
   .scriptName(NAME)
+  // .alias("v", "version") // This prevents repl from working for some reason?
   .usage("$0 <cmd> [args]")
   .command(
     "run [input]",

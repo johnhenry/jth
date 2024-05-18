@@ -9,14 +9,14 @@
 
 <hr >
 
-Latest Version: [0.1.0](https://github.com/johnhenry/jth/tree/main/docs/changelog.md#0.1.0)
+Latest Version: [0.2.0](https://github.com/johnhenry/jth/tree/main/docs/changelog.md#0.2.0)
 
 | Sub-Repositories                                                      | Version |
 | --------------------------------------------------------------------- | ------- |
 | [Jth Core](https://github.com/johnhenry/jth/tree/main/packages/core/) | 0.2.0   |
 | [Jth CLI](https://github.com/johnhenry/jth/tree/main/packages/cli/)   | 0.2.0   |
 
-**Jth** (rhymes with "eighth")
+**jth** (rhymes with "eighth")
 is an alternative syntax for javascript
 centered around squential data processing.
 
@@ -79,7 +79,7 @@ Learn more about jth here:
 ## See Languages
 
 [Point-Free/Tacit](https://en.wikipedia.org/wiki/Tacit_programming) |
-[Concatenative](<https://en.wikipedia.org/wiki/Factor_(programming_language)>) |
+[Concatenative](https://en.wikipedia.org/wiki/Concatenative_programming_language) |
 [Array-based](https://en.wikipedia.org/wiki/Array_programming) |
 [Stack-oriented](https://en.wikipedia.org/wiki/Stack-oriented_programming) |
 [Homoiconicity](https://en.wikipedia.org/wiki/Homoiconicity)
@@ -87,6 +87,7 @@ Learn more about jth here:
 - https://en.wikipedia.org/wiki/APL_(programming_language)
 - https://en.wikipedia.org/wiki/J_(programming_language)
 - https://en.wikipedia.org/wiki/Forth_(programming_language)
+  - https://forth-standard.org/standard/core
 - https://thinking-forth.sourceforge.net/
 - https://en.wikipedia.org/wiki/Joy_(programming_language)
   - https://hypercubed.github.io/joy/joy.html
@@ -109,3 +110,9 @@ Learn more about jth here:
 #### Other Inspirations
 
 - https://en.wikipedia.org/wiki/TI-BASIC_83
+
+a b c langchain.pipe @;
+
+c b.pipe a.pipe @;
+
+a b c langchain member("pipe");

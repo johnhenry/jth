@@ -1,6 +1,7 @@
 //https://github.com/qntm/hyperoperate/edit/main/src/index.js
 // also interesting: https://naruyoko.github.io/ExpantaNum.js/explanation.html
 // All arguments must be BigInts. Return value is a BigInt or a thrown RangeError
+
 const bigH = (n, a, b) => {
   if (n < 0n || a < 0n || b < 0n) {
     throw Error("Can only hyperoperate on non-negative integers");
@@ -66,6 +67,24 @@ const bigH = (n, a, b) => {
 
   return result;
 };
+
+/*
+ * @description  Performs a hyperoperation on two numbers
+ * @param {BigInt} n - The hyperoperation to perform
+ * @param {BigInt} a - The first argument
+ * @param {BigInt} b - The second argument
+ * @returns {BigInt} - The result of the hyperoperation
+ * @throws {RangeError} - If any argument is negative
+ * @throws {RangeError} - If the result is too large to be represented as a BigInt
+ * @throws {RangeError} - If the result causes a stack overflow
+ * @throws {Error} - If any argument is negative
+ * @throws {Error} - If any argument if all three areguments are not of the same type (BigInts or numbers)
+ * @example
+ * ```javascript
+ * hyperoperation(0n)(1n, 2n); // 2n
+ * ```
+ *
+ */
 
 export const hyperoperation =
   (n) =>
