@@ -286,6 +286,95 @@
     return Promise.all(stack);
   };
 
+  const and$1 = attackStack((n) => collapseBinary(n, (a, b) => [a && b]), 2);
+
+  const or$1 = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
+
+  const not$1 = (...stack) => {
+    const item = !stack.pop();
+    return [...stack, item];
+  };
+
+  ////////////////
+  // Experimental
+  ////////////////
+  const when =
+    (condition = true) =>
+    (...stack) => {
+      if (typeof condition === "function" ? condition(...stack) : condition) {
+        return stack;
+      }
+      stack.pop();
+      return stack;
+    };
+
+  const dropWhen =
+    (condition = true) =>
+    (...stack) => {
+      if (typeof condition === "function" ? condition(...stack) : condition) {
+        stack.pop();
+        return stack;
+      }
+      stack.pop();
+      return stack;
+    };
+
+  const whenever =
+    (condition, ...pre) =>
+    (...stack) => {
+      while (condition(...stack)) {
+        stack = pre(...stack);
+      }
+      return stack;
+    };
+
+  const wheneverRepeat =
+    (condition, ...pre) =>
+    (...stack) => {
+      if (condition(...stack)) {
+        return [
+          ...stack,
+          ...pre,
+          wheneverRepeat(condition, ...pre),
+          rewindN(2)(),
+        ];
+      }
+      return [...stack];
+    };
+
+  /*
+  1 persistN()(sum) whenever((...stack)=>stack.length < 6, [rewindN(2)()], [drop])
+  1 wheneverRepeat((...stack)=>stack.length < 6, sum)
+
+  1 whenever((...stack)=>stack.length < 6, sum);
+  */
+
+  const keepIf = applyLastN(2)((condition, affirmative) =>
+    condition ? [affirmative] : []
+  );
+
+  const dropIf = applyLastN(2)((condition, affirmative) =>
+    condition ? [] : [affirmative]
+  );
+  const keepIfElse = applyLastN(3)((condition, affirmative, negative) =>
+    condition ? [affirmative] : [negative]
+  );
+
+  const dropIfElse = applyLastN(3)((condition, affirmative, negative) =>
+    condition ? [negative] : [affirmative]
+  );
+
+  const and = attackStack((n) => collapseBinary(n, (a, b) => [a & b]), 2);
+
+  const or = attackStack((n) => collapseBinary(n, (a, b) => [a | b]), 2);
+
+  const not = (...stack) => {
+    const item = ~stack.pop();
+    return [...stack, item];
+  };
+
+  const xor = attackStack((n) => collapseBinary(n, (a, b) => [a ^ b]), 2);
+
   const run = applyLastN(1)((a) => [processN()(...a)]);
   const noop = (...args) => args;
   const clear$1 = function (guard) {
@@ -627,6 +716,13 @@
   };
 
   setObj({
+    "||": or$1,
+    "&&": and$1,
+    "!": not$1,
+    "|": or,
+    "&": and,
+    "~": not,
+    "^": xor,
     "@": peek,
     "@@": view,
     "∅": noop,
@@ -1104,90 +1200,6 @@
     return [...numProc(nums, ascending, start, end)];
   };
 
-  const and = attackStack((n) => collapseBinary(n, (a, b) => [a && b]), 2);
-
-  const or = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
-
-  const not = (...stack) => {
-    const item = !stack.pop();
-    return [...stack, item];
-  };
-
-  ////////////////
-  // Experimental
-  ////////////////
-  const when =
-    (condition = true) =>
-    (...stack) => {
-      if (typeof condition === "function" ? condition(...stack) : condition) {
-        return stack;
-      }
-      stack.pop();
-      return stack;
-    };
-
-  const dropWhen =
-    (condition = true) =>
-    (...stack) => {
-      if (typeof condition === "function" ? condition(...stack) : condition) {
-        stack.pop();
-        return stack;
-      }
-      stack.pop();
-      return stack;
-    };
-
-  const whenever =
-    (condition, ...pre) =>
-    (...stack) => {
-      while (condition(...stack)) {
-        stack = pre(...stack);
-      }
-      return stack;
-    };
-
-  const wheneverRepeat =
-    (condition, ...pre) =>
-    (...stack) => {
-      if (condition(...stack)) {
-        return [
-          ...stack,
-          ...pre,
-          wheneverRepeat(condition, ...pre),
-          rewindN(2)(),
-        ];
-      }
-      return [...stack];
-    };
-
-  /*
-  1 persistN()(sum) whenever((...stack)=>stack.length < 6, [rewindN(2)()], [drop])
-  1 wheneverRepeat((...stack)=>stack.length < 6, sum)
-
-  1 whenever((...stack)=>stack.length < 6, sum);
-  */
-
-  const keepIf = applyLastN(2)((condition, affirmative) =>
-    condition ? [affirmative] : []
-  );
-
-  const dropIf = applyLastN(2)((condition, affirmative) =>
-    condition ? [] : [affirmative]
-  );
-  const keepIfElse = applyLastN(3)((condition, affirmative, negative) =>
-    condition ? [affirmative] : [negative]
-  );
-
-  const dropIfElse = applyLastN(3)((condition, affirmative, negative) =>
-    condition ? [negative] : [affirmative]
-  );
-
-  setObj({
-    "||": or,
-    "&&": and,
-    "!!": not,
-  });
-
   const fibonacci = applyLastN(2)((a, b) => [b, a, b + a]);
 
   //https://github.com/qntm/hyperoperate/edit/main/src/index.js
@@ -1433,6 +1445,10 @@
     unwrap: unwrap,
     wrap: wrap,
     processN: processN,
+    bitwiseOr: or,
+    bitwiseAnd: and,
+    bitwiseNot: not,
+    bitwiseXor: xor,
     EMPTY_ARGUMENT: EMPTY_ARGUMENT,
     applyLastN: applyLastN,
     attackStack: attackStack,
@@ -1451,6 +1467,17 @@
     swap: swap,
     wait: wait,
     waitAll: waitAll,
+    and: and$1,
+    or: or$1,
+    not: not$1,
+    when: when,
+    dropWhen: dropWhen,
+    whenever: whenever,
+    wheneverRepeat: wheneverRepeat,
+    keepIf: keepIf,
+    dropIf: dropIf,
+    keepIfElse: keepIfElse,
+    dropIfElse: dropIfElse,
     run: run,
     clear: clear$1,
     forbidden: forbidden,
@@ -1526,17 +1553,6 @@
     fromTo: fromTo,
     toInc: toInc,
     fromToInc: fromToInc,
-    and: and,
-    or: or,
-    not: not,
-    when: when,
-    dropWhen: dropWhen,
-    whenever: whenever,
-    wheneverRepeat: wheneverRepeat,
-    keepIf: keepIf,
-    dropIf: dropIf,
-    keepIfElse: keepIfElse,
-    dropIfElse: dropIfElse,
     fibonacci: fibonacci,
     get: get,
     set: set

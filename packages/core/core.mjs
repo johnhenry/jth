@@ -5,6 +5,13 @@ export * from "./wrap.mjs";
 export * from "./async/index.mjs";
 export * from "./logic/index.mjs";
 
+export {
+  or as bitwiseOr,
+  and as bitwiseAnd,
+  not as bitwiseNot,
+  xor as bitwiseXor,
+} from "./bitwise-logic/index.mjs";
+
 export const run = applyLastN(1)((a) => [processN()(...a)]);
 export const noop = (...args) => args;
 export const clear = function (guard) {
