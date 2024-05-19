@@ -286,12 +286,12 @@
     return Promise.all(stack);
   };
 
-  const and$1 = attackStack((n) => collapseBinary(n, (a, b) => [a && b]), 2);
+  const and = attackStack((n) => collapseBinary(n, (a, b) => [a && b]), 2);
   const andAll = (...stack) => [stack.reduceRight((a, b) => a && b, true)];
-  const or$1 = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
-  const orAll = (...stack) => [stack.reduceRight((a, b) => a || b, false)];
+  const or = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
+  const orAll = (...stack) => [stack.reduceRight((a, b) => a || b)];
 
-  const not$1 = (...stack) => {
+  const not = (...stack) => {
     const item = !stack.pop();
     return [...stack, item];
   };
@@ -365,6 +365,53 @@
     condition ? [negative] : [affirmative]
   );
 
+  const ELSE = Symbol("ELSE");
+  const ELSEIF = Symbol("ELSEIF");
+
+  const ifElse = (...stack) => {
+    const condition = stack.pop();
+    const return_stack = [];
+    let else_encountered = false;
+    if (condition) {
+      let item;
+      while (true) {
+        if (stack.length === 0) {
+          break;
+        }
+        item = stack.pop();
+        if (item === ELSE) {
+          break;
+        }
+        if (item === ELSEIF) {
+          break;
+        }
+        return_stack.unshift(item);
+      }
+    } else {
+      // go throug hte stack until ELSEIF or ELSE encounterd
+      while (true) {
+        if (stack.length === 0) {
+          break;
+        }
+        const item = stack.pop();
+        if (item === ELSEIF) {
+          return ifElse(...stack);
+        }
+        if (item === ELSE) {
+          if (else_encountered) {
+            break;
+          }
+          else_encountered = true;
+          continue;
+        }
+        if (else_encountered) {
+          return_stack.unshift(item);
+        }
+      }
+    }
+    return return_stack;
+  };
+
   const sort$1 = (...stack) => stack.sort();
 
   const mean = (...stack) => {
@@ -429,10 +476,10 @@
   };
 
   const populationStandardDeviation = (...stack) => {
-    return [Math.sqrt(populationVariance$(stack)[0])];
+    return [Math.sqrt(populationVariance(...stack)[0])];
   };
   const sampleStandardDeviation = (...stack) => {
-    return [Math.sqrt(sampleVariance$(stack)[0])];
+    return [Math.sqrt(sampleVariance(...stack)[0])];
   };
 
   const percentile =
@@ -467,16 +514,40 @@
     return [...stack, min, q1, m, q3, max];
   };
 
-  const and = attackStack((n) => collapseBinary(n, (a, b) => [a & b]), 2);
+  const bitwiseAnd = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a & b]),
+    2
+  );
 
-  const or = attackStack((n) => collapseBinary(n, (a, b) => [a | b]), 2);
+  const bitwiseOr = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a | b]),
+    2
+  );
 
-  const not = (...stack) => {
+  const bitwiseNot = (...stack) => {
     const item = ~stack.pop();
     return [...stack, item];
   };
 
-  const xor = attackStack((n) => collapseBinary(n, (a, b) => [a ^ b]), 2);
+  const bitwiseXor = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a ^ b]),
+    2
+  );
+
+  const leftShift = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a << b]),
+    2
+  );
+
+  const rightShift = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a >> b]),
+    2
+  );
+
+  const rightShiftZeroFill = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a >>> b]),
+    2
+  );
 
   const noop = (...args) => args;
   const clear$1 = function (guard) {
@@ -847,21 +918,22 @@
   };
 
   setObj({
-    "||": or$1,
-    "&&": and$1,
+    "||": or,
+    "&&": and,
     "|||": orAll,
     "&&&": andAll,
-    "!": not$1,
-    "|": or,
-    "&": and,
-    "~": not,
-    "^": xor,
+    "!": not,
+    "|": bitwiseOr,
+    "&": bitwiseAnd,
+    "~": bitwiseNot,
+    "^": bitwiseXor,
     "@": peek,
     "@@": view,
     "∅": noop,
     "+": plus,
     "-": minus,
     "*": times,
+    "⋅": times,
     "**": exp,
     "/": divide,
     "÷": divide,
@@ -887,13 +959,16 @@
     x̄: mean,
     _: wait,
     __: waitAll,
+    if: ifElse,
+    else: ELSE,
+    elseif: ELSEIF,
   });
 
+  const defaultDynamicOperators = new Map();
   // Incrementors
   // Examples: -1/, 14+, 32*, 3.414/ ...
-  const defaultDynamicOperators = new Map();
   defaultDynamicOperators.set(
-    /^([+-]?(?:\d*\.)?\d+)(n?)([+-\\*\\/\%])$/,
+    /^([+-]?(?:\d*\.)?\d*)(n?)([+\-\*\\/\%÷⋅]|[\*]{2}|[\%]{2})$/,
     (o, r) => {
       const [, num, bigint, op] = r.exec(o);
       const n = bigint ? BigInt(num) : Number(num);
@@ -905,17 +980,35 @@
           // Examples: 1-, 14-, -32*, 3.414- ...
           return applyLastN(1)((a = 0) => [n - a]);
         case "*":
+        case "⋅":
           // Examples: 1*, 14*, -32*, 3.414* ...
           return applyLastN(1)((a = 1) => [n * a]);
         case "/":
+        case "÷":
           // Examples: 1/, 14/, -32/, 3.414/ ...
           return applyLastN(1)((a = 1) => [n / a]);
         case "%":
           // Examples: 1%, 14%, -32%, 3% ...
           return applyLastN(1)((a = 1) => [((n % a) + a) % a]);
+        case "**":
+          // Examples: 1**, 14**, -32**, 3.414** ...
+          return applyLastN(1)((a = 0) => [n ** a]);
+        case "%%":
+          // Examples: 1%%, 14%%, -32%%, 3.414%% ...
+          return applyLastN(1)((a = 0) => [n % a]);
       }
+      throw new Error(`Unknown operator: ${o}`);
     }
   );
+
+  // Logarithms 3log, 2.718log, 10log ...
+  defaultDynamicOperators.set(/^([+-]?(?:\d*\.)?\d*)log$/, (o, r) => {
+    const [, base] = r.exec(o);
+    return (...stack) => {
+      const result = Math.log(stack.pop()) / Math.log(Number(base));
+      return [...stack, result];
+    };
+  });
 
   // Skip
   // Examples: ->, ->2, ->3 ...
@@ -1529,10 +1622,6 @@
     unwrap: unwrap,
     wrap: wrap,
     processN: processN,
-    bitwiseOr: or,
-    bitwiseAnd: and,
-    bitwiseNot: not,
-    bitwiseXor: xor,
     EMPTY_ARGUMENT: EMPTY_ARGUMENT,
     applyLastN: applyLastN,
     attackStack: attackStack,
@@ -1551,11 +1640,11 @@
     swap: swap,
     wait: wait,
     waitAll: waitAll,
-    and: and$1,
+    and: and,
     andAll: andAll,
-    or: or$1,
+    or: or,
     orAll: orAll,
-    not: not$1,
+    not: not,
     when: when,
     dropWhen: dropWhen,
     whenever: whenever,
@@ -1564,6 +1653,9 @@
     dropIf: dropIf,
     keepIfElse: keepIfElse,
     dropIfElse: dropIfElse,
+    ELSE: ELSE,
+    ELSEIF: ELSEIF,
+    ifElse: ifElse,
     mean: mean,
     median: median,
     mode: mode,
@@ -1575,6 +1667,13 @@
     percentile: percentile,
     fiveNumberSummary: fiveNumberSummary,
     fiveNumberSummaryB: fiveNumberSummaryB,
+    bitwiseAnd: bitwiseAnd,
+    bitwiseOr: bitwiseOr,
+    bitwiseNot: bitwiseNot,
+    bitwiseXor: bitwiseXor,
+    leftShift: leftShift,
+    rightShift: rightShift,
+    rightShiftZeroFill: rightShiftZeroFill,
     clear: clear$1,
     forbidden: forbidden,
     spread: spread,

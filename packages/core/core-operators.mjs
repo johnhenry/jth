@@ -40,6 +40,9 @@ import {
   wait,
   waitAll,
   mean,
+  ifElse,
+  ELSE,
+  ELSEIF,
 } from "./core.mjs";
 setObj({
   "||": or,
@@ -57,6 +60,7 @@ setObj({
   "+": plus,
   "-": minus,
   "*": times,
+  "⋅": times,
   "**": exp,
   "/": divide,
   "÷": divide,
@@ -82,13 +86,16 @@ setObj({
   x̄: mean,
   _: wait,
   __: waitAll,
+  if: ifElse,
+  else: ELSE,
+  elseif: ELSEIF,
 });
 
+const defaultDynamicOperators = new Map();
 // Incrementors
 // Examples: -1/, 14+, 32*, 3.414/ ...
-const defaultDynamicOperators = new Map();
 defaultDynamicOperators.set(
-  /^([+-]?(?:\d*\.)?\d+)(n?)([+-\\*\\/\%])$/,
+  /^([+-]?(?:\d*\.)?\d*)(n?)([+\-\*\\/\%÷⋅]|[\*]{2}|[\%]{2})$/,
   (o, r) => {
     const [, num, bigint, op] = r.exec(o);
     const n = bigint ? BigInt(num) : Number(num);
@@ -100,17 +107,35 @@ defaultDynamicOperators.set(
         // Examples: 1-, 14-, -32*, 3.414- ...
         return applyLastN(1)((a = 0) => [n - a]);
       case "*":
+      case "⋅":
         // Examples: 1*, 14*, -32*, 3.414* ...
         return applyLastN(1)((a = 1) => [n * a]);
       case "/":
+      case "÷":
         // Examples: 1/, 14/, -32/, 3.414/ ...
         return applyLastN(1)((a = 1) => [n / a]);
       case "%":
         // Examples: 1%, 14%, -32%, 3% ...
         return applyLastN(1)((a = 1) => [((n % a) + a) % a]);
+      case "**":
+        // Examples: 1**, 14**, -32**, 3.414** ...
+        return applyLastN(1)((a = 0) => [n ** a]);
+      case "%%":
+        // Examples: 1%%, 14%%, -32%%, 3.414%% ...
+        return applyLastN(1)((a = 0) => [n % a]);
     }
+    throw new Error(`Unknown operator: ${o}`);
   }
 );
+
+// Logarithms 3log, 2.718log, 10log ...
+defaultDynamicOperators.set(/^([+-]?(?:\d*\.)?\d*)log$/, (o, r) => {
+  const [, base] = r.exec(o);
+  return (...stack) => {
+    const result = Math.log(stack.pop()) / Math.log(Number(base));
+    return [...stack, result];
+  };
+});
 
 // Skip
 // Examples: ->, ->2, ->3 ...

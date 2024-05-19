@@ -1,126 +1,306 @@
+"# Kitchen Sink" @@;
+@@;
+
+"## Hello World" @@;
+"[> 'hello world' @@;" @@;
 'hello world' @@;
-1 2 3 4 5 6 ((...stack)=>stack.map(x=>x**x)) ((...stack)=>stack.map(x=>x+1)) @@ ::: x;
-1 2 3 4 5 6 6 fiveNumberSummary @@;
-Math.random() @@;
-1 2 3 4 5 6 hold(limitN(3)(trunc(randomize))) ::: r;
-r ... <- @@;
-1 2 3 limitN(2)(+) @@;
+@@;
+
+"## Arithmetic" @@;
+"[> 2 3 plus @@;" @@;
+2 3 plus @@;
+"[> 2 3 + @@;" @@;
+2 3 + @@;
+@@;
+"[> 3 4 times @@;" @@;
+3 3 times @@;
+"[> 3 4 * @@;" @@;
+3 3 * @@;
+@@;
+"[> 2 3 minus @@;" @@;
+2 3 minus @@;
+"[> 2 3 - @@;" @@;
+2 3 - @@;
+@@;
+"[> 3 4 divide @@;" @@;
+3 4 divide @@;
+"[> 3 4 / @@;" @@;
+3 4 / @@;
+"[> 3 4 ÷ @@;" @@;
+3 4 ÷ @@;
+@@;
+"[> 3 4 mod @@;" @@;
+3 4 mod @@;
+"[> 3 4 % @@;" @@;
+@@;
+3 4 % @@;
+"[> 3 4 modulus @@;" @@;
+3 4 modulus @@;
+"[> 3 4 %% @@;" @@;
+3 4 %% @@;
+@@;
+"[> 2 3 4 sum @@;" @@;
+2 3 4 sum @@;
+"[> 2 3 4 Σ @@;" @@;
+2 3 4 Σ @@;
+@@;
+"[> 2 3 4 product @@;" @@;
+2 3 4 product @@;
+"[> 2 3 4 Π @@;" @@;
+2 3 4 Π @@;
+@@;
+
+"### Arithmetic Dynamic Operators -- adding '+', '-', '*','⋅','/', '÷',  or '**' to the end of a number creates an appropriate unary funciton" @@;
+"[> 2 3+ @@;" @@;
+2 3+ @@;
+"[> 4 5- @@;" @@;
+4 5- @@;
+"[> 6 7* @@;" @@;
+6 7* @@;
+"[> 6 7⋅ @@;" @@;
+6 7⋅ @@;
+"[> 8 9/ @@;" @@;
+8 9/ @@;
+"[> 8 9÷ @@;" @@;
+8 9÷ @@;
+"[> 10 10** @@;" @@;
+10 10** @@;
+@@;
+
+
+"### Logarithm Dynamic Operators -- adding 'log' to the end of a number creates a logorithmic function that base" @@;
+"[> 100 10log; @@" @@;
+100 10log @@;
+"[> 8 2log; @@" @@;
+8 2log @@;
+@@;
+
+
+"### n-tration with '**', '***', '****', etc." @@;
+"[> 2 3 ** @@;" @@;
+2 3 ** @@;
+"[> 2 3 *** @@;" @@;
+2 3 *** @@;
+"[> 2 3 **** @@;" @@;
+2 3 **** @@;
+@@;
+
+"## Stack" @@;
+"### copy last item on stack with 'dupe'" @@;
+"[> 1 2 3 dupe @@;" @@;
 1 2 3 dupe @@;
-hold(dupe) hold(*) compose ::: [squareLast];
-2 3 squareLast @@;
 
-2 3 dupe * @@;
-2 3 dupe limitN(2)(Σ) @@;
-//;
-hold(dupe) hold(+) compose ::: [double];
-hold(double) hold(squareLast) compose ::: [doublesquare];
-4 3 doublesquare @@;
-"" @@;
-1 2 3 dupe @@ ::: dave;
-3 squareLast @@ ::: [fiona];
-"" @@;
-1 2 3 ::: start;
-7 8 9 ::: end;
-start ... 4 5 6 end ... @@;
-"" @@;
-1 2 3 4 5 ::: list;
-list @@;
-list ... @@ trunc(count) ::: [l];
-"L:" l @@;
-list ... Σ :::[s];
-list ... Π :::[p];
-list ... mean :::[m];
-"sum" s "product" p "mean" m @@;
-"sum" list ... limitN(l)(+)
-  "product" list ... limitN(l)(*)
-  "mean" list ... limitN(l)(mean)
-  @@;
+"### copy all items on stack with 'copy'" @@;
+"[> 1 2 3 copy @@;" @@;
+1 2 3 copy @@;
+@@;
+
+"### truncate stack to last n items with 'trunc'" @@;
+"[> 1 2 3 trunc(1) @@;" @@;
+1 2 3 trunc(1) @@;
+"[> 1 2 3 trunc(2) @@;" @@;
+1 2 3 trunc(2) @@;
+@@;
 
 
-1 2 3 ::: [a,b,c];
+"### Mapping in-place" @@;
+"[> 1 2 3 ((...stack)=>stack.map(x=>x**x))" @@;
+1 2 3 ((...stack)=>stack.map(x=>x**x)) @@;
+@@;
 
-c b a @@;
+"## Arrays" @@;
+"### create empty using '[]' " @@;
+"[> [] @@;" @@;
+[] @@;
+"[> [1 2 3] @@;" @@;
+[1 2 3] @@;
+"### collect items into array 'array' " @@;
+"[> 1 2 3 array(2) @@;" @@;
+1 2 3 array(2) @@;
+"[> 1 2 3 array() @@;" @@;
+1 2 3 array() @@;
+@@;
 
-3 4 5 6 7 4 false keepIf @@;
+"### Spread array onto stack with '...' or 'spread'" @@;
+"[> 0 [1 2 3] ... 4 @@;" @@;
+0 [1 2 3] ... 4 @@;
+@@;
 
-0 0 0 6 7 0 false or 12 3 @@;
+"### Delayed Execution via array" @@;
+"[> [1 2 3 Π] @@;" @@;
+[1 2 3 Π] @@;
+@@;
 
-3 4 5 6 7 4 map(x=>x>5) @@;
+"#### Execute array with '$' or 'execute' to produce a promise" @@;
+"[> [1 2 3 Π] $ @@;" @@;
+[1 2 3 Π] $ @@;
+"#### await promise with '_' or 'wait'" @@;
+"[> [1 2 3 Π] $ _ @@;" @@;
+[1 2 3 Π]  $ _ @@;
+"#### or use shorthand '$$'" @@;
+"[> [1 2 3 Π] $$ @@;" @@;
+[1 2 3 Π]  $$ @@;
+"#### spread awaited promise with '...' or 'wait'" @@;
+"[> [1 2 3 Π] $ _ ... @@;" @@;
+[1 2 3 Π]  $ _ ... @@;
+"#### or use shorthand '$$$'" @@;
+"[> [1 2 3 Π] $$$ @@;" @@;
+[1 2 3 Π]  $$$ @@;
+@@;
 
-0 1 2 3 4 5 8 to @@;
-0 1 2 3 4 5 8 fromTo @@;
-0 1 2 3 4 5 8 toInc @@;
-0 1 2 3 4 5 8 fromToInc @@;
 
+"### Place delayed functions via 'hold', 'pause' or collect and spread methods" @@;
+"[> 1 2 3 hold(Π) @@;" @@;
+1 2 3 hold(Π) @@;
+"[> 1 2 3 pause(Π) @@;" @@;
+1 2 3 pause(Π) @@;
+"[> 1 2 3 [Π] ... @@;" @@;
+1 2 3 [Π] ... @@;
+@@;
+
+"### Execute delayed functions by stepping back with '<-'" @@;
+"[> 1 2 3 hold(Π) <- @@;" @@;
+1 2 3 hold(Π) <- @@;
+"[> 1 2 3 pause(Π) <- @@;" @@;
+1 2 3 pause(Π) <- @@;
+"[> 1 2 3 [Π] ... <- @@;" @@;
+1 2 3 [Π] ... <- @@;
+@@;
+
+"### Bind items on stack with '\:\:\:'" @@;
+"[> 1 2 3 \:\:\: [one two three];" @@;
+1 2 3 ::: [one two three];
+"one two three @@;" @@;
+one two three @@;
+"three one two @@;" @@;
+three one two @@;
+@@;
+
+"### Bind entire stack as array wtih '...'" @@;
+"[> 1 2 3 \:\:\: [...stack];" @@;
+"stack @@;" @@;
+1 2 3 ::: [...stack];
+stack @@;
+@@;
+
+
+"## Limit the reach of a function with limitN(2)" @@;
+"[> 2 3 4 5 limitN(3)(Π)" @@;
+2 3 4 5 limitN(3)(Π) @@;
+"[> 2 3 4 5 limitN(2)(Π)" @@;
+2 3 4 5 limitN(2)(Π) @@;
+@@;
+
+"### Bind functions by delaying them first" @@;
+"[> hold(1+) hold(2+) \:\:\: [plusone double];" @@;
+hold(1+) hold(2*) ::: [plusone double];
+"[> 1 plusone @@;" @@;
+2 plusone @@;
+"[> 1 double @@;" @@;
+3 double @@;
+@@;
+
+"### composed delayed functions with 'compose'" @@;
+"[> hold(plusone) hold(double) compose \:\:\: [plusoneThenDouble];" @@;
+"[> hold(double) hold(plusone) compose \:\:\: [doubleThenPlusone];" @@;
+hold(plusone) hold(double) compose ::: [plusoneThenDouble];
+hold(double) hold(plusone) compose ::: [doubleThenPlusone];
+"[> 5 plusoneThenDouble;" @@;
+"[> 5 doubleThenPlusone;" @@;
+5 plusoneThenDouble @@;
+5 doubleThenPlusone @@;
+@@;
+
+
+"## Ranges" @@;
+"### create range with 'to', 'fromTo', 'toInc' and 'fromToInc' " @@;
+"[> 5 -5 to @@;" @@;
 5 -5 to @@;
+"[> 5 -5 fromTo @@;" @@;
 5 -5 fromTo @@;
+"[> 5 -5 toInc @@;" @@;
 5 -5 toInc @@;
+"[> 5 -5 fromToInc @@;" @@;
 5 -5 fromToInc @@;
+@@;
 
-1 2 3 4 5 populationVariance @@;
+"## Logic basic binary operators 'and/&&', 'or/||', and 'not/!' " @@;
+"[> false true and @@;" @@;
+false true and @@;
+"[> false false && @@;" @@;
+false false && @@;
+"[> false true or @@;" @@;
+false true or @@;
+"[> false true || @@;" @@;
+true true || @@;
+"[> false not @@;" @@;
+false not @@;
+"[> true ! @@;" @@;
+true ! @@;
 
-1 2 3 4 5 hold(sampleVariance) hold(populationVariance) true keepIfElse <- @@:::[variance];
+"## Logic -- variadic operators '&&&', '|||' " @@;
+"[> true false true true true true &&& @@;" @@;
+true false true true true true &&& @@;
+"[> false false true false false ||| @@;" @@;
+true false true false false ||| @@;
+@@;
 
-1 2 3 4 5 sampleVariance @@;
+"## If statements" @@;
+"### if" @@;
+"[> 7 8 9 true if @@;" @@;
+7 8 9 true if @@;
+"[> 7 8 9 false if @@;" @@;
+7 8 9 false if @@;
+"### if, else" @@;
+"[> 4 5 6 else 7 8 9 true if @@;" @@;
+4 5 6 else 7 8 9 true if @@;
+"[> 4 5 6 else 7 8 9 false if @@;" @@;
+4 5 6 else 7 8 9 false if @@;
+"### if, elseif, else" @@;
+"[> 1 2 3 else 4 5 6 true elseif 7 8 9 true if @@;" @@;
+1 2 3 else 4 5 6 true elseif 7 8 9 true if @@;
+"[> 1 2 3 else 4 5 6 true elseif 7 8 9 false if @@;" @@;
+1 2 3 else 4 5 6 true elseif 7 8 9 false if @@;
+"[> 1 2 3 else 4 5 6 false elseif 7 8 9 true if @@;" @@;
+1 2 3 else 4 5 6 false elseif 7 8 9 false if @@;
+@@;
 
-1 2 3 4 5 hold(sampleVariance) hold(populationVariance) false keepIfElse <- @@:::[variance];
+"## Bitwise Logic" @@;
+"### bitwise and, or, xor, not, shiftLeft, shiftRight, shiftRightUnsigned" @@;
+"[> 1 0 & @@;" @@;
+1 0 & @@;
+"[> 2 1 | @@;" @@;
+2 1 | @@;
+"[> 5 3 ^ @@;" @@;
+5 3 ^ @@;
+"[> 1 ~ @@;" @@;
+1 ~ @@;
+"[> 0 ~ @@;" @@;
+0 ~ @@;
+@@;
 
-3 4 5 map((x)=>x**4) @@ ::: carol;
-"" @@;
+"## Statistics" @@;
+"[> 1 2 3 4 5 6 randomize @@;" @@;
+1 2 3 4 5 6 randomize @@;
+"[> 1 2 3 4 5 6 6 mean @@;" @@;
+1 2 3 4 5 6 6 mean @@;
+"[> 1 2 3 4 5 6 6 x̄ @@;" @@;
+1 2 3 4 5 6 6 x̄ @@;
+"[> 1 2 3 4 5 6 6 median @@;" @@;
+1 2 3 4 5 6 6 median @@;
+"[> 1 2 3 4 5 6 6 mode @@;" @@;
+1 2 3 4 5 6 6 mode @@;
+"[> 1 2 3 4 5 6 6 modes @@;" @@;
+1 2 3 4 5 6 6 modes @@;
+"[> 1 2 3 4 5 6 6 populationVariance @@;" @@;
+1 2 3 4 5 6 6 populationVariance @@;
+"[> 1 2 3 4 5 6 6 sampleVariance @@;" @@;
+1 2 3 4 5 6 6 sampleVariance @@;
+"[> 1 2 3 4 5 6 6 populationStandardDeviation @@;" @@;
+1 2 3 4 5 6 6 populationStandardDeviation @@;
+"[> 1 2 3 4 5 6 6 sampleStandardDeviation @@;" @@;
+1 2 3 4 5 6 6 sampleStandardDeviation @@;
+"[> 1 2 3 4 5 6 6 fiveNumberSummary @@;" @@;
+1 2 3 4 5 6 6 fiveNumberSummary @@;
+@@;
 
-4 [1 2 3 product] $ ::: arr;
-arr @@;
-arr ... @@;
-arr ... _ @@;
-arr ... _ ... @@;
-arr ... _ ... * @@;
-arr ... _ ... * * @@;
-4 [1 2 3 *] $ ::: arr;
-arr @@;
-arr ... @@;
-arr ... _ @@;
-arr ... _ ... @@;
-arr ... _ ... * @@;
-arr ... _ ... * * @@;
-"---" @@;
-"---" @@;
-4 [1 2 3 *] ::: arr;
-arr @@;
-arr ... @@;
-arr ... ... @@;
-arr ... ... <- * * @@;
-"---" @@;
-
-4 [1 2 3 *] $ _ ... @@;
-4 [1 2 3 *] ... <- @@;
-
-// arr ... $ @@;
-// arr ... $ ... @@;
-// arr ... $ @@ ::: [...sub];
-// sub[1] ... @@;
-
-[1 2 3 Π ] $ _ :::[s];
-s @@;
-1 [2 3 4 5 6 Π] $ _ ... Σ @@;
-
-[2 3 Π] $ @@;
-"---" @@;
-5 [2 2 Π] ... <- 3 @@ ::: [twenty three];
-5 [2 2 *] ... <- 3 @@ ::: [five four three];
-// // (*){ * *0 1 fromToInc ${2} Π};
-
-1 2 3 reduce((a,b)=>a+b, 0) @@;
-4 5 @@ :::[...rest];
-rest ... @@ :::[...rest];
-
-Promise.resolve(4) @@;
-
-(await Promise.resolve(4)) @@;
-
-1 [2 3 4 Π] 5 @@;
-1 [2 3 4 Π] $ 5 @@;
-1 [2 3 4 Π] $$ 5 @@;
-1 [2 3 4 Π] $$$ 5 @@;
-1 Promise.resolve(2) wait 3 @@;
-
-1 2 3 4 5 5 5 5 x̄ @;

@@ -62,10 +62,10 @@ export const sampleVariance = (...stack) => {
 };
 
 export const populationStandardDeviation = (...stack) => {
-  return [Math.sqrt(populationVariance$(stack)[0])];
+  return [Math.sqrt(populationVariance(...stack)[0])];
 };
 export const sampleStandardDeviation = (...stack) => {
-  return [Math.sqrt(sampleVariance$(stack)[0])];
+  return [Math.sqrt(sampleVariance(...stack)[0])];
 };
 
 export const percentile =

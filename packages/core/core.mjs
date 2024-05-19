@@ -8,12 +8,7 @@ export * from "./stat/index.mjs"; // jth-stats
 
 import { wait } from "./async/index.mjs";
 
-export {
-  or as bitwiseOr,
-  and as bitwiseAnd,
-  not as bitwiseNot,
-  xor as bitwiseXor,
-} from "./bitwise-logic/index.mjs";
+export * from "./bitwise-logic/index.mjs";
 
 export const noop = (...args) => args;
 export const clear = function (guard) {
