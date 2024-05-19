@@ -14,7 +14,6 @@ export * from "./iterator/index.mjs"; // jth-iterator
 export * from "./range/index.mjs"; // jth-range
 //
 export * from "./logic/index.mjs"; // jth-logic
-import "./logic/operators.mjs"; // jth-logic/operators
 //
 export * from "./sequences/index.mjs"; // jth-misc
 //

@@ -1,6 +1,9 @@
 import { setObj } from "./operators.mjs"; //jth-core/operators
 import { applyLastN } from "./tools/index.mjs"; //"jth-tools"
 import {
+  and,
+  or,
+  not,
   plus,
   minus,
   times,
@@ -31,6 +34,9 @@ import {
   waitAll,
 } from "./core.mjs";
 setObj({
+  "||": or,
+  "&&": and,
+  "!": not,
   "@": peek,
   "@@": view,
   "∅": noop,

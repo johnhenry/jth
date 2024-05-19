@@ -3,6 +3,8 @@ import { applyLastN, attackStack, collapseBinary } from "./tools/index.mjs"; // 
 export * from "./tools/index.mjs"; // jth-tools
 export * from "./wrap.mjs";
 export * from "./async/index.mjs";
+export * from "./logic/index.mjs";
+
 export const run = applyLastN(1)((a) => [processN()(...a)]);
 export const noop = (...args) => args;
 export const clear = function (guard) {
