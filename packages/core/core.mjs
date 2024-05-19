@@ -4,6 +4,9 @@ export * from "./tools/index.mjs"; // jth-tools
 export * from "./wrap.mjs";
 export * from "./async/index.mjs";
 export * from "./logic/index.mjs";
+export * from "./stat/index.mjs"; // jth-stats
+
+import { wait } from "./async/index.mjs";
 
 export {
   or as bitwiseOr,
@@ -12,7 +15,6 @@ export {
   xor as bitwiseXor,
 } from "./bitwise-logic/index.mjs";
 
-export const run = applyLastN(1)((a) => [processN()(...a)]);
 export const noop = (...args) => args;
 export const clear = function (guard) {
   if (this === CALLING_STACK_FUNCTION) {
@@ -73,10 +75,17 @@ export const copy = function (...stack) {
   }
   return [...stack, ...stack];
 };
-export const dupe = attackStack(
-  (n) => collapseBinary(n, (a, b) => [b, a, a]),
-  2
-);
+// export const dupe = attackStack(
+//   (n) => collapseBinary(n, (a, b) => [b, a, a]),
+//   2
+// );
+export const dupe = (...stack) => {
+  if (stack.length === 0) {
+    return stack;
+  }
+  const last = stack.pop();
+  return [...stack, last, last];
+};
 
 export const retrieve =
   (index = 0) =>
@@ -272,6 +281,28 @@ export const collect = function (...stack) {
     return [collection];
   };
 };
+
+////////////////
+// Execution
+////////////////
+
+export const execute = applyLastN(1)((a) => [processN()(...a)]);
+
+// export const executeWait = applyLastN(1)((a) => [processN()(...a), wait]);
+// export const executeWaitSpread = applyLastN(1)((a) => [
+//   processN()(...a),
+//   wait,
+//   spread,
+// ]);
+
+// export const executeWait = applyLastN(1)(async (a) => [await processN()(...a)]);
+// export const executeWaitSpread = applyLastN(1)(
+//   async (a) => await processN()(...a)
+// );
+
+export const executeWait = (...stack) => wait(...execute(...stack));
+export const executeWaitSpread = async (...stack) =>
+  spread(...(await executeWait(...stack)));
 
 ////////////////
 // Experimental

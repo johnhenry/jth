@@ -1,8 +1,9 @@
 import { applyLastN, attackStack, collapseBinary } from "../tools/index.mjs"; //jth-tools
 
 export const and = attackStack((n) => collapseBinary(n, (a, b) => [a && b]), 2);
-
+export const andAll = (...stack) => [stack.reduceRight((a, b) => a && b, true)];
 export const or = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
+export const orAll = (...stack) => [stack.reduceRight((a, b) => a || b, false)];
 
 export const not = (...stack) => {
   const item = !stack.pop();

@@ -188,3 +188,55 @@ export const suppose = attackStack((index = 0, n = 1) => (...stack) => {
   }
   return [...stack, arr, ...spare];
 });
+
+export const array =
+  (n = Infinity) =>
+  (...stack) => {
+    // split stack into two parts
+    // firtst part is the origninal stack with last n elements removed
+    // second part is the rest of the stack
+    const end = stack.splice(-n, Infinity);
+
+    return [...stack, end];
+  };
+
+export const pushItem =
+  (...items) =>
+  (...stack) => {
+    const last = stack.pop();
+    if (Array.isArray(last)) {
+      for (const item of items) {
+        last.push(item);
+      }
+      return [...stack, last];
+    }
+    return [...stack, last, [...items]];
+  };
+
+export const unshiftItem =
+  (...items) =>
+  (...stack) => {
+    const last = stack.pop();
+    if (Array.isArray(last)) {
+      for (const item of items) {
+        last.unshift(item);
+      }
+      return [...stack, last];
+    }
+    return [...stack, last, [...items]];
+  };
+
+export const flatten = (...stack) => {
+  const flattened = [];
+  stack.forEach((item) => {
+    if (Array.isArray(item)) {
+      const items = flatten(...item);
+      for (const subItem of items) {
+        flattened.push(subItem);
+      }
+    } else {
+      flattened.push(item);
+    }
+  });
+  return flattened;
+};

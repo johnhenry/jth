@@ -12,6 +12,7 @@
     "url": "https://github.com/johnhenry/jth/issues"
   },
   "scripts": {
+    "demo:current": "jth run ./sample/current.jth",
     "demo:import": "jth run ./sample/import.jth",
     "demo:kitchen-sink": "jth run ./sample/kitchen-sink.jth",
     "packages:test": "sh ./scripts/test.sh",

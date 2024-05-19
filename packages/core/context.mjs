@@ -4,16 +4,11 @@ import "./core-operators.mjs"; // jth-core/default-operators
 import { operators } from "./operators.mjs"; // jth-core/operators
 export { operators };
 //
-//
-export * from "./stat/index.mjs"; // jth-stats
-//
 export * from "./array/index.mjs"; // jth-array
 //
 export * from "./iterator/index.mjs"; // jth-iterator
 //
 export * from "./range/index.mjs"; // jth-range
-//
-export * from "./logic/index.mjs"; // jth-logic
 //
 export * from "./sequences/index.mjs"; // jth-misc
 //

@@ -287,8 +287,9 @@
   };
 
   const and$1 = attackStack((n) => collapseBinary(n, (a, b) => [a && b]), 2);
-
+  const andAll = (...stack) => [stack.reduceRight((a, b) => a && b, true)];
   const or$1 = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
+  const orAll = (...stack) => [stack.reduceRight((a, b) => a || b, false)];
 
   const not$1 = (...stack) => {
     const item = !stack.pop();
@@ -364,6 +365,108 @@
     condition ? [negative] : [affirmative]
   );
 
+  const sort$1 = (...stack) => stack.sort();
+
+  const mean = (...stack) => {
+    return [stack.reduceRight((a, b) => a + b, 0) / stack.length];
+  };
+  const median = (...stack) => {
+    const values = sort$1(...stack);
+    const half = Math.floor(values.length / 2);
+    if (values.length % 2) {
+      return [values[half]];
+    }
+    return [(values[half - 1] + values[half]) / 2];
+  };
+
+  const mode = (...stack) => {
+    const counts = new Map();
+    let max = 0;
+    for (const item of stack) {
+      const value = counts.get(item) || 0;
+      counts.set(item, value + 1);
+      if (value === max) {
+        max++;
+      }
+    }
+    return [[...counts].find(([, value]) => value === max)[0]];
+  };
+  const modes = (...stack) => {
+    const counts = new Map();
+    let max = 0;
+    for (const item of stack) {
+      const value = counts.get(item) || 0;
+      counts.set(item, value + 1);
+      if (value === max) {
+        max++;
+      }
+    }
+    const result = [...counts]
+      .filter(([, value]) => value === max)
+      .map(([key]) => key);
+    return [...result, result.length];
+  };
+
+  const populationVariance = (...stack) => {
+    const n = stack.length;
+    if (n < 1) {
+      throw new Error("stack length must be greater than 0");
+    }
+    const [m] = mean(...stack);
+    return [
+      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / n,
+    ];
+  };
+  const sampleVariance = (...stack) => {
+    const n = stack.length;
+    if (n < 2) {
+      throw new Error("stack length must be greater than 1");
+    }
+    const [m] = mean(...stack);
+    return [
+      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / (n - 1),
+    ];
+  };
+
+  const populationStandardDeviation = (...stack) => {
+    return [Math.sqrt(populationVariance$(stack)[0])];
+  };
+  const sampleStandardDeviation = (...stack) => {
+    return [Math.sqrt(sampleVariance$(stack)[0])];
+  };
+
+  const percentile =
+    (d) =>
+    (...stack) => {
+      const index = d * (stack.length - 1);
+      if (Number.isInteger(index)) {
+        return [stack[index]];
+      } else {
+        const lower = Math.floor(index);
+        const upper = Math.ceil(index);
+        return [(stack[lower] + stack[upper]) / 2];
+      }
+    };
+
+  const fiveNumberSummary = (...stack) => {
+    const values = sort$1(...stack);
+    const [m] = mean(...stack);
+    const [lower, upper] = [values[0], values[values.length - 1]];
+    const [q1] = percentile(0.25)(...values);
+    const [q3] = percentile(0.75)(...values);
+    return [lower, q1, m, q3, upper];
+  };
+
+  const fiveNumberSummaryB = (...stack) => {
+    const values = sort$1(...stack);
+    const [m] = mean(...stack);
+    const [q1] = percentile(0.25)(...values);
+    const [q3] = percentile(0.75)(...values);
+    const iqr = q3 - q1;
+    const [min, max] = [q1 - 1.5 * iqr, q3 + 1.5 * iqr];
+    return [...stack, min, q1, m, q3, max];
+  };
+
   const and = attackStack((n) => collapseBinary(n, (a, b) => [a & b]), 2);
 
   const or = attackStack((n) => collapseBinary(n, (a, b) => [a | b]), 2);
@@ -375,7 +478,6 @@
 
   const xor = attackStack((n) => collapseBinary(n, (a, b) => [a ^ b]), 2);
 
-  const run = applyLastN(1)((a) => [processN()(...a)]);
   const noop = (...args) => args;
   const clear$1 = function (guard) {
     if (this === CALLING_STACK_FUNCTION) {
@@ -436,10 +538,17 @@
     }
     return [...stack, ...stack];
   };
-  const dupe = attackStack(
-    (n) => collapseBinary(n, (a, b) => [b, a, a]),
-    2
-  );
+  // export const dupe = attackStack(
+  //   (n) => collapseBinary(n, (a, b) => [b, a, a]),
+  //   2
+  // );
+  const dupe = (...stack) => {
+    if (stack.length === 0) {
+      return stack;
+    }
+    const last = stack.pop();
+    return [...stack, last, last];
+  };
 
   const retrieve =
     (index = 0) =>
@@ -502,7 +611,7 @@
       [stack.join(s)];
   //
 
-  const sort$1 = function (...stack) {
+  const sort = function (...stack) {
     const sort_ascending = (a, b) => (a === b ? 0 : a > b ? -1 : 1);
     const sort_descending = (a, b) => (a === b ? 0 : a < b ? -1 : 1);
 
@@ -636,6 +745,28 @@
   };
 
   ////////////////
+  // Execution
+  ////////////////
+
+  const execute = applyLastN(1)((a) => [processN()(...a)]);
+
+  // export const executeWait = applyLastN(1)((a) => [processN()(...a), wait]);
+  // export const executeWaitSpread = applyLastN(1)((a) => [
+  //   processN()(...a),
+  //   wait,
+  //   spread,
+  // ]);
+
+  // export const executeWait = applyLastN(1)(async (a) => [await processN()(...a)]);
+  // export const executeWaitSpread = applyLastN(1)(
+  //   async (a) => await processN()(...a)
+  // );
+
+  const executeWait = (...stack) => wait(...execute(...stack));
+  const executeWaitSpread = async (...stack) =>
+    spread(...(await executeWait(...stack)));
+
+  ////////////////
   // Experimental
   ////////////////
 
@@ -718,6 +849,8 @@
   setObj({
     "||": or$1,
     "&&": and$1,
+    "|||": orAll,
+    "&&&": andAll,
     "!": not$1,
     "|": or,
     "&": and,
@@ -731,12 +864,15 @@
     "*": times,
     "**": exp,
     "/": divide,
+    "÷": divide,
     "=": equal,
     "==": coercedEqual,
     "++": inc,
     "--": dec,
     "...": spread,
-    $: run,
+    $: execute,
+    $$: executeWait,
+    $$$: executeWaitSpread,
     "<": gt,
     "<=": gte,
     ">": lt,
@@ -748,11 +884,9 @@
     "->>": skipN(Infinity)(),
     Σ: sum,
     Π: product,
+    x̄: mean,
     _: wait,
     __: waitAll,
-    and: copy,
-    or: copy,
-    not: copy,
   });
 
   // Incrementors
@@ -803,108 +937,6 @@
   });
 
   setObj(defaultDynamicOperators);
-
-  const sort = (...stack) => stack.sort();
-
-  const mean = (...stack) => {
-    return [stack.reduceRight((a, b) => a + b, 0) / stack.length];
-  };
-  const median = (...stack) => {
-    const values = sort(...stack);
-    const half = Math.floor(values.length / 2);
-    if (values.length % 2) {
-      return [values[half]];
-    }
-    return [(values[half - 1] + values[half]) / 2];
-  };
-
-  const mode = (...stack) => {
-    const counts = new Map();
-    let max = 0;
-    for (const item of stack) {
-      const value = counts.get(item) || 0;
-      counts.set(item, value + 1);
-      if (value === max) {
-        max++;
-      }
-    }
-    return [[...counts].find(([, value]) => value === max)[0]];
-  };
-  const modes = (...stack) => {
-    const counts = new Map();
-    let max = 0;
-    for (const item of stack) {
-      const value = counts.get(item) || 0;
-      counts.set(item, value + 1);
-      if (value === max) {
-        max++;
-      }
-    }
-    const result = [...counts]
-      .filter(([, value]) => value === max)
-      .map(([key]) => key);
-    return [...result, result.length];
-  };
-
-  const populationVariance = (...stack) => {
-    const n = stack.length;
-    if (n < 1) {
-      throw new Error("stack length must be greater than 0");
-    }
-    const [m] = mean(...stack);
-    return [
-      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / n,
-    ];
-  };
-  const sampleVariance = (...stack) => {
-    const n = stack.length;
-    if (n < 2) {
-      throw new Error("stack length must be greater than 1");
-    }
-    const [m] = mean(...stack);
-    return [
-      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / (n - 1),
-    ];
-  };
-
-  const populationStandardDeviation = (...stack) => {
-    return [Math.sqrt(populationVariance$(stack)[0])];
-  };
-  const sampleStandardDeviation = (...stack) => {
-    return [Math.sqrt(sampleVariance$(stack)[0])];
-  };
-
-  const percentile =
-    (d) =>
-    (...stack) => {
-      const index = d * (stack.length - 1);
-      if (Number.isInteger(index)) {
-        return [stack[index]];
-      } else {
-        const lower = Math.floor(index);
-        const upper = Math.ceil(index);
-        return [(stack[lower] + stack[upper]) / 2];
-      }
-    };
-
-  const fiveNumberSummary = (...stack) => {
-    const values = sort(...stack);
-    const [m] = mean(...stack);
-    const [lower, upper] = [values[0], values[values.length - 1]];
-    const [q1] = percentile(0.25)(...values);
-    const [q3] = percentile(0.75)(...values);
-    return [lower, q1, m, q3, upper];
-  };
-
-  const fiveNumberSummaryB = (...stack) => {
-    const values = sort(...stack);
-    const [m] = mean(...stack);
-    const [q1] = percentile(0.25)(...values);
-    const [q3] = percentile(0.75)(...values);
-    const iqr = q3 - q1;
-    const [min, max] = [q1 - 1.5 * iqr, q3 + 1.5 * iqr];
-    return [...stack, min, q1, m, q3, max];
-  };
 
   /**
    * @category StackFunction
@@ -1095,6 +1127,58 @@
     }
     return [...stack, arr, ...spare];
   });
+
+  const array =
+    (n = Infinity) =>
+    (...stack) => {
+      // split stack into two parts
+      // firtst part is the origninal stack with last n elements removed
+      // second part is the rest of the stack
+      const end = stack.splice(-n, Infinity);
+
+      return [...stack, end];
+    };
+
+  const pushItem =
+    (...items) =>
+    (...stack) => {
+      const last = stack.pop();
+      if (Array.isArray(last)) {
+        for (const item of items) {
+          last.push(item);
+        }
+        return [...stack, last];
+      }
+      return [...stack, last, [...items]];
+    };
+
+  const unshiftItem =
+    (...items) =>
+    (...stack) => {
+      const last = stack.pop();
+      if (Array.isArray(last)) {
+        for (const item of items) {
+          last.unshift(item);
+        }
+        return [...stack, last];
+      }
+      return [...stack, last, [...items]];
+    };
+
+  const flatten = (...stack) => {
+    const flattened = [];
+    stack.forEach((item) => {
+      if (Array.isArray(item)) {
+        const items = flatten(...item);
+        for (const subItem of items) {
+          flattened.push(subItem);
+        }
+      } else {
+        flattened.push(item);
+      }
+    });
+    return flattened;
+  };
 
   /**
    * @category StackFunction
@@ -1468,7 +1552,9 @@
     wait: wait,
     waitAll: waitAll,
     and: and$1,
+    andAll: andAll,
     or: or$1,
+    orAll: orAll,
     not: not$1,
     when: when,
     dropWhen: dropWhen,
@@ -1478,7 +1564,17 @@
     dropIf: dropIf,
     keepIfElse: keepIfElse,
     dropIfElse: dropIfElse,
-    run: run,
+    mean: mean,
+    median: median,
+    mode: mode,
+    modes: modes,
+    populationVariance: populationVariance,
+    sampleVariance: sampleVariance,
+    populationStandardDeviation: populationStandardDeviation,
+    sampleStandardDeviation: sampleStandardDeviation,
+    percentile: percentile,
+    fiveNumberSummary: fiveNumberSummary,
+    fiveNumberSummaryB: fiveNumberSummaryB,
     clear: clear$1,
     forbidden: forbidden,
     spread: spread,
@@ -1498,7 +1594,7 @@
     hold: hold,
     seed: seed,
     join: join,
-    sort: sort$1,
+    sort: sort,
     randomize: randomize,
     strcat: strcat,
     strseq: strseq,
@@ -1526,26 +1622,22 @@
     count: count,
     reverse: reverse,
     collect: collect,
+    execute: execute,
+    executeWait: executeWait,
+    executeWaitSpread: executeWaitSpread,
     stepDown: stepDown,
     stepUp: stepUp,
     loops: loops,
     loop: loop,
-    mean: mean,
-    median: median,
-    mode: mode,
-    modes: modes,
-    populationVariance: populationVariance,
-    sampleVariance: sampleVariance,
-    populationStandardDeviation: populationStandardDeviation,
-    sampleStandardDeviation: sampleStandardDeviation,
-    percentile: percentile,
-    fiveNumberSummary: fiveNumberSummary,
-    fiveNumberSummaryB: fiveNumberSummaryB,
     push: push,
     unshift: unshift,
     pop: pop,
     shift: shift,
     suppose: suppose,
+    array: array,
+    pushItem: pushItem,
+    unshiftItem: unshiftItem,
+    flatten: flatten,
     next: next,
     drain: drain,
     iter: iter,
