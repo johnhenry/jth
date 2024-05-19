@@ -414,7 +414,7 @@ Suppose last item is an array, set, or map and push it onto stack.
 | ++                   | inc          | Previous number +1                            |
 | --                   | dec          | Previous number -1                            |
 | ...                  | spread       | Expand iterator into stack                    |
-| !                    | run          | Run functions within array                    |
+| $                    | run          | Run functions within array                    |
 | <                    | gt           | true if [-1] > [-2], false otherwise          |
 | <=                   | gte          | true if [-1] >= [-2], false otherwise         |
 | >                    | lt           | true if [-1] < [-2], false otherwise          |
@@ -426,14 +426,13 @@ Suppose last item is an array, set, or map and push it onto stack.
 | %%                   | modulus      | Mixed result moduls (JS Default)              |
 | &&                   | and          | true if [-1] and [-2] truthy, false otherwise |
 | \|\|                 | or           | true if [-1] or [-2] truthy, false otherwise  |
-| !!                   | not          | true if [-1] is falsy, true otherwise         |
+| !                    | not          | true if [-1] is falsy, true otherwise         |
 | <<-                  | (n/a)        | Rewind to beginning                           |
 | ->>                  | (n/a)        | Skip to end                                   |
 | \_                   | wait         | resolve promise                               |
 | \_\_                 | waitAll      | resolve all promises                          |
 | **Dynamic Operator** |              |                                               |
-| \*\*\* (3+ times)    | (n/a)        | Hyperperoperator on BigInts                   |
-| /\*\*\* (3+ times)   | (n/a)        | Cumulative Hyperperoperator on BigInts        |
+| \*\*\* (3+ times)    | (n/a)        | Cumulative (n+1) Hyperperoperator             |
 | ->{N?}               | skip         | Skip Forward                                  |
 | {N?}<-               | rewind       | Skip Back                                     |
 | {F}+,-,\*,/          | (n/a)        | Successor Functions                           |

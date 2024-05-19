@@ -44,7 +44,7 @@ setObj({
   "++": inc,
   "--": dec,
   "...": spread,
-  "!": run,
+  $: run,
   "<": gt,
   "<=": gte,
   ">": lt,
