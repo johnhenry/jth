@@ -1,10 +1,11 @@
 import { processN, CALLING_STACK_FUNCTION } from "./process-n.mjs";
 import { applyLastN, attackStack, collapseBinary } from "./tools/index.mjs"; // jth-tools
-export * from "./tools/index.mjs"; // jth-tools
 export * from "./wrap.mjs";
+export * from "./tools/index.mjs";
 export * from "./async/index.mjs";
 export * from "./logic/index.mjs";
-export * from "./stat/index.mjs"; // jth-stats
+export * from "./stat/index.mjs";
+export * from "./unsorted/index.mjs";
 
 import { wait } from "./async/index.mjs";
 
@@ -178,6 +179,7 @@ export const strseq = attackStack(
 export const dec = applyLastN(1)((a = 0) => [a - 1]);
 export const inc = applyLastN(1)((a = 0) => [a + 1]);
 export const plus = attackStack((n) => collapseBinary(n, (a, b) => [a + b]), 2);
+
 export const minus = attackStack(
   (n) => collapseBinary(n, (a, b) => [a - b]),
   2

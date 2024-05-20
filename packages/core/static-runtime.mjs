@@ -1,5 +1,5 @@
 (function () {
-  'use strict';
+  "use strict";
 
   /**
    * @description Extracts values from a dictionary and assigns them to the global object.
@@ -67,7 +67,9 @@
         }
       }
       while (stack.length) {
-        const { _, delay, limit, rewind, persist, skip } = unwrap(stack.shift());
+        const { _, delay, limit, rewind, persist, skip } = unwrap(
+          stack.shift()
+        );
         if (typeof _ === "function") {
           if (skip !== undefined) {
             if (skip === -1 || skip === undefined) {
@@ -471,7 +473,8 @@
     }
     const [m] = mean(...stack);
     return [
-      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / (n - 1),
+      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) /
+        (n - 1),
     ];
   };
 
@@ -514,15 +517,62 @@
     return [...stack, min, q1, m, q3, max];
   };
 
+  const mapLast =
+    (fn) =>
+    (...stack) => {
+      const item = stack.pop();
+      return [...stack, fn(item)];
+    };
+
+  const abs = (...stack) => {
+    if (stack.length < 1) {
+      return stack;
+    }
+    const item = Math.abs(stack.pop());
+    return [...stack, item];
+  };
+
+  const _gcd = (A, B) => {
+    let a = A,
+      b = B;
+    while (b !== 0) {
+      const temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
+  };
+
+  const gcd = (...stack) => {
+    if (stack.length < 1) {
+      return stack;
+    }
+    const a = stack.pop();
+    const b = stack.pop();
+    return [...stack, _gcd(a, b)];
+  };
+  const gcdAll = (...stack) => [stack.reduceRight(_gcd)];
+
+  const _lcm = (A, B) => {
+    return (A * B) / _gcd(A, B);
+  };
+  const lcm = (...stack) => {
+    if (stack.length < 1) {
+      return stack;
+    }
+    const a = stack.pop();
+    const b = stack.pop();
+    return [_lcm(a, b)];
+  };
+
+  const lcmAll = (...stack) => [stack.reduceRight(_lcm)];
+
   const bitwiseAnd = attackStack(
     (n) => collapseBinary(n, (a, b) => [a & b]),
     2
   );
 
-  const bitwiseOr = attackStack(
-    (n) => collapseBinary(n, (a, b) => [a | b]),
-    2
-  );
+  const bitwiseOr = attackStack((n) => collapseBinary(n, (a, b) => [a | b]), 2);
 
   const bitwiseNot = (...stack) => {
     const item = ~stack.pop();
@@ -595,10 +645,8 @@
     return stack.splice(-n, Infinity);
   });
 
-  const keepHalf = (...stack) =>
-    stack.slice(0, Math.ceil(stack.length / 2));
-  const dropHalf = (...stack) =>
-    stack.slice(0, Math.floor(stack.length / 2));
+  const keepHalf = (...stack) => stack.slice(0, Math.ceil(stack.length / 2));
+  const dropHalf = (...stack) => stack.slice(0, Math.floor(stack.length / 2));
   const copy = function (...stack) {
     if (this !== CALLING_STACK_FUNCTION) {
       const f = stack[0];
@@ -717,29 +765,18 @@
   const dec = applyLastN(1)((a = 0) => [a - 1]);
   const inc = applyLastN(1)((a = 0) => [a + 1]);
   const plus = attackStack((n) => collapseBinary(n, (a, b) => [a + b]), 2);
-  const minus = attackStack(
-    (n) => collapseBinary(n, (a, b) => [a - b]),
-    2
-  );
 
-  const times = attackStack(
-    (n) => collapseBinary(n, (a, b) => [a * b]),
-    2
-  );
-  const divide = attackStack(
-    (n) => collapseBinary(n, (a, b) => [a / b]),
-    2
-  );
+  const minus = attackStack((n) => collapseBinary(n, (a, b) => [a - b]), 2);
+
+  const times = attackStack((n) => collapseBinary(n, (a, b) => [a * b]), 2);
+  const divide = attackStack((n) => collapseBinary(n, (a, b) => [a / b]), 2);
   const exp = attackStack((n) => collapseBinary(n, (a, b) => [a ** b]), 2);
 
   const mod = attackStack(
     (n) => collapseBinary(n, (a = NaN, b = NaN) => [((a % b) + b) % b]),
     2
   );
-  const modulus = attackStack(
-    (n) => collapseBinary(n, (a, b) => [a % b]),
-    2
-  );
+  const modulus = attackStack((n) => collapseBinary(n, (a, b) => [a % b]), 2);
 
   const sum = (...stack) => [stack.reduceRight((a, b) => a + b, 0)];
   const product = (...stack) => [stack.reduceRight((a, b) => a * b, 1)];
@@ -899,7 +936,9 @@
    */
 
   const set$1 = (k, v) => {
-    typeof k !== "string" ? dynamicOperators.set(k, v) : (staticOperators[k] = v);
+    typeof k !== "string"
+      ? dynamicOperators.set(k, v)
+      : (staticOperators[k] = v);
   };
   const setObj = (obj) => {
     for (const [k, v] of obj instanceof Map ? obj : Object.entries(obj)) {
@@ -930,6 +969,7 @@
     "@": peek,
     "@@": view,
     "∅": noop,
+    "+.": strseq,
     "+": plus,
     "-": minus,
     "*": times,
@@ -942,6 +982,8 @@
     "++": inc,
     "--": dec,
     "...": spread,
+    abs: abs,
+    "|𝑥|": abs,
     $: execute,
     $$: executeWait,
     $$$: executeWaitSpread,
@@ -1368,7 +1410,9 @@
 
   const toInc = (...stack) => {
     const { start, end, ascending, stack: nums } = numStack(...stack);
-    return [...numProc(nums, ascending, ascending ? start + 1 : start - 1, end)];
+    return [
+      ...numProc(nums, ascending, ascending ? start + 1 : start - 1, end),
+    ];
   };
   // 5 8 fromToInc @!!; 5 6 7 8
 
@@ -1614,7 +1658,7 @@
     };
   };
 
-  var context = /*#__PURE__*/Object.freeze({
+  var context = /*#__PURE__*/ Object.freeze({
     __proto__: null,
     operators: operators,
     META: META,
@@ -1622,11 +1666,6 @@
     unwrap: unwrap,
     wrap: wrap,
     processN: processN,
-    EMPTY_ARGUMENT: EMPTY_ARGUMENT,
-    applyLastN: applyLastN,
-    attackStack: attackStack,
-    collapseBinary: collapseBinary,
-    stackify: stackify,
     noop: noop,
     rewindN: rewindN$1,
     reset: reset,
@@ -1638,6 +1677,11 @@
     skipN: skipN,
     wrapify: wrapify,
     swap: swap,
+    EMPTY_ARGUMENT: EMPTY_ARGUMENT,
+    applyLastN: applyLastN,
+    attackStack: attackStack,
+    collapseBinary: collapseBinary,
+    stackify: stackify,
     wait: wait,
     waitAll: waitAll,
     and: and,
@@ -1667,6 +1711,12 @@
     percentile: percentile,
     fiveNumberSummary: fiveNumberSummary,
     fiveNumberSummaryB: fiveNumberSummaryB,
+    mapLast: mapLast,
+    abs: abs,
+    gcd: gcd,
+    gcdAll: gcdAll,
+    lcm: lcm,
+    lcmAll: lcmAll,
     bitwiseAnd: bitwiseAnd,
     bitwiseOr: bitwiseOr,
     bitwiseNot: bitwiseNot,
@@ -1746,9 +1796,8 @@
     fromToInc: fromToInc,
     fibonacci: fibonacci,
     get: get,
-    set: set
+    set: set,
   });
 
   extractGlobal(context);
-
 })();
