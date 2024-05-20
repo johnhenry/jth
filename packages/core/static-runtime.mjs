@@ -1,5 +1,5 @@
 (function () {
-  "use strict";
+  'use strict';
 
   /**
    * @description Extracts values from a dictionary and assigns them to the global object.
@@ -67,9 +67,7 @@
         }
       }
       while (stack.length) {
-        const { _, delay, limit, rewind, persist, skip } = unwrap(
-          stack.shift()
-        );
+        const { _, delay, limit, rewind, persist, skip } = unwrap(stack.shift());
         if (typeof _ === "function") {
           if (skip !== undefined) {
             if (skip === -1 || skip === undefined) {
@@ -473,8 +471,7 @@
     }
     const [m] = mean(...stack);
     return [
-      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) /
-        (n - 1),
+      stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / (n - 1),
     ];
   };
 
@@ -567,12 +564,52 @@
 
   const lcmAll = (...stack) => [stack.reduceRight(_lcm)];
 
+  const createJSON = (...stack) => {
+    const obj = {};
+    while (stack.length) {
+      const key = stack.pop();
+      const value = stack.pop();
+      obj[key] = value;
+    }
+    return [obj];
+  };
+
+  const createMap = (...stack) => {
+    const obj = new Map();
+    while (stack.length) {
+      const key = stack.pop();
+      const value = stack.pop();
+      obj.set(key, value);
+    }
+    return [obj];
+  };
+
+  const createSet = (...stack) => {
+    const obj = new Set();
+    while (stack.length) {
+      const value = stack.pop();
+      obj.add(value);
+    }
+    return [obj];
+  };
+
+  const readEnv = (...stack) => {
+    const key = stack.pop();
+    return [
+      ...stack,
+      typeof Deno !== "undefined" ? Deno.env.get(key) : process.env[key],
+    ];
+  };
+
   const bitwiseAnd = attackStack(
     (n) => collapseBinary(n, (a, b) => [a & b]),
     2
   );
 
-  const bitwiseOr = attackStack((n) => collapseBinary(n, (a, b) => [a | b]), 2);
+  const bitwiseOr = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a | b]),
+    2
+  );
 
   const bitwiseNot = (...stack) => {
     const item = ~stack.pop();
@@ -645,8 +682,10 @@
     return stack.splice(-n, Infinity);
   });
 
-  const keepHalf = (...stack) => stack.slice(0, Math.ceil(stack.length / 2));
-  const dropHalf = (...stack) => stack.slice(0, Math.floor(stack.length / 2));
+  const keepHalf = (...stack) =>
+    stack.slice(0, Math.ceil(stack.length / 2));
+  const dropHalf = (...stack) =>
+    stack.slice(0, Math.floor(stack.length / 2));
   const copy = function (...stack) {
     if (this !== CALLING_STACK_FUNCTION) {
       const f = stack[0];
@@ -766,17 +805,29 @@
   const inc = applyLastN(1)((a = 0) => [a + 1]);
   const plus = attackStack((n) => collapseBinary(n, (a, b) => [a + b]), 2);
 
-  const minus = attackStack((n) => collapseBinary(n, (a, b) => [a - b]), 2);
+  const minus = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a - b]),
+    2
+  );
 
-  const times = attackStack((n) => collapseBinary(n, (a, b) => [a * b]), 2);
-  const divide = attackStack((n) => collapseBinary(n, (a, b) => [a / b]), 2);
+  const times = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a * b]),
+    2
+  );
+  const divide = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a / b]),
+    2
+  );
   const exp = attackStack((n) => collapseBinary(n, (a, b) => [a ** b]), 2);
 
   const mod = attackStack(
     (n) => collapseBinary(n, (a = NaN, b = NaN) => [((a % b) + b) % b]),
     2
   );
-  const modulus = attackStack((n) => collapseBinary(n, (a, b) => [a % b]), 2);
+  const modulus = attackStack(
+    (n) => collapseBinary(n, (a, b) => [a % b]),
+    2
+  );
 
   const sum = (...stack) => [stack.reduceRight((a, b) => a + b, 0)];
   const product = (...stack) => [stack.reduceRight((a, b) => a * b, 1)];
@@ -936,9 +987,7 @@
    */
 
   const set$1 = (k, v) => {
-    typeof k !== "string"
-      ? dynamicOperators.set(k, v)
-      : (staticOperators[k] = v);
+    typeof k !== "string" ? dynamicOperators.set(k, v) : (staticOperators[k] = v);
   };
   const setObj = (obj) => {
     for (const [k, v] of obj instanceof Map ? obj : Object.entries(obj)) {
@@ -1274,6 +1323,28 @@
       return [...stack, end];
     };
 
+  const arrayRev =
+    (n = Infinity) =>
+    (...stack) => {
+      // split stack into two parts
+      // firtst part is the origninal stack with last n elements removed
+      // second part is the rest of the stack
+      const end = stack.splice(-n, Infinity).reverse();
+
+      return [...stack, end];
+    };
+
+  // export const collect =
+  //   (n = Infinity) =>
+  //   (...stack) => {
+  //     // split stack into two parts
+  //     // firtst part is the origninal stack with last n elements removed
+  //     // second part is the rest of the stack
+  //     const end = stack.splice(-n, Infinity).reverse();
+
+  //     return [...stack, end];
+  //   };
+
   const pushItem =
     (...items) =>
     (...stack) => {
@@ -1410,9 +1481,7 @@
 
   const toInc = (...stack) => {
     const { start, end, ascending, stack: nums } = numStack(...stack);
-    return [
-      ...numProc(nums, ascending, ascending ? start + 1 : start - 1, end),
-    ];
+    return [...numProc(nums, ascending, ascending ? start + 1 : start - 1, end)];
   };
   // 5 8 fromToInc @!!; 5 6 7 8
 
@@ -1658,7 +1727,7 @@
     };
   };
 
-  var context = /*#__PURE__*/ Object.freeze({
+  var context = /*#__PURE__*/Object.freeze({
     __proto__: null,
     operators: operators,
     META: META,
@@ -1717,6 +1786,10 @@
     gcdAll: gcdAll,
     lcm: lcm,
     lcmAll: lcmAll,
+    createJSON: createJSON,
+    createMap: createMap,
+    createSet: createSet,
+    readEnv: readEnv,
     bitwiseAnd: bitwiseAnd,
     bitwiseOr: bitwiseOr,
     bitwiseNot: bitwiseNot,
@@ -1784,6 +1857,7 @@
     shift: shift,
     suppose: suppose,
     array: array,
+    arrayRev: arrayRev,
     pushItem: pushItem,
     unshiftItem: unshiftItem,
     flatten: flatten,
@@ -1796,8 +1870,9 @@
     fromToInc: fromToInc,
     fibonacci: fibonacci,
     get: get,
-    set: set,
+    set: set
   });
 
   extractGlobal(context);
+
 })();

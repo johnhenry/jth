@@ -200,6 +200,28 @@ export const array =
     return [...stack, end];
   };
 
+export const arrayRev =
+  (n = Infinity) =>
+  (...stack) => {
+    // split stack into two parts
+    // firtst part is the origninal stack with last n elements removed
+    // second part is the rest of the stack
+    const end = stack.splice(-n, Infinity).reverse();
+
+    return [...stack, end];
+  };
+
+// export const collect =
+//   (n = Infinity) =>
+//   (...stack) => {
+//     // split stack into two parts
+//     // firtst part is the origninal stack with last n elements removed
+//     // second part is the rest of the stack
+//     const end = stack.splice(-n, Infinity).reverse();
+
+//     return [...stack, end];
+//   };
+
 export const pushItem =
   (...items) =>
   (...stack) => {

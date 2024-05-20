@@ -49,3 +49,40 @@ export const lcm = (...stack) => {
 };
 
 export const lcmAll = (...stack) => [stack.reduceRight(_lcm)];
+
+export const createJSON = (...stack) => {
+  const obj = {};
+  while (stack.length) {
+    const key = stack.pop();
+    const value = stack.pop();
+    obj[key] = value;
+  }
+  return [obj];
+};
+
+export const createMap = (...stack) => {
+  const obj = new Map();
+  while (stack.length) {
+    const key = stack.pop();
+    const value = stack.pop();
+    obj.set(key, value);
+  }
+  return [obj];
+};
+
+export const createSet = (...stack) => {
+  const obj = new Set();
+  while (stack.length) {
+    const value = stack.pop();
+    obj.add(value);
+  }
+  return [obj];
+};
+
+export const readEnv = (...stack) => {
+  const key = stack.pop();
+  return [
+    ...stack,
+    typeof Deno !== "undefined" ? Deno.env.get(key) : process.env[key],
+  ];
+};
