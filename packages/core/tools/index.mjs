@@ -34,6 +34,13 @@ export const applyLastN =
       ...fn(...args),
     ];
   };
+
+/**
+ * @description A helper for creating stack functions
+ * @param {function} stackattack
+ * @param {any} stackDefaults
+ * @returns {function}
+ */
 export const attackStack = (stackattack, ...stackDefaults) =>
   function (...stack) {
     if (this !== Symbol.for("CALLING_STACK_FUNCTION")) {
@@ -47,6 +54,12 @@ export const attackStack = (stackattack, ...stackDefaults) =>
     return stackattack(...stackDefaults)(...stack);
   };
 
+/**
+ * @description Collapse the stack by repeatedly applying a binary function
+ * @param {number} n
+ * @param {function} binary
+ * @returns {function}
+ */
 export const collapseBinary =
   (n = 2, binary = (a, b) => [a, b]) =>
   (...stack) => {
@@ -67,6 +80,14 @@ const splitArgs = (left, take = 0) => {
   return [left, taken];
 };
 
+/**
+ * @description A helper for creating stack functions
+ * @param {function} func
+ * @param {object} bindObject
+ * @param {number} take
+ * @param {boolean} wrapOutputInArray
+ * @returns {function}
+ */
 export const stackify = (
   func,
   bindObject = undefined,
