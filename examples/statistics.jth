@@ -1,0 +1,11 @@
+// Calculate the mean of a list of numbers
+1 2 3 4 5 mean;
+// returns 3
+
+// Calculate the median of a list of numbers
+1 2 3 4 5 median;
+// returns 3
+
+// Calculate the mode of a list of numbers
+1 1 2 3 4 5 mode;
+// returns 1

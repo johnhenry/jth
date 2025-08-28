@@ -401,6 +401,11 @@ export const sum = (...stack) => [stack.reduceRight((a, b) => a + b, 0)];
  */
 export const product = (...stack) => [stack.reduceRight((a, b) => a * b, 1)];
 
+/**
+ * @description Map a function over the stack
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const map = function (...stack) {
   if (this !== CALLING_STACK_FUNCTION) {
     const transformer = stack[0];
@@ -408,6 +413,12 @@ export const map = function (...stack) {
   }
   return stack.map((x) => x);
 };
+
+/**
+ * @description Filter the stack with a predicate
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const filter = function (...stack) {
   if (this !== CALLING_STACK_FUNCTION) {
     const predicate = stack[0];
@@ -416,6 +427,11 @@ export const filter = function (...stack) {
   return stack.filter((x) => x);
 };
 
+/**
+ * @description Reduce the stack with a function
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const reduce = function (...stack) {
   if (this !== CALLING_STACK_FUNCTION) {
     const reducer = stack[0].bind(CALLING_STACK_FUNCTION);
@@ -431,24 +447,85 @@ export const reduce = function (...stack) {
   return stack;
 };
 
+/**
+ * @description Check if the last two items on the stack are equal
+ * @param {any} a
+ * @param {any} b
+ * @returns {boolean[]}
+ */
 export const equal = applyLastN(2)((a = NaN, b = NaN) => [a === b]);
+
+/**
+ * @description Check if the last two items on the stack are equal with coercion
+ * @param {any} a
+ * @param {any} b
+ * @returns {boolean[]}
+ */
 export const coercedEqual = applyLastN(2)((a = NaN, b = NaN) => [a == b]);
 
+/**
+ * @description Compare the last two items on the stack
+ * @param {any} a
+ * @param {any} b
+ * @returns {number[]}
+ */
 export const spaceship = applyLastN(2)((a = NaN, b = NaN) => [
   a === b ? 0 : a > b ? -1 : 1,
 ]);
+
+/**
+ * @description Check if the second to last item on the stack is less than the last item
+ * @param {any} a
+ * @param {any} b
+ * @returns {boolean[]}
+ */
 export const lt = applyLastN(2)((a = NaN, b = NaN) => [a < b]);
+
+/**
+ * @description Check if the second to last item on the stack is less than or equal to the last item
+ * @param {any} a
+ * @param {any} b
+ * @returns {boolean[]}
+ */
 export const lte = applyLastN(2)((a = NaN, b = NaN) => [a <= b]);
 
+/**
+ * @description Check if the second to last item on the stack is greater than the last item
+ * @param {any} a
+ * @param {any} b
+ * @returns {boolean[]}
+ */
 export const gt = applyLastN(2)((a = NaN, b = NaN) => [a > b]);
+
+/**
+ * @description Check if the second to last item on the stack is greater than or equal to the last item
+ * @param {any} a
+ * @param {any} b
+ * @returns {boolean[]}
+ */
 export const gte = applyLastN(2)((a = NaN, b = NaN) => [a >= b]);
 
+/**
+ * @description Count the number of items on the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const count = (...stack) => {
   return [stack.length];
 };
 
+/**
+ * @description Reverse the stack
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const reverse = (...stack) => stack.reverse();
 
+/**
+ * @description Collect the stack into an array
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const collect = function (...stack) {
   if (this === CALLING_STACK_FUNCTION) {
     return [stack];
@@ -476,6 +553,11 @@ export const collect = function (...stack) {
 // Execution
 ////////////////
 
+/**
+ * @description Execute a function
+ * @param {any} a
+ * @returns {any[]}
+ */
 export const execute = applyLastN(1)((a) => [processN()(...a)]);
 
 // export const executeWait = applyLastN(1)((a) => [processN()(...a), wait]);
@@ -490,7 +572,18 @@ export const execute = applyLastN(1)((a) => [processN()(...a)]);
 //   async (a) => await processN()(...a)
 // );
 
+/**
+ * @description Execute a function and wait for it to resolve
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const executeWait = (...stack) => wait(...execute(...stack));
+
+/**
+ * @description Execute a function, wait for it to resolve, and spread the result
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const executeWaitSpread = async (...stack) =>
   spread(...(await executeWait(...stack)));
 
@@ -498,6 +591,11 @@ export const executeWaitSpread = async (...stack) =>
 // Experimental
 ////////////////
 
+/**
+ * @description Step down from a number
+ * @param {number} n
+ * @returns {function}
+ */
 export const stepDown = (n = -Infinity) =>
   applyLastN(1)((a) => {
     if (a > n) {
@@ -506,6 +604,11 @@ export const stepDown = (n = -Infinity) =>
     return [a];
   });
 
+/**
+ * @description Step up from a number
+ * @param {number} n
+ * @returns {function}
+ */
 export const stepUp = (n = Infinity) =>
   applyLastN(1)((a) => {
     if (a < n) {
@@ -523,6 +626,11 @@ export const loops = {
   },
 };
 
+/**
+ * @description Loop until a condition is met
+ * @param {function} condition
+ * @returns {function}
+ */
 export const loop = (condition = loops.IMMUTABLE) => {
   return (...stack) => {
     const func = stack.pop();
