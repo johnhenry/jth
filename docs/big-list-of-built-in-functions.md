@@ -432,6 +432,99 @@ Collapses the stack by repeatedly applying a binary function.
 
 Generates the next number in the fibonacci sequence.
 
+### exhaustIterator
+
+Exhausts an iterator, spreading all its values onto the stack.
+
+## Math Extensions
+
+### abs
+
+Returns the absolute value of the last item on the stack.
+
+```jth
+-5 abs;
+// results in 5
+```
+
+### gcd
+
+Calculates the greatest common divisor of the last two items on the stack.
+
+```jth
+12 8 gcd;
+// results in 4
+```
+
+### gcdAll
+
+Calculates the greatest common divisor of all items on the stack.
+
+### lcm
+
+Calculates the least common multiple of the last two items on the stack.
+
+```jth
+4 6 lcm;
+// results in 12
+```
+
+### lcmAll
+
+Calculates the least common multiple of all items on the stack.
+
+## Data Types
+
+### createJSON
+
+Creates a JSON string from the items on the stack. Takes a count parameter.
+
+```jth
+"name" "jth" "version" "0.2.0" 2 createJSON;
+// results in '{"name":"jth","version":"0.2.0"}'
+```
+
+### createMap
+
+Creates a JavaScript Map from key-value pairs on the stack.
+
+```jth
+"key1" "value1" "key2" "value2" 2 createMap;
+// results in Map with 2 entries
+```
+
+### createSet
+
+Creates a JavaScript Set from items on the stack.
+
+```jth
+1 2 3 3 createSet;
+// results in Set {1, 2, 3}
+```
+
+### readEnv
+
+Reads an environment variable by name.
+
+```jth
+"PATH" readEnv;
+// results in the PATH environment variable value
+```
+
+## Execution Control
+
+### execute
+
+Executes a function from the stack.
+
+### executeWait
+
+Executes a function and waits for it to resolve (for async operations).
+
+### executeWaitSpread
+
+Executes a function, waits for it to resolve, and spreads the result onto the stack.
+
 ## Operators
 
 |                      | Alias        | Description                                   |

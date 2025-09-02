@@ -4,21 +4,84 @@
 
 ## 0.2.0 - Internal Affairs
 
-- Paradigm shift -- eagar execution of functions by default
+### Core Language Changes
+- Paradigm shift -- eager execution of functions by default
   - `!` is no longer used to execute functions
-  - Functions now must be intentionally delayed using [special higher-order functions]()
-- AST trasnfromation removed (temporarily?)
-- Working REPL
-- Batteries included
-  - More functions included by default.
-  - At some point I should sort these out into dedicated libraries,
-    but as of now it's unclear how these should _best_ be separated.
+  - Functions now must be intentionally delayed using special higher-order functions
+- AST transformation removed (temporarily?)
+- Working REPL with improved stability
+- Operators support
+  - Built-in operators (+, -, *, /, etc.)
+  - Define operators at runtime
+  - New bitwise operators
+
+### New Functions and Features
+
+#### Math Functions
+- `gcd` - Greatest common divisor
+- `lcm` - Least common multiple  
+- `abs` - Absolute value
+- Enhanced math operators with JSDoc documentation
+
+#### Data Structures
+- **Dictionary operations:**
+  - `get` - Get value(s) from a dictionary
+  - `set` - Set value(s) in a dictionary
+- **Iterator operations:**
+  - `iter` - Create an iterator from an iterable
+  - `next` - Get next value from an iterator
+  - `drain` - Drain n values from an iterator to the stack
+- **Range operations:**
+  - `to` - Create exclusive range
+  - `fromTo` - Create range inclusive of start
+  - `toInc` - Create range inclusive of end
+  - `fromToInc` - Create fully inclusive range
+
+#### Statistics Functions
+- `mean` - Calculate mean
+- `median` - Calculate median
+- `mode` - Calculate mode
+- `modes` - Calculate all modes
+- `populationVariance` - Population variance
+- `sampleVariance` - Sample variance
+- `populationStandardDeviation` - Population standard deviation
+- `sampleStandardDeviation` - Sample standard deviation
+- `percentile` - Calculate percentile
+- `fiveNumberSummary` - Five number summary
+- `fiveNumberSummaryB` - Alternative five number summary
+
+#### Data Type Support
+- JSON parsing and stringification
+- Map creation and manipulation
+- Set creation and manipulation
+- Environment variable reading
+
+#### Execution Control
+- `executeWait` - Execute function and wait for resolution
+- `executeWaitSpread` - Execute, wait, and spread results
+
+#### Other Additions
+- `fibonacci` - Generate next Fibonacci number
+- `exhaustIterator` - Exhaust an iterator to array
+
+### Documentation & Examples
+- Comprehensive JSDoc comments added throughout codebase
+- New example files demonstrating:
+  - Dictionary operations (dict.jth)
+  - Iterator operations (iterator.jth)
+  - Range operations (range.jth)
+  - Statistics functions (statistics.jth)
+  - Miscellaneous functions (misc.jth)
+- Updated "Big List of Built-in Functions" documentation
+- Improved README with clearer installation and usage instructions
+
+### Architecture Changes
+- Batteries included approach
+  - More functions included by default
+  - At some point these should be sorted into dedicated libraries
 - jth-tools and jth-stats temporarily paused
   - All related functions are included in `jth-core/core`
-    until I can better understand how they should be seperated.
-- Operators support
-  - Built in operators (+, -, etc...)
-  - Define operators at runtime
+    until better separation strategy is determined
 
 ## 0.1.0 - Here comes the AST!
 
