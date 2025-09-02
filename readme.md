@@ -60,6 +60,7 @@ node index.mjs
 Learn more about Jth here:
 
 -   [Introduction](https://github.com/johnhenry/jth/tree/main/docs/introduction.md): A gentle introduction to the Jth language.
+-   [Comprehensive Introduction](https://github.com/johnhenry/jth/tree/main/docs/comprehensive-introduction.md): A complete guide covering all language features, operators, and paradigms.
 -   [Tooling](https://github.com/johnhenry/jth/tree/main/docs/tooling.md): Information about the Jth CLI and other tools.
 -   [Examples](https://github.com/johnhenry/jth/tree/main/examples): A collection of example Jth programs.
 -   [Big List of Built-in Functions](https://github.com/johnhenry/jth/tree/main/docs/big-list-of-built-in-functions.md): A comprehensive list of all the built-in functions in Jth.
