@@ -247,7 +247,7 @@ yargs(hideBin(process.argv))
           alias: "v",
           type: "boolean",
           describe: "view output",
-          default: true,
+          default: false,
         })
         .option("operator-func", {
           alias: "o",

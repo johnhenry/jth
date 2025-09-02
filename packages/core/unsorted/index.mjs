@@ -51,32 +51,40 @@ export const lcm = (...stack) => {
 export const lcmAll = (...stack) => [stack.reduceRight(_lcm)];
 
 export const createJSON = (...stack) => {
+  if (stack.length % 2 !== 0) {
+    throw new Error("Stack length must be even.");
+  }
   const obj = {};
-  while (stack.length) {
-    const key = stack.pop();
-    const value = stack.pop();
-    obj[key] = value;
+  for (let i = 0; i < stack.length; i += 2) {
+    obj[stack[i + 1]] = stack[i];
   }
   return [obj];
 };
 
 export const createMap = (...stack) => {
-  const obj = new Map();
-  while (stack.length) {
-    const key = stack.pop();
-    const value = stack.pop();
-    obj.set(key, value);
+  if (stack.length % 2 !== 0) {
+    throw new Error("Stack length must be even.");
   }
-  return [obj];
+  const obj = [];
+  for (let i = 0; i < stack.length; i += 2) {
+    obj.push([stack[i + 1], stack[i]]);
+  }
+  return [new Map(obj)];
+};
+
+export const keyFlip = (...stack) => {
+  return stack.map((items) => items.reverse());
 };
 
 export const createSet = (...stack) => {
-  const obj = new Set();
-  while (stack.length) {
-    const value = stack.pop();
-    obj.add(value);
-  }
-  return [obj];
+  return [new Set(stack)];
+};
+
+export const createArray = (...stack) => {
+  return [stack];
+};
+export const createArrayReversed = (...stack) => {
+  return [stack.reverse()];
 };
 
 export const readEnv = (...stack) => {

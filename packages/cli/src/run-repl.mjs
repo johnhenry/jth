@@ -86,14 +86,14 @@ const createRepl = (
   replServer.defineCommand("peek", {
     help: "View current stack",
     action() {
-      vm.runInContext(`console.log(...${STACK_NAME})`, context);
+      vm.runInContext(`view(...${STACK_NAME})`, context);
       this.displayPrompt();
     },
   });
   replServer.defineCommand("count", {
-    help: "View current stack",
+    help: "View current size of stack",
     action() {
-      vm.runInContext(`console.log(${STACK_NAME}.length)`, context);
+      vm.runInContext(`view(${STACK_NAME}.length)`, context);
       this.displayPrompt();
     },
   });

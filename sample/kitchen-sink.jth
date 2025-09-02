@@ -136,8 +136,8 @@
 "### collect items into array 'array' " @@;
 "[> 1 2 3 array(2) @@;" @@;
 1 2 3 array(2) @@;
-"[> 1 2 3 array() @@;" @@;
-1 2 3 array() @@;
+"[> 1 2 3 createArray @@;" @@;
+1 2 3 createArray @@;
 @@;
 
 "### Spread array onto stack with '...' or 'spread'" @@;
@@ -150,21 +150,21 @@
 [1 2 3 Π] @@;
 @@;
 
-"#### Execute array with '$' or 'execute' to produce a promise" @@;
+"#### Execute array 'execute' to produce a promise" @@;
+"[> [1 2 3 Π] execute @@;" @@;
+[1 2 3 Π] execute @@;
+"#### await promise with 'wait'" @@;
+"[> [1 2 3 Π] execute wait @@;" @@;
+[1 2 3 Π]  execute wait @@;
+"#### or use shorthand '$'" @@;
 "[> [1 2 3 Π] $ @@;" @@;
 [1 2 3 Π] $ @@;
-"#### await promise with '_' or 'wait'" @@;
-"[> [1 2 3 Π] $ _ @@;" @@;
-[1 2 3 Π]  $ _ @@;
+"#### spread awaited promise with '...' or 'spread'" @@;
+"[> [1 2 3 Π] execute wait ... @@;" @@;
+[1 2 3 Π]  execute wait ... @@;
 "#### or use shorthand '$$'" @@;
 "[> [1 2 3 Π] $$ @@;" @@;
-[1 2 3 Π] $$ @@;
-"#### spread awaited promise with '...' or 'wait'" @@;
-"[> [1 2 3 Π] $ _ ... @@;" @@;
-[1 2 3 Π]  $ _ ... @@;
-"#### or use shorthand '$$$'" @@;
-"[> [1 2 3 Π] $$$ @@;" @@;
-[1 2 3 Π]  $$$ @@;
+[1 2 3 Π]  $$ @@;
 @@;
 
 "### Place delayed functions via 'hold', 'pause' or collect and spread methods" @@;
@@ -242,7 +242,7 @@ hold(double) hold(plusone) compose ::: [doubleThenPlusone];
 5 -5 fromToInc @@;
 @@;
 
-"## Logic basic binary operators 'and/&&', 'or/||', and 'not/!' " @@;
+"## Logic basic binary operators 'and/&&', 'or/||', and 'not/~~' " @@;
 "[> false true and @@;" @@;
 false true and @@;
 "[> false false && @@;" @@;
@@ -253,8 +253,8 @@ false true or @@;
 true true || @@;
 "[> false not @@;" @@;
 false not @@;
-"[> true ! @@;" @@;
-true ! @@;
+"[> true ~ @@;" @@;
+true ~ @@;
 
 "## Logic -- variadic operators '&&&', '|||' " @@;
 "[> true false true true true true &&& @@;" @@;
@@ -337,20 +337,29 @@ true false true false false ||| @@;
 "[> key @@;" @@;
 key @@;
 
-"## Create Objects" @@;
+"## Create JSON" @@;
 "[> 1 'one' 2 'two' createJSON @@;" @@;
 1 'one' 2 'two' createJSON @@;
-"[> 1 2 3 array() 'array' 2 'two' 1 'one' createJSON 'all' createJSON @@;" @@;
-1 2 3 array() 'array' 2 'two' 1 'one' createJSON 'all' createJSON @@;
-"[> 1 2 3 array() 'array' 2 'two' 1 'one' createJSON 'all' createMap @@;" @@;
-1 2 3 array() 'array' 2 'two' 1 'one' createJSON 'all' createMap @@;
+"[> 1 2 3 createArray 'array' 2 'two' 1 'one' createJSON 'all' createJSON @@;" @@;
+1 2 3 createArray 'array' 2 'two' 1 'one' createJSON 'all' createJSON @@;
+"[> 1 2 3 createArray 'array' 2 'two' 1 'one' createJSON 'all' createMap @@;" @@;
+1 2 3 createArray 'array' 2 'two' 1 'one' createJSON 'all' createMap @@;
+
+"## Create Set" @@;
 "[> 1 2 3 4 5 createSet @@;" @@;
 1 2 3 4 5 createSet @@;
 
 
+"## Create Map" @@;
+"[> 1 2 3 4 5 6 createMap @@;" @@;
+1 2 3 4 5 6 createMap @@;
+
+"## Revive From Map" @@;
+"[> 1 2 3 4 5 6 createMap ... keyFlip flatten @@;" @@;
+1 2 3 4 5 6 createMap ... keyFlip flatten @@;
 
 // "gpt-3.5" "model" "OPEN_AI_API_KEY" readenv "key" createModel ::: [model]
 // "tell me a joke about {topic}" createPrompt ::: [prompt]
 // "bears" "topic" prompt model parse @;
 // "weather" "topic" prompt model parse @;
-// "bears" "topic" createObject prompt model parse @;
+// "bears" "topic" createJSON prompt model parse @;

@@ -10,6 +10,10 @@ export const not = (...stack) => {
   return [...stack, item];
 };
 
+export const notAll = (...stack) => {
+  return stack.map((item) => !item);
+};
+
 ////////////////
 // Experimental
 ////////////////

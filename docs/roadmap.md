@@ -36,3 +36,17 @@ const __FUNCTION__ = (sym, popped, body) => {
   };
 };
 ```
+
+## Transition to stack data structure
+
+Currently the "stack" is an array.
+Perhaps a linked list or [perhaps not](https://stackoverflow.com/a/25922596/1290781) would be better?
+This means that we'll have to drop some things like counts and peeks,
+but this should overall improve performance
+
+## Loops
+
+Currently looking into using [folds and bends](https://github.com/HigherOrderCO/bend/blob/main/GUIDE.md#folds-and-bends)
+rather than loops.
+
+<else> else <elseif> elseif <if> <condition> if

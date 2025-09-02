@@ -28,7 +28,15 @@ export const forbidden =
     return noop(...args);
   };
 
+export const exhaustIterator = applyLastN(1)((a) => {
+  return a[Symbol.iterator]
+    ? [[...a]]
+    : typeof a === object && a !== null
+    ? [[Object.entries(a)]]
+    : [a];
+});
 export const spread = applyLastN(1)((a) => a);
+
 export const drop = attackStack(
   (n) =>
     (...stack) => {
@@ -184,7 +192,6 @@ export const minus = attackStack(
   (n) => collapseBinary(n, (a, b) => [a - b]),
   2
 );
-2 ** (2 ** 2);
 
 export const times = attackStack(
   (n) => collapseBinary(n, (a, b) => [a * b]),

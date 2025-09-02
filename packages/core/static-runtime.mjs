@@ -296,6 +296,10 @@
     return [...stack, item];
   };
 
+  const notAll = (...stack) => {
+    return stack.map((item) => !item);
+  };
+
   ////////////////
   // Experimental
   ////////////////
@@ -565,32 +569,40 @@
   const lcmAll = (...stack) => [stack.reduceRight(_lcm)];
 
   const createJSON = (...stack) => {
+    if (stack.length % 2 !== 0) {
+      throw new Error("Stack length must be even.");
+    }
     const obj = {};
-    while (stack.length) {
-      const key = stack.pop();
-      const value = stack.pop();
-      obj[key] = value;
+    for (let i = 0; i < stack.length; i += 2) {
+      obj[stack[i + 1]] = stack[i];
     }
     return [obj];
   };
 
   const createMap = (...stack) => {
-    const obj = new Map();
-    while (stack.length) {
-      const key = stack.pop();
-      const value = stack.pop();
-      obj.set(key, value);
+    if (stack.length % 2 !== 0) {
+      throw new Error("Stack length must be even.");
     }
-    return [obj];
+    const obj = [];
+    for (let i = 0; i < stack.length; i += 2) {
+      obj.push([stack[i + 1], stack[i]]);
+    }
+    return [new Map(obj)];
+  };
+
+  const keyFlip = (...stack) => {
+    return stack.map((items) => items.reverse());
   };
 
   const createSet = (...stack) => {
-    const obj = new Set();
-    while (stack.length) {
-      const value = stack.pop();
-      obj.add(value);
-    }
-    return [obj];
+    return [new Set(stack)];
+  };
+
+  const createArray = (...stack) => {
+    return [stack];
+  };
+  const createArrayReversed = (...stack) => {
+    return [stack.reverse()];
   };
 
   const readEnv = (...stack) => {
@@ -653,7 +665,15 @@
       return noop(...args);
     };
 
+  const exhaustIterator = applyLastN(1)((a) => {
+    return a[Symbol.iterator]
+      ? [[...a]]
+      : typeof a === object && a !== null
+      ? [[Object.entries(a)]]
+      : [a];
+  });
   const spread = applyLastN(1)((a) => a);
+
   const drop = attackStack(
     (n) =>
       (...stack) => {
@@ -1008,9 +1028,10 @@
   setObj({
     "||": or,
     "&&": and,
+    "~~": not,
     "|||": orAll,
     "&&&": andAll,
-    "!": not,
+    "~~~": notAll,
     "|": bitwiseOr,
     "&": bitwiseAnd,
     "~": bitwiseNot,
@@ -1030,12 +1051,12 @@
     "==": coercedEqual,
     "++": inc,
     "--": dec,
+    "..": exhaustIterator,
     "...": spread,
     abs: abs,
     "|𝑥|": abs,
-    $: execute,
-    $$: executeWait,
-    $$$: executeWaitSpread,
+    $: executeWait,
+    $$: executeWaitSpread,
     "<": gt,
     "<=": gte,
     ">": lt,
@@ -1758,6 +1779,7 @@
     or: or,
     orAll: orAll,
     not: not,
+    notAll: notAll,
     when: when,
     dropWhen: dropWhen,
     whenever: whenever,
@@ -1788,7 +1810,10 @@
     lcmAll: lcmAll,
     createJSON: createJSON,
     createMap: createMap,
+    keyFlip: keyFlip,
     createSet: createSet,
+    createArray: createArray,
+    createArrayReversed: createArrayReversed,
     readEnv: readEnv,
     bitwiseAnd: bitwiseAnd,
     bitwiseOr: bitwiseOr,
@@ -1799,6 +1824,7 @@
     rightShiftZeroFill: rightShiftZeroFill,
     clear: clear$1,
     forbidden: forbidden,
+    exhaustIterator: exhaustIterator,
     spread: spread,
     drop: drop,
     keepN: keepN,
