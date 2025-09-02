@@ -6,6 +6,11 @@ export * from "./async/index.mjs";
 export * from "./logic/index.mjs";
 export * from "./stat/index.mjs";
 export * from "./unsorted/index.mjs";
+export * from "./array/index.mjs";
+export * from "./sequences/index.mjs";
+export * from "./range/index.mjs";
+export * from "./dict/index.mjs";
+export * from "./iterator/index.mjs";
 
 import { wait } from "./async/index.mjs";
 

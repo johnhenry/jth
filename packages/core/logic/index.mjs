@@ -5,6 +5,14 @@ export const andAll = (...stack) => [stack.reduceRight((a, b) => a && b, true)];
 export const or = attackStack((n) => collapseBinary(n, (a, b) => [a || b]), 2);
 export const orAll = (...stack) => [stack.reduceRight((a, b) => a || b)];
 
+// Additional logical operations
+export const xor = attackStack((n) => collapseBinary(n, (a, b) => [!!(a ^ b)]), 2);
+export const xorAll = (...stack) => [stack.reduceRight((a, b) => !!(a ^ b), false)];
+export const nand = attackStack((n) => collapseBinary(n, (a, b) => [!(a && b)]), 2);
+export const nandAll = (...stack) => [!stack.reduceRight((a, b) => a && b, true)];
+export const nor = attackStack((n) => collapseBinary(n, (a, b) => [!(a || b)]), 2);
+export const norAll = (...stack) => [!stack.reduceRight((a, b) => a || b, false)];
+
 export const not = (...stack) => {
   const item = !stack.pop();
   return [...stack, item];

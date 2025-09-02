@@ -1,6 +1,6 @@
 # The Big List of built in-functions
 
-Like most stack-oritented languages, jth has a large number of built-in functions.
+Like most stack-oriented languages, jth has a large number of built-in functions.
 
 ## Homosynchronic functions
 
@@ -21,7 +21,7 @@ until it is revisited via some mechanism such as **rewindN**
 1 3 pause(*);
 ```
 
-equavalent to
+equivalent to
 
 ```jth
 1 3 delayN(1)(*);
@@ -74,7 +74,7 @@ aliases:
 
 ### noop (alt: ∅)
 
-Does noting to stack
+Does nothing to stack
 
 ### peek (alt: @)
 
@@ -118,11 +118,11 @@ Negates last item on stack
 
 ### equal (alt: =)
 
-Test if last to items on stack are equal
+Test if last two items on stack are equal
 
 ### coercedEqual (alt: ==)
 
-Test if last to items on stack are equal (coerces)
+Test if last two items on stack are equal (coerces)
 
 ### lt (alt: >)
 
@@ -144,7 +144,7 @@ Test if last item is greater than or equal to penultimate
 
 Compares last two items on stack and returns -1, 0, or 1
 
-## Basic
+## Stack Manipulation
 
 ### swap
 
@@ -244,7 +244,7 @@ Replaces last two items with quotient
 
 ```jth
 6 3 /;
-// results in 0.5
+// results in 2
 ```
 
 ### exp (alt: \*\*)
@@ -276,8 +276,8 @@ Replaces last two items with pentration result
 
 ## Array
 
-These functions operate on Arrays and other collectinons when
-they are the last or next-to-last item on the array.
+These functions operate on Arrays and other collections when
+they are the last or next-to-last item on the stack.
 
 ### push
 
@@ -330,9 +330,19 @@ Suppose last item is an array, set, or map and push it onto stack.
 
 Gets a value from a dictionary.
 
+```jth
+{ name: "jth", version: "0.2.0" } "name" get;
+// results in "jth"
+```
+
 ### set
 
 Sets a value in a dictionary.
+
+```jth
+"name" "jth" "version" "0.2.0" 2 set;
+// results in { name: "jth", version: "0.2.0" }
+```
 
 ## Iterator
 
@@ -534,12 +544,12 @@ Executes a function, waits for it to resolve, and spreads the result onto the st
 | @                    | peek         | View top item of stack                        |
 | @@                   | peekAll      | View entire stack                             |
 | +                    | plus         | Add last two numbers on stack                 |
-| -                    | minus        | Subtract last two numbers on stack            |
-| \*                   | times        | Multiply last two numbers on stack            |
+| -                    | subtract     | Subtract last two numbers on stack            |
+| \*                   | multiply     | Multiply last two numbers on stack            |
 | /                    | divide       | Divide last two numbers on stack              |
 | \*\*                 | exp          | Raise [-1] to power of [-2]                   |
-| =                    | equal        | Test if last two numbers are equal            |
-| ==                   | coercedEqual | Test if last two numbers are equal (coerced)  |
+| =                    | equal        | Test if last two items are equal              |
+| ==                   | coercedEqual | Test if last two items are equal (coerced)    |
 | ++                   | inc          | Previous number +1                            |
 | --                   | dec          | Previous number -1                            |
 | ...                  | spread       | Expand iterator into stack                    |

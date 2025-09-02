@@ -9,52 +9,52 @@ import {
 import { fibonacci } from '../sequences/index.mjs';
 
 describe('JSON Operations', () => {
-  test('should create JSON from key-value pairs', () => {
-    const result = createJSON('name', 'jth', 'version', '0.2.0', 2);
-    const parsed = JSON.parse(result[0]);
-    assert.equal(parsed.name, 'jth');
-    assert.equal(parsed.version, '0.2.0');
+  test('should create JSON object from key-value pairs', () => {
+    const result = createJSON('jth', 'name', '0.2.0', 'version');
+    assert.equal(result.length, 1);
+    assert.equal(result[0].name, 'jth');
+    assert.equal(result[0].version, '0.2.0');
   });
 
   test('should handle single key-value pair', () => {
-    const result = createJSON('key', 'value', 1);
-    const parsed = JSON.parse(result[0]);
-    assert.equal(parsed.key, 'value');
+    const result = createJSON('value', 'key');
+    assert.equal(result.length, 1);
+    assert.equal(result[0].key, 'value');
   });
 
   test('should handle numbers and booleans', () => {
-    const result = createJSON('count', 42, 'active', true, 2);
-    const parsed = JSON.parse(result[0]);
-    assert.equal(parsed.count, 42);
-    assert.equal(parsed.active, true);
+    const result = createJSON(42, 'count', true, 'active');
+    assert.equal(result.length, 1);
+    assert.equal(result[0].count, 42);
+    assert.equal(result[0].active, true);
   });
 
   test('should handle nested objects', () => {
     const nested = { inner: 'value' };
-    const result = createJSON('outer', nested, 1);
-    const parsed = JSON.parse(result[0]);
-    assert.deepEqual(parsed.outer, { inner: 'value' });
+    const result = createJSON(nested, 'outer');
+    assert.equal(result.length, 1);
+    assert.deepEqual(result[0].outer, { inner: 'value' });
   });
 
-  test('should preserve other stack items', () => {
-    const result = createJSON('extra', 'item', 'key', 'value', 1);
-    assert.equal(result.length, 2);
-    assert.equal(result[0], 'extra');
-    const parsed = JSON.parse(result[1]);
-    assert.equal(parsed.key, 'value');
+  test('should handle multiple pairs', () => {
+    const result = createJSON('v1', 'k1', 'v2', 'k2', 'v3', 'k3');
+    assert.equal(result.length, 1);
+    assert.equal(result[0].k1, 'v1');
+    assert.equal(result[0].k2, 'v2');
+    assert.equal(result[0].k3, 'v3');
   });
 });
 
 describe('Map Operations', () => {
   test('should create Map from key-value pairs', () => {
-    const result = createMap('key1', 'value1', 'key2', 'value2', 2);
+    const result = createMap('value1', 'key1', 'value2', 'key2');
     assert.ok(result[0] instanceof Map);
     assert.equal(result[0].get('key1'), 'value1');
     assert.equal(result[0].get('key2'), 'value2');
   });
 
   test('should handle single entry', () => {
-    const result = createMap('key', 'value', 1);
+    const result = createMap('value', 'key');
     assert.ok(result[0] instanceof Map);
     assert.equal(result[0].size, 1);
     assert.equal(result[0].get('key'), 'value');
@@ -62,17 +62,19 @@ describe('Map Operations', () => {
 
   test('should handle various data types as keys', () => {
     const obj = { id: 1 };
-    const result = createMap(obj, 'object-key', 42, 'number-key', 2);
+    const result = createMap('object-value', obj, 'number-value', 42);
     assert.ok(result[0] instanceof Map);
-    assert.equal(result[0].get(obj), 'object-key');
-    assert.equal(result[0].get(42), 'number-key');
+    assert.equal(result[0].get(obj), 'object-value');
+    assert.equal(result[0].get(42), 'number-value');
   });
 
-  test('should preserve other stack items', () => {
-    const result = createMap('extra', 'key', 'value', 1);
-    assert.equal(result.length, 2);
-    assert.equal(result[0], 'extra');
-    assert.ok(result[1] instanceof Map);
+  test('should handle multiple pairs', () => {
+    const result = createMap('v1', 'k1', 'v2', 'k2', 'v3', 'k3');
+    assert.ok(result[0] instanceof Map);
+    assert.equal(result[0].size, 3);
+    assert.equal(result[0].get('k1'), 'v1');
+    assert.equal(result[0].get('k2'), 'v2');
+    assert.equal(result[0].get('k3'), 'v3');
   });
 });
 

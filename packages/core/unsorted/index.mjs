@@ -15,6 +15,18 @@ export const abs = (...stack) => {
   return [...stack, item];
 };
 
+// Math functions
+export const sqrt = applyLastN(1)((a) => [Math.sqrt(a)]);
+export const floor = applyLastN(1)((a) => [Math.floor(a)]);
+export const ceil = applyLastN(1)((a) => [Math.ceil(a)]);
+export const round = applyLastN(1)((a) => [Math.round(a)]);
+export const log = applyLastN(1)((a) => [Math.log(a)]);
+export const log10 = applyLastN(1)((a) => [Math.log10(a)]);
+export const log2 = applyLastN(1)((a) => [Math.log2(a)]);
+export const sin = applyLastN(1)((a) => [Math.sin(a)]);
+export const cos = applyLastN(1)((a) => [Math.cos(a)]);
+export const tan = applyLastN(1)((a) => [Math.tan(a)]);
+
 const _gcd = (A, B) => {
   let a = A,
     b = B;
