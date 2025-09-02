@@ -144,6 +144,45 @@ Test if last item is greater than or equal to penultimate
 
 Compares last two items on stack and returns -1, 0, or 1
 
+### xor
+
+Performs exclusive OR on the last two items.
+
+```jth
+true false xor;
+// results in true
+```
+
+### xorAll
+
+Performs exclusive OR on all items on the stack.
+
+### nand
+
+Performs NAND (NOT AND) on the last two items.
+
+```jth
+true true nand;
+// results in false
+```
+
+### nandAll
+
+Performs NAND on all items on the stack.
+
+### nor
+
+Performs NOR (NOT OR) on the last two items.
+
+```jth
+false false nor;
+// results in true
+```
+
+### norAll
+
+Performs NOR on all items on the stack.
+
 ## Stack Manipulation
 
 ### swap
@@ -281,7 +320,48 @@ they are the last or next-to-last item on the stack.
 
 ### push
 
-Push last item on stack into penultimate if it's an array, set, or map
+Push last item on stack into penultimate if it's an array.
+
+```jth
+[1 2 3] 4 push;
+// results in [1, 2, 3, 4]
+```
+
+### pop
+
+Pop last item from array and put it on stack.
+
+```jth
+[1 2 3 4] pop;
+// results in [1, 2, 3] 4
+```
+
+### shift
+
+Remove first item from array and put it on stack.
+
+```jth
+[1 2 3 4] shift;
+// results in 1 [2, 3, 4]
+```
+
+### unshift
+
+Add item to beginning of array.
+
+```jth
+[2 3 4] 1 unshift;
+// results in [1, 2, 3, 4]
+```
+
+### flatten
+
+Flatten a nested array by one level.
+
+```jth
+[[1 2] [3 4]] flatten;
+// results in [1, 2, 3, 4]
+```
 
 ```
 [1 2] 3 push;
@@ -482,6 +562,98 @@ Calculates the least common multiple of the last two items on the stack.
 ### lcmAll
 
 Calculates the least common multiple of all items on the stack.
+
+## Math Functions (Extended)
+
+### sqrt
+
+Returns the square root of the last item on the stack.
+
+```jth
+9 sqrt;
+// results in 3
+```
+
+### floor
+
+Rounds down to the nearest integer.
+
+```jth
+3.7 floor;
+// results in 3
+```
+
+### ceil
+
+Rounds up to the nearest integer.
+
+```jth
+3.2 ceil;
+// results in 4
+```
+
+### round
+
+Rounds to the nearest integer.
+
+```jth
+3.5 round;
+// results in 4
+```
+
+### log
+
+Returns the natural logarithm (base e).
+
+```jth
+2.718281828 log;
+// results in ~1
+```
+
+### log10
+
+Returns the base-10 logarithm.
+
+```jth
+100 log10;
+// results in 2
+```
+
+### log2
+
+Returns the base-2 logarithm.
+
+```jth
+8 log2;
+// results in 3
+```
+
+### sin
+
+Returns the sine of the angle (in radians).
+
+```jth
+1.5708 sin;  // π/2 radians
+// results in ~1
+```
+
+### cos
+
+Returns the cosine of the angle (in radians).
+
+```jth
+3.14159 cos;  // π radians
+// results in ~-1
+```
+
+### tan
+
+Returns the tangent of the angle (in radians).
+
+```jth
+0.7854 tan;  // π/4 radians
+// results in ~1
+```
 
 ## Data Types
 

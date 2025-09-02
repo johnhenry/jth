@@ -106,3 +106,14 @@ export const readEnv = (...stack) => {
     typeof Deno !== "undefined" ? Deno.env.get(key) : process.env[key],
   ];
 };
+
+// String operations
+export const split = (delimiter = " ") => applyLastN(1)((str) => str.split(delimiter));
+export const toLowerCase = applyLastN(1)((str) => [str.toLowerCase()]);
+export const toUpperCase = applyLastN(1)((str) => [str.toUpperCase()]);
+export const trim = applyLastN(1)((str) => [str.trim()]);
+export const trimStart = applyLastN(1)((str) => [str.trimStart()]);
+export const trimEnd = applyLastN(1)((str) => [str.trimEnd()]);
+export const startsWith = applyLastN(2)((str, prefix) => [str.startsWith(prefix)]);
+export const endsWith = applyLastN(2)((str, suffix) => [str.endsWith(suffix)]);
+export const substring = (start, end) => applyLastN(1)((str) => [str.substring(start, end)]);

@@ -410,6 +410,20 @@ export const sum = (...stack) => [stack.reduceRight((a, b) => a + b, 0)];
 export const product = (...stack) => [stack.reduceRight((a, b) => a * b, 1)];
 
 /**
+ * @description Find minimum value in the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
+export const min = (...stack) => [Math.min(...stack)];
+
+/**
+ * @description Find maximum value in the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
+export const max = (...stack) => [Math.max(...stack)];
+
+/**
  * @description Map a function over the stack
  * @param {any} stack
  * @returns {any[]}

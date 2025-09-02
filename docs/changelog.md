@@ -2,9 +2,33 @@
 
 ⚠️WARNING⚠️ Breaking Changes
 
-## 0.2.0 - Internal Affairs
+## 0.2.0 - Internal Affairs (Latest Updates)
 
-### Core Language Changes
+### Recent Updates (September 2025)
+
+#### Test Suite Completion
+- Created comprehensive test suite with 139 tests using node:test
+- Achieved 100% test pass rate
+- Added tests for all major functionality areas
+
+#### Documentation Improvements
+- Fixed 10+ typos and inconsistencies in documentation
+- Added documentation for 25+ previously undocumented functions
+- Updated operator aliases for consistency (minus→subtract, times→multiply)
+- Added comprehensive examples for all major functions
+- Fixed section headers and organization
+
+#### New Functions Added
+- **Math functions**: `min`, `max`, `sqrt`, `floor`, `ceil`, `round`, `log`, `log10`, `log2`, `sin`, `cos`, `tan`
+- **Logic functions**: `xor`, `xorAll`, `nand`, `nandAll`, `nor`, `norAll`
+- **String operations**: `split`, `toLowerCase`, `toUpperCase`, `trim`, `trimStart`, `trimEnd`, `startsWith`, `endsWith`, `substring`
+- **Array operations**: Properly documented `push`, `pop`, `shift`, `unshift`, `flatten`
+
+#### Module Exports Fixed
+- Exported previously missing modules: `array`, `sequences`, `range`, `dict`, `iterator`
+- All core functionality now properly accessible
+
+### Core Language Changes (Original 0.2.0)
 - Paradigm shift -- eager execution of functions by default
   - `!` is no longer used to execute functions
   - Functions now must be intentionally delayed using special higher-order functions
