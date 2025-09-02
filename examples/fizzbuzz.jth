@@ -1,0 +1,45 @@
+// FizzBuzz - Classic programming challenge;
+
+// FizzBuzz for numbers 1 to 20;
+1 20 fromToInc (n => {
+  if (n % 15 === 0) return "FizzBuzz";
+  if (n % 3 === 0) return "Fizz";
+  if (n % 5 === 0) return "Buzz";
+  return n;
+}) map ::: result;
+
+"FizzBuzz from 1 to 20:" @;
+result @;
+
+// Alternative: Using stack operations;
+clear;
+
+// Define FizzBuzz checker;
+(n => n % 15 === 0) ::: isFizzBuzz;
+(n => n % 3 === 0) ::: isFizz;
+(n => n % 5 === 0) ::: isBuzz;
+
+// Process a single number;
+15 dupe dupe dupe 
+isFizzBuzz ["FizzBuzz"] 
+[dupe isFizz ["Fizz"] 
+[dupe isBuzz ["Buzz"] 
+[]] !_ ...] !_ ...] !_ ... @;
+
+// Clean approach with custom function;
+clear;
+
+// Create a more elegant FizzBuzz function;
+((n, ...stack) => {
+  const result = [];
+  for (let i = 1; i <= n; i++) {
+    if (i % 15 === 0) result.push("FizzBuzz");
+    else if (i % 3 === 0) result.push("Fizz");
+    else if (i % 5 === 0) result.push("Buzz");
+    else result.push(i);
+  }
+  return [...stack, ...result];
+}) ::: fizzBuzzTo;
+
+"FizzBuzz to 15 (spread on stack):" @;
+15 fizzBuzzTo @@;

@@ -1,0 +1,24 @@
+// Hello World - The simplest jth program;
+
+// Basic output;
+"Hello, World!" @;
+
+// Using string concatenation;
+"Hello, " "World!" strcat @;
+
+// Multiple values on the stack;
+"Hello" "from" "jth!" @@@;
+
+// Using variables;
+"Hello, World!" ::: greeting;
+greeting @;
+
+// Using arrays;
+["Hello" "World"] ... strseq @;
+
+// Using functions;
+(name => `Hello, ${name}!`) ::: greet;
+"jth" greet @;
+
+// All together now;
+clear "Welcome" "to" "jth" "programming!" @@@@;

@@ -1,0 +1,37 @@
+// Fibonacci Sequence Generator;
+
+// Generate first 10 Fibonacci numbers;
+0 1 ::: [a b];
+
+// Generate next 8 numbers;
+a b fibonacci fibonacci fibonacci fibonacci 
+fibonacci fibonacci fibonacci fibonacci ::: [...rest];
+
+// Collect all 10 numbers;
+a b rest ... ::: [...fibSequence];
+
+// Display the sequence;
+"First 10 Fibonacci numbers:" @;
+fibSequence @;
+
+// Alternative: Generate nth Fibonacci number;
+clear;
+
+// Function to get nth Fibonacci (using JavaScript);
+(n => {
+  if (n <= 1) return n;
+  let a = 0, b = 1;
+  for (let i = 2; i <= n; i++) {
+    [a, b] = [b, a + b];
+  }
+  return b;
+}) ::: getNthFib;
+
+// Get the 20th Fibonacci number;
+"20th Fibonacci number:" @;
+20 getNthFib @;
+
+// Generate a range of Fibonacci numbers;
+clear;
+"Fibonacci numbers from position 5 to 10:" @;
+5 10 fromToInc (getNthFib) map @;

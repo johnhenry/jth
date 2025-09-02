@@ -1,7 +1,7 @@
 {
   "name": "jth-core",
   "version": "0.2.0",
-  "description": "jth is an alternative syntax for javascript centerered around squential data processing.",
+  "description": "jth is an alternative syntax for javascript centered around sequential data processing.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnhenry/jth.git"
@@ -20,6 +20,7 @@
   },
   "scripts": {
     "test": "node --test test/*.test.mjs",
+    "test:watch": "node --test --watch test/*.test.mjs",
     "test:all": "node test/run-all.mjs",
     "test:core": "node --test test/core.test.mjs",
     "test:math": "node --test test/math.test.mjs",
@@ -39,7 +40,22 @@
     "pop-quiz": "^0.0.5",
     "rollup": "^2.79.0"
   },
-  "keywords": [],
+  "keywords": [
+    "jth",
+    "stack-oriented",
+    "concatenative",
+    "functional",
+    "programming-language",
+    "data-processing",
+    "javascript",
+    "compiler",
+    "stack-based",
+    "forth-like"
+  ],
+  "homepage": "https://github.com/johnhenry/jth#readme",
+  "bugs": {
+    "url": "https://github.com/johnhenry/jth/issues"
+  },
   "author": "John Henry",
   "license": "ISC"
 }

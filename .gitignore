@@ -1,2 +1,40 @@
+# OS Files
 .DS_Store
+Thumbs.db
+
+# Dependencies
 node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+out/
+*.min.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Temporary files
+tmp/
+temp/
+.tmp/
