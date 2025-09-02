@@ -1,0 +1,10 @@
+// Create an array and turn it into an iterator
+[1 2 3] iter;
+
+// Get the next value from the iterator
+next;
+// returns the iterator and 1
+
+// Drain 2 values from the iterator
+2 drain;
+// returns the iterator and 2 3

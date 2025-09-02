@@ -58,9 +58,7 @@ aliases:
 
 ### skipN
 
-**skipN** instructs processor to
-
-(Note, this only works when adding items to)
+**skipN** instructs processor to skip the next `n` items.
 
 aliases:
 
@@ -328,73 +326,111 @@ Suppose last item is an array, set, or map and push it onto stack.
 
 ## Dict
 
-### getString
-
-### getList
-
-### getAll
-
 ### get
 
+Gets a value from a dictionary.
+
 ### set
+
+Sets a value in a dictionary.
 
 ## Iterator
 
 ### next
 
+Gets the next value from an iterator.
+
 ### drain
+
+Drains `n` values from an iterator to the stack.
 
 ### iter
 
+Creates an iterator from an iterable.
+
 ## Range
-
-### numStack
-
-### numStack
 
 ### to
 
+Creates a range of numbers, excluding the start and end values.
+
 ### fromTo
+
+Creates a range of numbers, including the start value but excluding the end value.
 
 ### toInc
 
+Creates a range of numbers, excluding the start value but including the end value.
+
 ### fromToInc
 
-## Staticstcs
+Creates a range of numbers, including the start and end values.
+
+## Statistics
 
 ### mean
 
+Calculates the mean of the stack.
+
 ### median
+
+Calculates the median of the stack.
 
 ### mode
 
+Calculates the mode of the stack.
+
 ### modes
+
+Calculates the modes of the stack.
 
 ### populationVariance
 
+Calculates the population variance of the stack.
+
 ### sampleVariance
+
+Calculates the sample variance of the stack.
 
 ### populationStandardDeviation
 
+Calculates the population standard deviation of the stack.
+
 ### sampleStandardDeviation
+
+Calculates the sample standard deviation of the stack.
 
 ### percentile
 
+Calculates the percentile of the stack.
+
 ### fiveNumberSummary
 
+Calculates the five number summary of the stack.
+
 ### fiveNumberSummaryB
+
+Calculates the five number summary of the stack (version B).
 
 ## Utility Functions
 
 ### applyLastN
 
+Applies the last `n` items from the stack as arguments to a function.
+
 ### attackStack
 
+A helper for creating stack functions.
+
 ### binaryCollapse
+
+Collapses the stack by repeatedly applying a binary function.
 
 ## Misc
 
 ### Fibonacci
+
+Generates the next number in the fibonacci sequence.
 
 ## Operators
 

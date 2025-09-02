@@ -13,6 +13,13 @@ export const next = applyLastN(1)((obj) => {
   }
   return [obj, value];
 });
+
+/**
+ * @description Drain n values from an iterator to the stack
+ * @param {number} index
+ * @param {number} n
+ * @returns {function}
+ */
 export const drain = attackStack((index = 0, n = 1) => (...stack) => {
   const spare = [];
   for (let i = 0; i < index; i++) {
@@ -40,6 +47,12 @@ export const drain = attackStack((index = 0, n = 1) => (...stack) => {
   }
   return [obj];
 });
+
+/**
+ * @description Create an iterator from an iterable
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const iter = (...stack) => {
   const a = stack[stack.length - 1];
   if (typeof a[Symbol.iterator] === "function") {

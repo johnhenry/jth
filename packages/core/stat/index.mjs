@@ -1,8 +1,19 @@
 const sort = (...stack) => stack.sort();
 
+/**
+ * @description Calculate the mean of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const mean = (...stack) => {
   return [stack.reduceRight((a, b) => a + b, 0) / stack.length];
 };
+
+/**
+ * @description Calculate the median of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const median = (...stack) => {
   const values = sort(...stack);
   const half = Math.floor(values.length / 2);
@@ -12,6 +23,11 @@ export const median = (...stack) => {
   return [(values[half - 1] + values[half]) / 2];
 };
 
+/**
+ * @description Calculate the mode of the stack
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const mode = (...stack) => {
   const counts = new Map();
   let max = 0;
@@ -24,6 +40,12 @@ export const mode = (...stack) => {
   }
   return [[...counts].find(([, value]) => value === max)[0]];
 };
+
+/**
+ * @description Calculate the modes of the stack
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const modes = (...stack) => {
   const counts = new Map();
   let max = 0;
@@ -40,6 +62,11 @@ export const modes = (...stack) => {
   return [...result, result.length];
 };
 
+/**
+ * @description Calculate the population variance of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const populationVariance = (...stack) => {
   const n = stack.length;
   if (n < 1) {
@@ -50,6 +77,12 @@ export const populationVariance = (...stack) => {
     stack.map((x) => Math.pow(x - m, 2)).reduceRight((a, b) => a + b) / n,
   ];
 };
+
+/**
+ * @description Calculate the sample variance of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const sampleVariance = (...stack) => {
   const n = stack.length;
   if (n < 2) {
@@ -61,13 +94,29 @@ export const sampleVariance = (...stack) => {
   ];
 };
 
+/**
+ * @description Calculate the population standard deviation of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const populationStandardDeviation = (...stack) => {
   return [Math.sqrt(populationVariance(...stack)[0])];
 };
+
+/**
+ * @description Calculate the sample standard deviation of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const sampleStandardDeviation = (...stack) => {
   return [Math.sqrt(sampleVariance(...stack)[0])];
 };
 
+/**
+ * @description Calculate the percentile of the stack
+ * @param {number} d
+ * @returns {function}
+ */
 export const percentile =
   (d) =>
   (...stack) => {
@@ -81,6 +130,11 @@ export const percentile =
     }
   };
 
+/**
+ * @description Calculate the five number summary of the stack
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const fiveNumberSummary = (...stack) => {
   const values = sort(...stack);
   const [m] = mean(...stack);
@@ -90,6 +144,11 @@ export const fiveNumberSummary = (...stack) => {
   return [lower, q1, m, q3, upper];
 };
 
+/**
+ * @description Calculate the five number summary of the stack (version B)
+ * @param {any} stack
+ * @returns {number[]}
+ */
 export const fiveNumberSummaryB = (...stack) => {
   const values = sort(...stack);
   const [m] = mean(...stack);

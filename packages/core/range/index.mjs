@@ -23,7 +23,11 @@ const numProc = (nums, ascending, start, end) => {
   return nums;
 };
 
-// 5 8 to @!!; 6 7
+/**
+ * @description Create a range of numbers, excluding the start and end values.
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const to = (...stack) => {
   const { start, end, ascending, stack: nums } = numStack(...stack);
   return [
@@ -35,19 +39,32 @@ export const to = (...stack) => {
     ),
   ];
 };
-// 5 8 fromTo @!!; 5 6 7
+
+/**
+ * @description Create a range of numbers, including the start value but excluding the end value.
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const fromTo = (...stack) => {
   const { start, end, ascending, stack: nums } = numStack(...stack);
   return [...numProc(nums, ascending, start, ascending ? end - 1 : end + 1)];
 };
-// 5 8 toInc  @!!; 6 7 8
 
+/**
+ * @description Create a range of numbers, excluding the start value but including the end value.
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const toInc = (...stack) => {
   const { start, end, ascending, stack: nums } = numStack(...stack);
   return [...numProc(nums, ascending, ascending ? start + 1 : start - 1, end)];
 };
-// 5 8 fromToInc @!!; 5 6 7 8
 
+/**
+ * @description Create a range of numbers, including the start and end values.
+ * @param {any} stack
+ * @returns {any[]}
+ */
 export const fromToInc = (...stack) => {
   const { start, end, ascending, stack: nums } = numStack(...stack);
   return [...numProc(nums, ascending, start, end)];

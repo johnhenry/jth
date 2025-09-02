@@ -38,6 +38,12 @@ const getAll =
     return [...stack, object];
   };
 
+/**
+ * @description Get a value from a dictionary
+ * @param {string|string[]} key
+ * @param {boolean} bind
+ * @returns {function}
+ */
 export const get = (key, bind) => {
   if (key === undefined) {
     return getAll(bind);
@@ -49,6 +55,11 @@ export const get = (key, bind) => {
   }
 };
 
+/**
+ * @description Set a value in a dictionary
+ * @param {any} assingments
+ * @returns {function}
+ */
 export const set = (...assingments) => {
   const entries = [];
   while (assingments.length > 1) {

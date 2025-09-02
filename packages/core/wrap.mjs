@@ -1,6 +1,11 @@
 import { wrap } from "./process-n.mjs";
 export const noop = (...args) => args;
 
+/**
+ * @description Rewind the stack by n steps
+ * @param {number} n
+ * @returns {function}
+ * */
 export const rewindN =
   (n = 1) =>
   (f = noop) =>
@@ -9,21 +14,42 @@ export const rewindN =
 export const reset = rewindN(-1)();
 export const back = rewindN()();
 
+/**
+ * @description Limit the number of items a function can consume from the stack
+ * @param {number} n
+ * @returns {function}
+ * */
 export const limitN =
   (n = -1) =>
   (f = noop) =>
     wrap(f, { limit: n });
+
+/**
+ * @description Delay the execution of a function by n steps
+ * @param {number} n
+ * @returns {function}
+ * */
 export const delayN =
   (n = 1) =>
   (f = noop) =>
     wrap(f, { delay: n });
 export const pause = delayN();
 
+/**
+ * @description Persist a function on the stack for n steps
+ * @param {number} n
+ * @returns {function}
+ * */
 export const persistN =
   (n = Infinity) =>
   (f = noop) =>
     wrap(f, { persist: n });
 
+/**
+ * @description Skip the execution of a function for n steps
+ * @param {number} n
+ * @returns {function}
+ * */
 export const skipN =
   (n = 1) =>
   (f = noop) =>
