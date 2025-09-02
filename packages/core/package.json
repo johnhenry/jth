@@ -19,7 +19,13 @@
     "./runtime/extract-global": "./external/extract-global.mjs"
   },
   "scripts": {
-    "test": "node ./quiz.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:all": "node test/run-all.mjs",
+    "test:core": "node --test test/core.test.mjs",
+    "test:math": "node --test test/math.test.mjs",
+    "test:data": "node --test test/data-structures.test.mjs",
+    "test:stats": "node --test test/statistics.test.mjs",
+    "test:new": "node --test test/new-features.test.mjs",
     "link": "exit 0",
     "unlink": "exit 0",
     "build-static-runtime": "rollup ./runtime.mjs -o ./static-runtime.mjs -f iife",
