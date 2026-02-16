@@ -1,52 +1,58 @@
-# Roadmap
+# jth Roadmap
 
-## In-line Functions
+## 0.3.0 (current)
 
-Currently functions are either defined in javascript and imported OR via compositon.
+### Syntax swap: blocks and objects
+- [x] `#[ ]` for blocks, `{ }` for objects
+- [x] Import bindings keep `{ }` to mirror JS destructuring
+- [x] Updated all examples, tests, and documentation
 
-I would like to define them in-line via jth.
+### `elseif` / `else` chaining
+- [ ] Add `elseif` operator for chained conditionals
+- [ ] Add `else` as sugar for the false-branch of `if`
+- [ ] Current pattern requires deeply nested blocks:
+  ```jth
+  #[ ... ] swap #[ ... ] swap if
+  ```
+  Goal: support a flatter syntax like:
+  ```jth
+  #[ "fizzbuzz" ] 15 % 0 = if
+  #[ "fizz" ] 3 % 0 = elseif
+  #[ "buzz" ] 5 % 0 = elseif
+  #[ n ] else
+  ```
 
-Consider the following syntax:
+### `map` / `filter` / `reduce` as first-class operators
+- [ ] `map` — apply a block to each element of an array, return new array
+- [ ] `filter` — keep elements where block returns truthy
+- [ ] `reduce` / `fold` — accumulate over an array with a block and initial value
+- [ ] Ensure consistent semantics: block receives element on a fresh stack, result is collected
 
-```javascript
-(*){* *} => [dupe$];
-(X){X ((a,b=1)=>{a*b}) fold$!!} => [product$];
-dupe!product => [square$];
-(*1){* *0 1 fromToInc$!{2} product!{*0}} => [factorial$];
-```
+### Folds and bends
+- [ ] Investigate fold/bend patterns inspired by [HVM/Bend](https://github.com/HigherOrderCO/bend/blob/main/GUIDE.md#folds-and-bends)
+- [ ] `fold` — structural recursion over data (catamorphism)
+- [ ] `bend` — structural corecursion / unfold (anamorphism)
+- [ ] Determine how these map to jth's stack model:
+  - Fold: consume a structure element-by-element, accumulating on the stack
+  - Bend: produce a structure by repeatedly applying a block until a condition is met
+- [ ] Consider whether folds/bends replace or complement `times` and `reduce`
 
-That might work with the following code to define an inline function
+## Future
 
-```javascript
-const matchSym = /^\(\s*(?<symbol>[\S^d])(?<popped>\d*)\s*\){(?<body>.*)}$/;
+### Performance
+- Evaluate alternative stack representations (linked list vs array)
+- Benchmark common patterns and optimize hot paths
 
-const { symbol, size, body } = matchSym.exec(sym).groups;
-const __FUNCTION__ = (sym, popped, body) => {
-  const size = Number(popped);
-  return (stack) => {
-    const args = [];
-    for (let i = 0; i < size; i++) {
-      args.push(stack.pop());
-    }
-    for (let i = args.length - 1; i >= 0; i--) {
-      body = body.replaceAll(`${symbol}${i}`, args[i]);
-    }
-    body = body.replaceAll(`${symbol}`, `${args.join(" ")}`);
-    return "...?";
-  };
-};
-```
+### Module system
+- Support for package-level imports (npm/jsr packages)
+- Namespace operator resolution
 
-## Transition to stack data structure
+### Tooling
+- Language server / editor support
+- Source maps for compiled output
+- REPL improvements (tab completion, history)
 
-Currently the "stack" is an array.
-Perhaps a linked list or [perhaps not](https://stackoverflow.com/a/25922596/1290781) would be better?
-This means that we'll have to drop some things like counts and peeks,
-but this should overall improve performance
-
-## Loops
-
-Currently looking into using [folds and bends](https://github.com/HigherOrderCO/bend/blob/main/GUIDE.md#folds-and-bends)
-rather than loops.
-
-<else> else <elseif> elseif <if> <condition> if
+### Language features
+- Pattern matching on stack values
+- Typed operator signatures
+- Tail-call optimization for recursive blocks

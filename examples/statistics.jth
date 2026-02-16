@@ -1,11 +1,44 @@
-// Calculate the mean of a list of numbers
-1 2 3 4 5 mean;
-// returns 3
+// Statistics operators
+//
+// mean, median, mode, and modes are variadic —
+// they consume ALL values on the stack.
+// Each demonstration starts with a fresh set of values.
 
-// Calculate the median of a list of numbers
-1 2 3 4 5 median;
-// returns 3
+// Mean (average)
+2 4 4 4 5 5 7 9;
+mean @;              // 5
+drop;
 
-// Calculate the mode of a list of numbers
-1 1 2 3 4 5 mode;
-// returns 1
+// Median (middle value)
+2 4 4 4 5 5 7 9;
+median @;            // 4.5
+drop;
+
+// Mode (most frequent value)
+2 4 4 4 5 5 7 9;
+mode @;              // 4
+drop;
+
+// All modes
+2 4 4 4 5 5 7 9;
+modes @;             // [4]
+drop;
+
+// Sum with Σ (variadic — consumes all)
+1 2 3 4 5;
+Σ @;                 // 15
+drop;
+
+// Product with Π (variadic — consumes all)
+2 3 4;
+Π @;                 // 24
+drop;
+
+// Min and max (also variadic)
+3 1 4 1 5 9 2 6;
+min @;               // 1
+drop;
+
+3 1 4 1 5 9 2 6;
+max @;               // 9
+drop;

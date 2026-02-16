@@ -1,0 +1,13 @@
+{
+  "name": "jth-types",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./tokens": "./src/tokens.mjs",
+    "./ast": "./src/ast.mjs",
+    "./errors": "./src/errors.mjs",
+    "./interfaces": "./src/interfaces.mjs"
+  }
+}

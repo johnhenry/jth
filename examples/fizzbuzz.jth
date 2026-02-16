@@ -1,45 +1,42 @@
-// FizzBuzz - Classic programming challenge;
+// FizzBuzz in jth
+//
+// For numbers 1 to 100:
+//   - divisible by 15: print "FizzBuzz"
+//   - divisible by 3:  print "Fizz"
+//   - divisible by 5:  print "Buzz"
+//   - otherwise:       print the number
+//
+// if syntax: #[ false-block ] #[ true-block ] condition if
+//   but blocks pushed before the condition interfere with dupe,
+//   so we compute the condition first, then use swap to reorder.
 
-// FizzBuzz for numbers 1 to 20;
-1 20 fromToInc (n => {
-  if (n % 15 === 0) return "FizzBuzz";
-  if (n % 3 === 0) return "Fizz";
-  if (n % 5 === 0) return "Buzz";
-  return n;
-}) map ::: result;
+#[
+  // n is on the stack — check fizzbuzz conditions
+  dupe 15 % 0 =
+  #[
+    // not divisible by 15, check 3
+    dupe 3 % 0 =
+    #[
+      // not divisible by 3, check 5
+      dupe 5 % 0 =
+      #[ ] swap
+      #[ drop "Buzz" ] swap
+      if
+    ] swap
+    #[ drop "Fizz" ] swap
+    if
+  ] swap
+  #[ drop "FizzBuzz" ] swap
+  if
+] :fizzbuzz;
 
-"FizzBuzz from 1 to 20:" @;
-result @;
+0;
+#[
+  1 +          // increment counter
+  dupe         // keep the counter on the stack
+  fizzbuzz     // replace copy with fizzbuzz result
+  @            // log it
+  drop         // discard the result, keep counter
+] 100 times;
 
-// Alternative: Using stack operations;
-clear;
-
-// Define FizzBuzz checker;
-(n => n % 15 === 0) ::: isFizzBuzz;
-(n => n % 3 === 0) ::: isFizz;
-(n => n % 5 === 0) ::: isBuzz;
-
-// Process a single number;
-15 dupe dupe dupe 
-isFizzBuzz ["FizzBuzz"] 
-[dupe isFizz ["Fizz"] 
-[dupe isBuzz ["Buzz"] 
-[]] !_ ...] !_ ...] !_ ... @;
-
-// Clean approach with custom function;
-clear;
-
-// Create a more elegant FizzBuzz function;
-((n, ...stack) => {
-  const result = [];
-  for (let i = 1; i <= n; i++) {
-    if (i % 15 === 0) result.push("FizzBuzz");
-    else if (i % 3 === 0) result.push("Fizz");
-    else if (i % 5 === 0) result.push("Buzz");
-    else result.push(i);
-  }
-  return [...stack, ...result];
-}) ::: fizzBuzzTo;
-
-"FizzBuzz to 15 (spread on stack):" @;
-15 fizzBuzzTo @@;
+drop;          // clean up the counter

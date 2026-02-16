@@ -1,2 +1,0 @@
-import { fromToInc$ } from "jth-tools";
-0 9 fromToInc$!! @!!;

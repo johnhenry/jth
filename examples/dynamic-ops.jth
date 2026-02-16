@@ -1,0 +1,39 @@
+// Dynamic operators
+//
+// Prefix a number to an operator to create a partial application.
+// The semantics are: N op value, i.e. the prefix number comes first.
+//
+// For commutative operations (+, *) the order doesn't matter.
+// For non-commutative operations (-, /, %, **):
+//   "3-" means (3 - x), "2/" means (2 / x), "3**" means (3 ** x)
+
+// Addition (commutative — N + x)
+10 3+ @;     // 13
+10 5+ @;     // 15
+
+// Subtraction (N - x)
+20 3- @;     // 3 - 20 = -17
+
+// Multiplication (commutative — N * x)
+7 2* @;      // 14
+5 10* @;     // 50
+
+// Division (N / x)
+50 100/ @;   // 100 / 50 = 2
+
+// Modulo (N % x)
+17 5% @;     // 5 % 17 = 5
+
+// Exponentiation (N ** x)
+3 2** @;     // 2 ** 3 = 8
+2 3** @;     // 3 ** 2 = 9
+
+// Logarithm (log base N of x)
+100 10log @;   // 2  (log base 10 of 100)
+8 2log @;      // 3  (log base 2 of 8)
+
+// Dynamic operators are useful in pipelines
+10;
+3+ @;     // 13
+2* @;     // 26
+drop;

@@ -1,0 +1,37 @@
+// Array creation and manipulation
+
+// Create arrays with square brackets (space-separated)
+[1 2 3 4 5] @;           // [1, 2, 3, 4, 5]
+drop;
+
+// Push an element onto an array
+[1 2 3] 4 push @;        // [1, 2, 3, 4]
+drop;
+
+// Pop returns [modifiedArray, poppedItem]
+[1 2 3] pop;
+@;                        // 3 (the popped item)
+drop drop;                // clean up item and remaining array
+
+// Shift returns [modifiedArray, shiftedItem]
+[1 2 3] shift;
+@;                        // 1 (the shifted item)
+drop drop;
+
+// Unshift (prepend) an element
+[2 3] 1 unshift @;        // [1, 2, 3]
+drop;
+
+// Spread an array onto the stack
+[10 20 30] ...;           // stack: [10, 20, 30]
+@@;                       // logs: 10 20 30
+clear;
+
+// Collect all stack items into an array
+1 2 3 4 5;
+collect @;                // [1, 2, 3, 4, 5]
+drop;
+
+// Objects with { } (alternating key-value pairs)
+{ "name" "Alice" "age" 30 } @;
+drop;

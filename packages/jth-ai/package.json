@@ -1,0 +1,9 @@
+{
+  "name": "jth-ai",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "dependencies": {
+    "jth-runtime": "0.3.0"
+  }
+}

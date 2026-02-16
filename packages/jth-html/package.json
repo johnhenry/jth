@@ -1,0 +1,16 @@
+{
+  "name": "jth-html",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./nodes": "./src/nodes.mjs",
+    "./render": "./src/render.mjs",
+    "./operators": "./src/operators.mjs",
+    "./register": "./src/register.mjs"
+  },
+  "dependencies": {
+    "jth-runtime": "0.3.0"
+  }
+}

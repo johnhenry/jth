@@ -1,0 +1,17 @@
+{
+  "name": "jth-compiler",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./lexer": "./src/lexer.mjs",
+    "./parser": "./src/parser.mjs",
+    "./codegen": "./src/codegen.mjs",
+    "./transform": "./src/transform.mjs"
+  },
+  "dependencies": {
+    "jth-types": "0.3.0",
+    "jth-runtime": "0.3.0"
+  }
+}
