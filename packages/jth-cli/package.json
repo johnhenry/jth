@@ -1,0 +1,16 @@
+{
+  "name": "jth-cli",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "bin": {
+    "jth": "./bin/jth.mjs"
+  },
+  "dependencies": {
+    "jth-compiler": "0.3.0",
+    "jth-runtime": "0.3.0",
+    "jth-stdlib": "0.3.0",
+    "jth-types": "0.3.0",
+    "jth-repl": "0.3.0"
+  }
+}

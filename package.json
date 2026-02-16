@@ -1,35 +1,24 @@
 {
-  "name": "jth-lang",
-  "version": "0.1.0",
-  "description": "jth-lang",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/johnhenry/jth.git"
-  },
-  "author": "John Henry",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/johnhenry/jth/issues"
+  "name": "jth-monorepo",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/jth-types",
+    "packages/jth-runtime",
+    "packages/jth-compiler",
+    "packages/jth-stdlib",
+    "packages/jth-cli",
+    "packages/jth-repl",
+    "packages/jth-ai",
+    "packages/jth-html"
+  ],
+  "devDependencies": {
+    "vitest": "^3.0.0"
   },
   "scripts": {
-    "demo:current": "jth run ./sample/current.jth",
-    "demo:import": "jth run ./sample/import.jth",
-    "demo:kitchen-sink": "jth run ./sample/kitchen-sink.jth",
-    "packages:test": "sh ./scripts/test.sh",
-    "packages:publish": "sh ./scripts/publish.sh",
-    "packages:link": "sh ./scripts/link.sh",
-    "packages:unlink": "sh ./scripts/unlink.sh",
-    "packages:logo": "sh ./scripts/logo.sh",
-    "link": "npm link ./packages/cli ./packages/core",
-    "unlink": "npm unlink --no-save ./packages/cli ./packages/core",
-    "repl": "jth repl"
-  },
-  "homepage": "https://github.com/johnhenry/jth#readme",
-  "devDependencies": {
-    "jth-cli": "file:packages/cli",
-    "jth-core": "file:packages/core"
-  },
-  "dependencies": {
-    "ollama": "^0.5.18"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "vitest run test/e2e/"
   }
 }

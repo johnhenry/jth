@@ -1,0 +1,16 @@
+{
+  "name": "jth-repl",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./evaluator": "./src/evaluator.mjs"
+  },
+  "dependencies": {
+    "jth-types": "0.3.0",
+    "jth-runtime": "0.3.0",
+    "jth-compiler": "0.3.0",
+    "jth-stdlib": "0.3.0"
+  }
+}

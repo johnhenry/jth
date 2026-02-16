@@ -1,0 +1,23 @@
+// Factorial — iterative
+//
+// Strategy: push numbers n, n-1, n-2, ..., 1 onto the stack,
+// then multiply them all with Π (product of all stack values).
+//
+// Important: Π is variadic (consumes entire stack), so we
+// must drop the result before computing the next factorial.
+
+#[
+  // Stack: [n]
+  dupe 1 -            // [n, n-1] — loop count
+  #[ dupe 1 - ] swap   // push block, then swap count on top
+  times               // run {dupe 1 -} (n-1) times
+  // Stack now holds: [n, n-1, n-2, ..., 1]
+  Π                   // multiply all values
+] :factorial;
+
+5 factorial @;    // 120
+drop;
+10 factorial @;   // 3628800
+drop;
+1 factorial @;    // 1
+drop;

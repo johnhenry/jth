@@ -1,0 +1,21 @@
+// HTML page builder example
+::import "jth-html";
+
+#[
+  #[
+    "meta" h-void { "charset" "utf-8" } h-attrs
+    #[ "My Page" h-text ] "title" h-tag
+  ] "head" h-tag
+
+  #[
+    #[ "Hello, World!" h-text ] "h1" h-tag
+    #[
+      #[ "Welcome to jth-html." h-text ] "p" h-tag
+      #[
+        #[ "Item 1" h-text ] "li" h-tag
+        #[ "Item 2" h-text ] "li" h-tag
+      ] "ul" h-tag
+    ] "main" h-tag
+  ] "body" h-tag
+] "html" h-tag
+h-render @;

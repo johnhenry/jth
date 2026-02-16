@@ -1,37 +1,16 @@
-// Fibonacci Sequence Generator;
+// Fibonacci sequence using the built-in fibonacci operator
+//
+// fibonacci pops (a, b) and pushes (b, a, a+b) — three values.
+// We use swap drop to trim back to two values [b, a+b] for the next step.
+// @ peeks (logs the top without removing it).
 
-// Generate first 10 Fibonacci numbers;
-0 1 ::: [a b];
+0 1;
 
-// Generate next 8 numbers;
-a b fibonacci fibonacci fibonacci fibonacci 
-fibonacci fibonacci fibonacci fibonacci ::: [...rest];
+// Print 15 fibonacci numbers
+#[
+  fibonacci     // [a, b] => [b, a, a+b]
+  swap drop     // [b, a, a+b] => [b, a+b]
+  @             // log a+b (peek, no removal)
+] 15 times;
 
-// Collect all 10 numbers;
-a b rest ... ::: [...fibSequence];
-
-// Display the sequence;
-"First 10 Fibonacci numbers:" @;
-fibSequence @;
-
-// Alternative: Generate nth Fibonacci number;
-clear;
-
-// Function to get nth Fibonacci (using JavaScript);
-(n => {
-  if (n <= 1) return n;
-  let a = 0, b = 1;
-  for (let i = 2; i <= n; i++) {
-    [a, b] = [b, a + b];
-  }
-  return b;
-}) ::: getNthFib;
-
-// Get the 20th Fibonacci number;
-"20th Fibonacci number:" @;
-20 getNthFib @;
-
-// Generate a range of Fibonacci numbers;
-clear;
-"Fibonacci numbers from position 5 to 10:" @;
-5 10 fromToInc (getNthFib) map @;
+drop drop;      // clean up

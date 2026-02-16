@@ -1,0 +1,39 @@
+// Defining custom operators with :name
+//
+// :name pops a value and registers it as an operator.
+// Blocks become callable operators.
+// Non-block values (numbers, strings) are pushed when the operator is used.
+
+// Define a "square" operator
+#[ dupe * ] :square;
+
+// Define a "cube" operator
+#[ dupe dupe * * ] :cube;
+
+// Define a constant (registers a number as an operator)
+3.14159 :PI;
+
+// Use the custom operators
+5 square @;    // 25
+drop;
+3 cube @;      // 27
+drop;
+PI @;          // 3.14159
+drop;
+
+// Operators can call other operators
+#[ square square ] :fourth-power;
+2 fourth-power @;   // 16
+drop;
+
+// Define an "abs-diff" operator that computes |a - b|
+#[ - abs ] :abs-diff;
+10 3 abs-diff @;    // 7
+drop;
+3 10 abs-diff @;    // 7
+drop;
+
+// Define a "hypotenuse" operator using Pythagorean theorem
+#[ square swap square + sqrt ] :hypotenuse;
+3 4 hypotenuse @;   // 5
+drop;

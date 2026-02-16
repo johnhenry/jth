@@ -1,0 +1,17 @@
+{
+  "name": "jth-runtime",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./stack": "./src/stack.mjs",
+    "./op": "./src/op.mjs",
+    "./meta": "./src/meta.mjs",
+    "./process-n": "./src/process-n.mjs",
+    "./registry": "./src/registry.mjs"
+  },
+  "dependencies": {
+    "jth-types": "0.3.0"
+  }
+}

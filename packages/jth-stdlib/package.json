@@ -1,0 +1,13 @@
+{
+  "name": "jth-stdlib",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "dependencies": {
+    "jth-types": "0.3.0",
+    "jth-runtime": "0.3.0"
+  }
+}
