@@ -23,6 +23,8 @@ import {
   collect,
   peek,
   view,
+  over,
+  rot,
 } from "../src/stack-ops.mjs";
 
 describe("stack-ops", () => {
@@ -218,5 +220,29 @@ describe("stack-ops", () => {
     expect(spy).toHaveBeenCalledWith(1, 2, 3);
     expect(s.toArray()).toEqual([1, 2, 3]);
     spy.mockRestore();
+  });
+
+  describe("over", () => {
+    it("copies second item to top: a b -- a b a", () => {
+      const s = new Stack();
+      s.push(1, 2);
+      over(s);
+      expect(s.toArray()).toEqual([1, 2, 1]);
+    });
+    it("works with different types", () => {
+      const s = new Stack();
+      s.push("hello", 42);
+      over(s);
+      expect(s.toArray()).toEqual(["hello", 42, "hello"]);
+    });
+  });
+
+  describe("rot", () => {
+    it("rotates top three: a b c -- b c a", () => {
+      const s = new Stack();
+      s.push(1, 2, 3);
+      rot(s);
+      expect(s.toArray()).toEqual([2, 3, 1]);
+    });
   });
 });
