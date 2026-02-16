@@ -8,9 +8,9 @@
 - [x] Updated all examples, tests, and documentation
 
 ### `elseif` / `else` chaining
-- [ ] Add `elseif` operator for chained conditionals
-- [ ] Add `else` as sugar for the false-branch of `if`
-- [ ] Current pattern requires deeply nested blocks:
+- [x] Add `elseif` operator for chained conditionals
+- [x] Add `else` as sugar for the false-branch of `if`
+- [x] Current pattern requires deeply nested blocks:
   ```jth
   #[ ... ] swap #[ ... ] swap if
   ```
@@ -23,19 +23,19 @@
   ```
 
 ### `map` / `filter` / `reduce` as first-class operators
-- [ ] `map` — apply a block to each element of an array, return new array
-- [ ] `filter` — keep elements where block returns truthy
-- [ ] `reduce` / `fold` — accumulate over an array with a block and initial value
-- [ ] Ensure consistent semantics: block receives element on a fresh stack, result is collected
+- [x] `map` — apply a block to each element of an array, return new array
+- [x] `filter` — keep elements where block returns truthy
+- [x] `reduce` / `fold` — accumulate over an array with a block and initial value
+- [x] Ensure consistent semantics: block receives element on a fresh stack, result is collected
 
 ### Folds and bends
-- [ ] Investigate fold/bend patterns inspired by [HVM/Bend](https://github.com/HigherOrderCO/bend/blob/main/GUIDE.md#folds-and-bends)
-- [ ] `fold` — structural recursion over data (catamorphism)
-- [ ] `bend` — structural corecursion / unfold (anamorphism)
-- [ ] Determine how these map to jth's stack model:
+- [x] Investigate fold/bend patterns inspired by [HVM/Bend](https://github.com/HigherOrderCO/bend/blob/main/GUIDE.md#folds-and-bends)
+- [x] `fold` — structural recursion over data (catamorphism) — alias for `reduce`
+- [x] `bend` — structural corecursion / unfold (anamorphism)
+- [x] Determine how these map to jth's stack model:
   - Fold: consume a structure element-by-element, accumulating on the stack
   - Bend: produce a structure by repeatedly applying a block until a condition is met
-- [ ] Consider whether folds/bends replace or complement `times` and `reduce`
+- [x] Consider whether folds/bends replace or complement `times` and `reduce`
 
 ## Future
 

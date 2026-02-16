@@ -82,6 +82,8 @@ export function registerAll() {
 
   // Control flow
   registry.set("if", controlFlow.ifOp);
+  registry.set("elseif", controlFlow.elseifOp);
+  registry.set("else", controlFlow.elseOp);
   registry.set("when", controlFlow.when);
   registry.set("drop-when", controlFlow.dropWhen);
   registry.set("keep-if", controlFlow.keepIf);
@@ -124,6 +126,11 @@ export function registerAll() {
   registry.set("unshift", arrayOps.unshift);
   registry.set("suppose", arrayOps.suppose);
   registry.set("flatten", arrayOps.flatten);
+  registry.set("map", arrayOps.mapOp);
+  registry.set("filter", arrayOps.filterOp);
+  registry.set("reduce", arrayOps.reduceOp);
+  registry.set("fold", arrayOps.foldOp);
+  registry.set("bend", arrayOps.bendOp);
 
   // Dict ops
   registry.set("keys", dictOps.keys);

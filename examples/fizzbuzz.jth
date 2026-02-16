@@ -1,33 +1,16 @@
-// FizzBuzz in jth
+// FizzBuzz in jth (using elseif/else chaining)
 //
 // For numbers 1 to 100:
 //   - divisible by 15: print "FizzBuzz"
 //   - divisible by 3:  print "Fizz"
 //   - divisible by 5:  print "Buzz"
 //   - otherwise:       print the number
-//
-// if syntax: #[ false-block ] #[ true-block ] condition if
-//   but blocks pushed before the condition interfere with dupe,
-//   so we compute the condition first, then use swap to reorder.
 
 #[
-  // n is on the stack — check fizzbuzz conditions
-  dupe 15 % 0 =
-  #[
-    // not divisible by 15, check 3
-    dupe 3 % 0 =
-    #[
-      // not divisible by 3, check 5
-      dupe 5 % 0 =
-      #[ ] swap
-      #[ drop "Buzz" ] swap
-      if
-    ] swap
-    #[ drop "Fizz" ] swap
-    if
-  ] swap
-  #[ drop "FizzBuzz" ] swap
-  if
+  dupe 15 % 0 = #[ drop "FizzBuzz" ] swap if
+  dupe 3 % 0 = #[ drop "Fizz" ] swap elseif
+  dupe 5 % 0 = #[ drop "Buzz" ] swap elseif
+  #[ ] else
 ] :fizzbuzz;
 
 0;

@@ -141,6 +141,17 @@ PI @;   // 3.14159 — PI pushes the value onto the stack
 
 The order on the stack before `if` executes is: false-block (bottom), true-block, condition (top). In code you write the false-block first, then the true-block, then the condition.
 
+**if/elseif/else chains** — flat conditional chaining without nesting:
+
+```jth
+dupe 15 % 0 = #[ drop "FizzBuzz" ] swap if
+dupe 3 % 0 = #[ drop "Fizz" ] swap elseif
+dupe 5 % 0 = #[ drop "Buzz" ] swap elseif
+#[ ] else
+```
+
+`if` in 2-arg mode starts a chain. `elseif` checks additional conditions. `else` is the fallback. Only the first matching branch executes.
+
 **times** — runs a block N times:
 
 ```jth
@@ -336,7 +347,10 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `if` | Conditional branch | `#[ "no" ] #[ "yes" ] true if` => `"yes"` |
+| `if` | Conditional branch (3-arg) | `#[ "no" ] #[ "yes" ] true if` => `"yes"` |
+| `if` | Start conditional chain (2-arg) | `#[ "yes" ] true if` |
+| `elseif` | Chain conditional | `#[ "alt" ] cond elseif` |
+| `else` | Default branch | `#[ "default" ] else` |
 | `when` | Keep if truthy | `42 true when` => `42` |
 | `drop-when` | Drop if truthy | `42 true drop-when` => `[]` |
 | `keep-if` | Keep value if truthy | `42 true keep-if` => `42` |
@@ -385,6 +399,11 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `unshift` | Prepend to array | `[2 3] 1 unshift` => `[1,2,3]` |
 | `suppose` | Add to collection | `[1 2] 3 suppose` => `[1,2,3]` |
 | `flatten` | Flatten all stack values (variadic) | `[1] [2 3] flatten` => `1 2 3` on stack |
+| `map` | Apply block to each element | `[1 2 3] #[ 2 * ] map` => `[2,4,6]` |
+| `filter` | Keep elements where block is truthy | `[1 2 3 4] #[ 2 % 0 = ] filter` => `[2,4]` |
+| `reduce` | Accumulate with block and init | `[1 2 3] 0 #[ + ] reduce` => `6` |
+| `fold` | Alias for reduce (catamorphism) | `[1 2 3] 0 #[ + ] fold` => `6` |
+| `bend` | Unfold/anamorphism from seed | `1 #[ 5 <= ] #[ dupe 1 + ] bend` => `[1,2,3,4,5]` |
 
 ### Objects / Dictionaries
 

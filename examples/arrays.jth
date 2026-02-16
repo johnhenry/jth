@@ -35,3 +35,33 @@ drop;
 // Objects with { } (alternating key-value pairs)
 { "name" "Alice" "age" 30 } @;
 drop;
+
+// --- map / filter / reduce ---
+
+// map: apply a block to each element
+[1 2 3 4 5] #[ 2 * ] map @;       // [2, 4, 6, 8, 10]
+drop;
+
+// filter: keep elements matching a predicate
+[1 2 3 4 5 6] #[ 2 % 0 = ] filter @;  // [2, 4, 6]
+drop;
+
+// reduce: accumulate with a block and initial value
+[1 2 3 4 5] 0 #[ + ] reduce @;    // 15
+drop;
+
+// --- fold / bend ---
+
+// fold: alias for reduce (catamorphism)
+[1 2 3 4 5] 0 #[ + ] fold @;      // 15
+drop;
+
+// bend: unfold / anamorphism — generate an array from a seed
+// Syntax: seed #[ predicate ] #[ step ] bend
+// step should leave [value nextSeed] on the stack
+1 #[ 10 <= ] #[ dupe 1 + ] bend @;  // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+drop;
+
+// bend: generate powers of 2 up to 32
+1 #[ 32 <= ] #[ dupe 2 * ] bend @;  // [1, 2, 4, 8, 16, 32]
+drop;

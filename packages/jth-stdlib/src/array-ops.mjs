@@ -1,4 +1,5 @@
 import { op, variadic } from "jth-runtime";
+import { Stack } from "jth-runtime";
 
 // push: push item onto array (bottom=arr, top=item)
 export const push = op(2)((arr, item) => {
@@ -99,21 +100,98 @@ export const randomize = (stack) => {
   stack.push(...arr);
 };
 
-// map: { block } map -- apply block to each item
+// map: [array] #[ block ] map -- apply block to each element, return new array
+// Block-aware: each element gets its own isolated Stack.
+export const mapOp = (stack) => {
+  const block = stack.pop();
+  const arr = stack.pop();
+  const result = [];
+  for (const elem of arr) {
+    const s = new Stack();
+    s.push(elem);
+    if (typeof block === "function") block(s);
+    result.push(s.pop());
+  }
+  stack.push(result);
+};
+
+// filter: [array] #[ block ] filter -- keep elements where block returns truthy
+// Block-aware: each element gets its own isolated Stack.
+export const filterOp = (stack) => {
+  const block = stack.pop();
+  const arr = stack.pop();
+  const result = [];
+  for (const elem of arr) {
+    const s = new Stack();
+    s.push(elem);
+    if (typeof block === "function") block(s);
+    if (s.pop()) result.push(elem);
+  }
+  stack.push(result);
+};
+
+// reduce: [array] init #[ block ] reduce -- accumulate over array with block
+// Block-aware: each iteration gets its own isolated Stack with [acc, element].
+export const reduceOp = (stack) => {
+  const block = stack.pop();
+  const init = stack.pop();
+  const arr = stack.pop();
+  let acc = init;
+  for (const elem of arr) {
+    const s = new Stack();
+    s.push(acc, elem);
+    if (typeof block === "function") block(s);
+    acc = s.pop();
+  }
+  stack.push(acc);
+};
+
+// fold: alias for reduce (catamorphism over flat arrays)
+export const foldOp = reduceOp;
+
+// bend: seed #[ predicate ] #[ step ] bend -- unfold/anamorphism
+// Produces an array from a seed value.
+// predicate: given seed, returns truthy to continue
+// step: given seed, should leave [value, nextSeed] on stack
+export const bendOp = (stack) => {
+  const step = stack.pop();
+  const predicate = stack.pop();
+  let seed = stack.pop();
+  const result = [];
+
+  for (;;) {
+    // Test predicate
+    const ps = new Stack();
+    ps.push(seed);
+    if (typeof predicate === "function") predicate(ps);
+    if (!ps.pop()) break;
+
+    // Execute step
+    const ss = new Stack();
+    ss.push(seed);
+    if (typeof step === "function") step(ss);
+    const nextSeed = ss.pop();
+    const value = ss.pop();
+    result.push(value);
+    seed = nextSeed;
+  }
+
+  stack.push(result);
+};
+
+// Legacy configurable versions (not registered, kept for internal use)
 export const map = (fn) => (stack) => {
   const arr = stack.toArray();
   stack.clear();
   stack.push(...arr.map(fn));
 };
 
-// filter: { predicate } filter -- keep items where predicate is truthy
 export const filter = (fn) => (stack) => {
   const arr = stack.toArray();
   stack.clear();
   stack.push(...arr.filter(fn));
 };
 
-// reduce: { reducer } init reduce
 export const reduce = (fn, init) => (stack) => {
   const arr = stack.toArray();
   stack.clear();

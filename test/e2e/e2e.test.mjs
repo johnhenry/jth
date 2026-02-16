@@ -242,6 +242,89 @@ describe("E2E: Control flow", () => {
     // 0 #[ 1 + ] :inc; inc inc inc; => [3]
     expect(await evalJth("0; #[ 1 + ] :inc; inc; inc; inc;")).toEqual([3]);
   });
+
+  it("2-arg if executes block when truthy", () => {
+    const stack = new Stack();
+    stack.push(42);
+    const block = (s) => s.push("matched");
+    stack.push(block);
+    stack.push(true);
+    registry.resolve("if")(stack);
+    expect(stack.toArray()).toEqual([42, "matched"]);
+  });
+
+  it("2-arg if skips block when falsy", () => {
+    const stack = new Stack();
+    stack.push(42);
+    const block = (s) => s.push("matched");
+    stack.push(block);
+    stack.push(false);
+    registry.resolve("if")(stack);
+    expect(stack.toArray()).toEqual([42]);
+  });
+
+  it("if/elseif/else chain: matches first", () => {
+    const stack = new Stack();
+    stack.push(99);
+
+    const b1 = (s) => s.push("first");
+    stack.push(b1);
+    stack.push(true);
+    registry.resolve("if")(stack);
+
+    const b2 = (s) => s.push("second");
+    stack.push(b2);
+    stack.push(true);
+    registry.resolve("elseif")(stack);
+
+    const b3 = (s) => s.push("fallback");
+    stack.push(b3);
+    registry.resolve("else")(stack);
+
+    expect(stack.toArray()).toEqual([99, "first"]);
+  });
+
+  it("if/elseif/else chain: matches elseif", () => {
+    const stack = new Stack();
+    stack.push(99);
+
+    const b1 = (s) => s.push("first");
+    stack.push(b1);
+    stack.push(false);
+    registry.resolve("if")(stack);
+
+    const b2 = (s) => s.push("second");
+    stack.push(b2);
+    stack.push(true);
+    registry.resolve("elseif")(stack);
+
+    const b3 = (s) => s.push("fallback");
+    stack.push(b3);
+    registry.resolve("else")(stack);
+
+    expect(stack.toArray()).toEqual([99, "second"]);
+  });
+
+  it("if/elseif/else chain: falls to else", () => {
+    const stack = new Stack();
+    stack.push(99);
+
+    const b1 = (s) => s.push("first");
+    stack.push(b1);
+    stack.push(false);
+    registry.resolve("if")(stack);
+
+    const b2 = (s) => s.push("second");
+    stack.push(b2);
+    stack.push(false);
+    registry.resolve("elseif")(stack);
+
+    const b3 = (s) => s.push("fallback");
+    stack.push(b3);
+    registry.resolve("else")(stack);
+
+    expect(stack.toArray()).toEqual([99, "fallback"]);
+  });
 });
 
 describe("E2E: Error handling", () => {
@@ -381,6 +464,58 @@ describe("E2E: Transform output verification", () => {
   it("value definition generates const assignment", () => {
     const js = transform("42 ::x;", { preamble: false });
     expect(js).toContain("const x = stack.pop()");
+  });
+});
+
+describe("E2E: Block-aware array operations", () => {
+  it("map: double each element", async () => {
+    expect(await evalJth("[1 2 3 4 5] #[ 2 * ] map;")).toEqual([
+      [2, 4, 6, 8, 10],
+    ]);
+  });
+
+  it("map: increment each element", async () => {
+    expect(await evalJth("[10 20 30] #[ 1 + ] map;")).toEqual([[11, 21, 31]]);
+  });
+
+  it("filter: keep even numbers", async () => {
+    expect(await evalJth("[1 2 3 4 5 6] #[ 2 % 0 = ] filter;")).toEqual([
+      [2, 4, 6],
+    ]);
+  });
+
+  it("filter: keep values greater than 3", async () => {
+    expect(await evalJth("[1 2 3 4 5] #[ 3 > ] filter;")).toEqual([[4, 5]]);
+  });
+
+  it("reduce: sum", async () => {
+    expect(await evalJth("[1 2 3 4 5] 0 #[ + ] reduce;")).toEqual([15]);
+  });
+
+  it("reduce: product", async () => {
+    expect(await evalJth("[1 2 3 4] 1 #[ * ] reduce;")).toEqual([24]);
+  });
+
+  it("fold: alias for reduce", async () => {
+    expect(await evalJth("[1 2 3 4 5] 0 #[ + ] fold;")).toEqual([15]);
+  });
+
+  it("bend: generate 1 to 5", async () => {
+    expect(
+      await evalJth("1 #[ 5 <= ] #[ dupe 1 + ] bend;")
+    ).toEqual([[1, 2, 3, 4, 5]]);
+  });
+
+  it("bend: generate 1 to 10", async () => {
+    expect(
+      await evalJth("1 #[ 10 <= ] #[ dupe 1 + ] bend;")
+    ).toEqual([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]);
+  });
+
+  it("map then filter pipeline", async () => {
+    expect(
+      await evalJth("[1 2 3 4 5] #[ 2 * ] map #[ 5 > ] filter;")
+    ).toEqual([[6, 8, 10]]);
   });
 });
 
