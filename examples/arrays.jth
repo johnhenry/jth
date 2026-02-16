@@ -1,67 +1,67 @@
 // Array creation and manipulation
 
 // Create arrays with square brackets (space-separated)
-[1 2 3 4 5] @;           // [1, 2, 3, 4, 5]
+[1 2 3 4 5] peek;           // [1, 2, 3, 4, 5]
 drop;
 
 // Push an element onto an array
-[1 2 3] 4 push @;        // [1, 2, 3, 4]
+[1 2 3] 4 push peek;        // [1, 2, 3, 4]
 drop;
 
 // Pop returns [modifiedArray, poppedItem]
 [1 2 3] pop;
-@;                        // 3 (the popped item)
+peek;                        // 3 (the popped item)
 drop drop;                // clean up item and remaining array
 
 // Shift returns [modifiedArray, shiftedItem]
 [1 2 3] shift;
-@;                        // 1 (the shifted item)
+peek;                        // 1 (the shifted item)
 drop drop;
 
 // Unshift (prepend) an element
-[2 3] 1 unshift @;        // [1, 2, 3]
+[2 3] 1 unshift peek;        // [1, 2, 3]
 drop;
 
 // Spread an array onto the stack
 [10 20 30] ...;           // stack: [10, 20, 30]
-@@;                       // logs: 10 20 30
+peek-all;                       // logs: 10 20 30
 clear;
 
 // Collect all stack items into an array
 1 2 3 4 5;
-collect @;                // [1, 2, 3, 4, 5]
+collect peek;                // [1, 2, 3, 4, 5]
 drop;
 
 // Objects with { } (alternating key-value pairs)
-{ "name" "Alice" "age" 30 } @;
+{ "name" "Alice" "age" 30 } peek;
 drop;
 
 // --- map / filter / reduce ---
 
 // map: apply a block to each element
-[1 2 3 4 5] #[ 2 * ] map @;       // [2, 4, 6, 8, 10]
+[1 2 3 4 5] #[ 2 * ] map peek;       // [2, 4, 6, 8, 10]
 drop;
 
 // filter: keep elements matching a predicate
-[1 2 3 4 5 6] #[ 2 % 0 = ] filter @;  // [2, 4, 6]
+[1 2 3 4 5 6] #[ 2 % 0 = ] filter peek;  // [2, 4, 6]
 drop;
 
 // reduce: accumulate with a block and initial value
-[1 2 3 4 5] 0 #[ + ] reduce @;    // 15
+[1 2 3 4 5] 0 #[ + ] reduce peek;    // 15
 drop;
 
 // --- fold / bend ---
 
 // fold: alias for reduce (catamorphism)
-[1 2 3 4 5] 0 #[ + ] fold @;      // 15
+[1 2 3 4 5] 0 #[ + ] fold peek;      // 15
 drop;
 
 // bend: unfold / anamorphism — generate an array from a seed
 // Syntax: seed #[ predicate ] #[ step ] bend
 // step should leave [value nextSeed] on the stack
-1 #[ 10 <= ] #[ dupe 1 + ] bend @;  // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+1 #[ 10 <= ] #[ dupe 1 + ] bend peek;  // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 drop;
 
 // bend: generate powers of 2 up to 32
-1 #[ 32 <= ] #[ dupe 2 * ] bend @;  // [1, 2, 4, 8, 16, 32]
+1 #[ 32 <= ] #[ dupe 2 * ] bend peek;  // [1, 2, 4, 8, 16, 32]
 drop;

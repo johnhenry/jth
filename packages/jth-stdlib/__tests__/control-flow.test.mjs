@@ -11,6 +11,7 @@ import {
   timesOp,
   loop,
 } from "../src/control-flow.mjs";
+import { apply, exec } from "../src/stack-ops.mjs";
 
 describe("control-flow", () => {
   describe("ifOp (3-arg legacy)", () => {
@@ -350,6 +351,26 @@ describe("control-flow", () => {
       s.push(block);
       loop(5)(s);
       expect(s.toArray()).toEqual([50]);
+    });
+  });
+
+  describe("apply (from stack-ops)", () => {
+    it("executes a block from the stack", async () => {
+      const s = new Stack();
+      s.push(2, 3);
+      s.push((stack) => {
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(a + b);
+      });
+      await apply(s);
+      expect(s.toArray()).toEqual([5]);
+    });
+  });
+
+  describe("exec (from stack-ops)", () => {
+    it("is an alias for apply", () => {
+      expect(exec).toBe(apply);
     });
   });
 });

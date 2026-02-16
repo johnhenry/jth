@@ -310,18 +310,6 @@ describe("lexer: operators", () => {
     expect(tok.value).toBe("<=>");
   });
 
-  it("should lex @", () => {
-    const tok = first("@");
-    expect(tok.type).toBe(TokenType.OPERATOR);
-    expect(tok.value).toBe("@");
-  });
-
-  it("should lex @@", () => {
-    const tok = first("@@");
-    expect(tok.type).toBe(TokenType.OPERATOR);
-    expect(tok.value).toBe("@@");
-  });
-
   it("should lex $", () => {
     const tok = first("$");
     expect(tok.type).toBe(TokenType.OPERATOR);
@@ -678,28 +666,28 @@ describe("lexer: line/column tracking", () => {
 // Complex token sequences
 // ---------------------------------------------------------------------------
 describe("lexer: complex sequences", () => {
-  it("should lex 1 2 + @;", () => {
-    const tokens = lexNoEof("1 2 + @;");
+  it("should lex 1 2 + peek;", () => {
+    const tokens = lexNoEof("1 2 + peek;");
     expect(tokens.map((t) => t.type)).toEqual([
       TokenType.NUMBER,
       TokenType.NUMBER,
       TokenType.OPERATOR,
-      TokenType.OPERATOR,
+      TokenType.IDENTIFIER,
       TokenType.SEMICOLON,
     ]);
     expect(tokens[0].value).toBe(1);
     expect(tokens[1].value).toBe(2);
     expect(tokens[2].value).toBe("+");
-    expect(tokens[3].value).toBe("@");
+    expect(tokens[3].value).toBe("peek");
   });
 
-  it('should lex "hello" "world" strcat @;', () => {
-    const tokens = lexNoEof('"hello" "world" strcat @;');
+  it('should lex "hello" "world" strcat peek;', () => {
+    const tokens = lexNoEof('"hello" "world" strcat peek;');
     expect(tokens.map((t) => t.type)).toEqual([
       TokenType.STRING,
       TokenType.STRING,
       TokenType.IDENTIFIER,
-      TokenType.OPERATOR,
+      TokenType.IDENTIFIER,
       TokenType.SEMICOLON,
     ]);
   });
@@ -728,13 +716,13 @@ describe("lexer: complex sequences", () => {
     expect(tokens[1].value).toBe("pi");
   });
 
-  it("should lex true false and @;", () => {
-    const tokens = lexNoEof("true false and @;");
+  it("should lex true false and peek;", () => {
+    const tokens = lexNoEof("true false and peek;");
     expect(tokens.map((t) => t.type)).toEqual([
       TokenType.BOOLEAN,
       TokenType.BOOLEAN,
       TokenType.IDENTIFIER,
-      TokenType.OPERATOR,
+      TokenType.IDENTIFIER,
       TokenType.SEMICOLON,
     ]);
   });

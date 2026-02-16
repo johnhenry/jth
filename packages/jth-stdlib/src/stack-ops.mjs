@@ -128,12 +128,27 @@ export const count = (stack) => {
 // collect: consume entire stack into a single array
 export const collect = variadic((...args) => [args]);
 
-// peek (@): console.log top item, don't consume
+// peek: console.log top item, don't consume (replaces @)
 export const peek = (stack) => {
   console.log(stack.peek());
 };
 
-// view (@@): console.log entire stack, don't consume
-export const view = (stack) => {
+// peekAll: console.log entire stack, don't consume (replaces @@)
+export const peekAll = (stack) => {
   console.log(...stack.toArray());
 };
+
+// view: alias for peekAll (backward compat for internal use)
+export const view = peekAll;
+
+// apply: pop top of stack (must be a function/block), execute it with the stack
+export const apply = (stack) => {
+  const block = stack.pop();
+  if (typeof block !== "function") {
+    throw new TypeError("apply: top of stack is not a function/block");
+  }
+  return block(stack);
+};
+
+// exec: alias for apply
+export const exec = apply;

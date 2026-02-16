@@ -6,39 +6,39 @@
 
 // Mean (average)
 2 4 4 4 5 5 7 9;
-mean @;              // 5
+mean peek;              // 5
 drop;
 
 // Median (middle value)
 2 4 4 4 5 5 7 9;
-median @;            // 4.5
+median peek;            // 4.5
 drop;
 
 // Mode (most frequent value)
 2 4 4 4 5 5 7 9;
-mode @;              // 4
+mode peek;              // 4
 drop;
 
 // All modes
 2 4 4 4 5 5 7 9;
-modes @;             // [4]
+modes peek;             // [4]
 drop;
 
 // Sum with Σ (variadic — consumes all)
 1 2 3 4 5;
-Σ @;                 // 15
+Σ peek;                 // 15
 drop;
 
 // Product with Π (variadic — consumes all)
 2 3 4;
-Π @;                 // 24
+Π peek;                 // 24
 drop;
 
 // Min and max (also variadic)
 3 1 4 1 5 9 2 6;
-min @;               // 1
+min peek;               // 1
 drop;
 
 3 1 4 1 5 9 2 6;
-max @;               // 9
+max peek;               // 9
 drop;

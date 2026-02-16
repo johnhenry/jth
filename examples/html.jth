@@ -18,4 +18,4 @@
     ] "main" h-tag
   ] "body" h-tag
 ] "html" h-tag
-h-render @;
+h-render peek;

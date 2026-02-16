@@ -7,10 +7,10 @@ function tx(source) {
 }
 
 describe("transform: source → JS round trip", () => {
-  it('"hello" @;', () => {
-    const js = tx('"hello" @;');
+  it('"hello" peek;', () => {
+    const js = tx('"hello" peek;');
     expect(js).toContain('"hello"');
-    expect(js).toContain('registry.resolve("@")');
+    expect(js).toContain('registry.resolve("peek")');
     expect(js).toContain("processN(stack,");
   });
 
@@ -47,7 +47,7 @@ describe("transform: source → JS round trip", () => {
   });
 
   it("multiple statements share the same stack", () => {
-    const js = tx("1; 2; +; @;");
+    const js = tx("1; 2; +; peek;");
     // All use the same stack variable
     const matches = js.match(/processN\(stack,/g);
     expect(matches).not.toBeNull();

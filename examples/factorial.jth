@@ -15,9 +15,9 @@
   Π                   // multiply all values
 ] :factorial;
 
-5 factorial @;    // 120
+5 factorial peek;    // 120
 drop;
-10 factorial @;   // 3628800
+10 factorial peek;   // 3628800
 drop;
-1 factorial @;    // 1
+1 factorial peek;    // 1
 drop;

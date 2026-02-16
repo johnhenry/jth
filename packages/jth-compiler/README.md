@@ -39,15 +39,15 @@ Emit JavaScript source from an AST. Accepts the same `preamble` option as `trans
 import { lex, parse, generate, transform } from "jth-compiler";
 
 // Full pipeline (one step)
-const js = transform('1 2 + @;', { preamble: true });
+const js = transform('1 2 + peek;', { preamble: true });
 console.log(js);
 
 // Stage by stage
-const tokens = lex('1 2 + @;');
+const tokens = lex('1 2 + peek;');
 const ast    = parse(tokens);
 const code   = generate(ast, { preamble: false });
 console.log(code);
-// => await processN(stack, [1, 2, registry.resolve("+"), registry.resolve("@")]);
+// => await processN(stack, [1, 2, registry.resolve("+"), registry.resolve("peek")]);
 ```
 
 ---

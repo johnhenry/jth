@@ -389,8 +389,8 @@ describe("parser: comments", () => {
 // Full programs
 // ---------------------------------------------------------------------------
 describe("parser: full programs", () => {
-  it("should parse a simple program: 5 square @;", () => {
-    const ast = parseSrc("5 square @;");
+  it("should parse a simple program: 5 square peek;", () => {
+    const ast = parseSrc("5 square peek;");
     expect(ast.body).toHaveLength(1);
     const stmt = ast.body[0];
     expect(stmt.expressions).toHaveLength(3);
@@ -399,11 +399,11 @@ describe("parser: full programs", () => {
     expect(stmt.expressions[1].type).toBe("OperatorCall");
     expect(stmt.expressions[1].name).toBe("square");
     expect(stmt.expressions[2].type).toBe("OperatorCall");
-    expect(stmt.expressions[2].name).toBe("@");
+    expect(stmt.expressions[2].name).toBe("peek");
   });
 
   it("should parse block definition + usage", () => {
-    const ast = parseSrc("#[ dupe * ] :square; 5 square @;");
+    const ast = parseSrc("#[ dupe * ] :square; 5 square peek;");
     expect(ast.body).toHaveLength(2);
 
     // First statement: block + definition
@@ -417,7 +417,7 @@ describe("parser: full programs", () => {
   });
 
   it("should parse array with spread", () => {
-    const ast = parseSrc("[1 2 3] spread + + @;");
+    const ast = parseSrc("[1 2 3] spread + + peek;");
     expect(ast.body).toHaveLength(1);
     const stmt = ast.body[0];
     expect(stmt.expressions[0].type).toBe("ArrayLiteral");
@@ -428,7 +428,7 @@ describe("parser: full programs", () => {
     const ast = parseSrc(`
       3.14 ::pi;
       #[ dupe * ] :square;
-      pi square @;
+      pi square peek;
     `);
     expect(ast.body).toHaveLength(3);
   });

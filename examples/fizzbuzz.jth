@@ -18,7 +18,7 @@
   1 +          // increment counter
   dupe         // keep the counter on the stack
   fizzbuzz     // replace copy with fizzbuzz result
-  @            // log it
+  peek            // log it
   drop         // discard the result, keep counter
 ] 100 times;
 

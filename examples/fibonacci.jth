@@ -2,7 +2,7 @@
 //
 // fibonacci pops (a, b) and pushes (b, a, a+b) — three values.
 // We use swap drop to trim back to two values [b, a+b] for the next step.
-// @ peeks (logs the top without removing it).
+// peek peeks (logs the top without removing it).
 
 0 1;
 
@@ -10,7 +10,7 @@
 #[
   fibonacci     // [a, b] => [b, a, a+b]
   swap drop     // [b, a, a+b] => [b, a+b]
-  @             // log a+b (peek, no removal)
+  peek             // log a+b (peek, no removal)
 ] 15 times;
 
 drop drop;      // clean up

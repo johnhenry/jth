@@ -8,7 +8,7 @@ import { compile, deriveOutputPath } from "../src/compile.mjs";
 
 describe("compile: inline code", () => {
   it("compiles inline code to a JS string", () => {
-    const js = compile('1 2 + @;', { isCode: true });
+    const js = compile('1 2 + peek;', { isCode: true });
     expect(typeof js).toBe("string");
     expect(js.length).toBeGreaterThan(0);
   });
@@ -26,9 +26,9 @@ describe("compile: inline code", () => {
   });
 
   it("output contains registry.resolve for operators", () => {
-    const js = compile("1 2 + @;", { isCode: true });
+    const js = compile("1 2 + peek;", { isCode: true });
     expect(js).toContain('registry.resolve("+")');
-    expect(js).toContain('registry.resolve("@")');
+    expect(js).toContain('registry.resolve("peek")');
   });
 
   it("compiles number literals", () => {
@@ -37,7 +37,7 @@ describe("compile: inline code", () => {
   });
 
   it("compiles string literals", () => {
-    const js = compile('"hello world" @;', { isCode: true });
+    const js = compile('"hello world" peek;', { isCode: true });
     expect(js).toContain('"hello world"');
   });
 
@@ -84,7 +84,7 @@ describe("compile: inline code", () => {
   });
 
   it("produced output is syntactically valid JavaScript (body)", () => {
-    const js = compile("1 2 + @;", { isCode: true });
+    const js = compile("1 2 + peek;", { isCode: true });
     // Strip import lines (new Function cannot parse ES module imports).
     // Validate only the executable body is syntactically correct.
     const body = js
@@ -115,12 +115,12 @@ describe("compile: file I/O", () => {
   });
 
   it("writes compiled output to a file", () => {
-    writeFileSync(tmpFile, '"hello" @;', "utf-8");
+    writeFileSync(tmpFile, '"hello" peek;', "utf-8");
     compile(tmpFile, { output: outFile });
     expect(existsSync(outFile)).toBe(true);
     const content = readFileSync(outFile, "utf-8");
     expect(content).toContain("processN(stack,");
-    expect(content).toContain('registry.resolve("@")');
+    expect(content).toContain('registry.resolve("peek")');
   });
 });
 

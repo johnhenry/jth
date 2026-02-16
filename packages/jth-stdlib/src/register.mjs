@@ -33,8 +33,10 @@ export function registerAll() {
   registry.set("reverse", stackOps.reverse);
   registry.set("count", stackOps.count);
   registry.set("collect", stackOps.collect);
-  registry.set("@", stackOps.peek);
-  registry.set("@@", stackOps.view);
+  registry.set("peek", stackOps.peek);
+  registry.set("peek-all", stackOps.peekAll);
+  registry.set("apply", stackOps.apply);
+  registry.set("exec", stackOps.exec);
 
   // Arithmetic
   registry.set("+", arithmetic.plus);

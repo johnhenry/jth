@@ -22,7 +22,10 @@ import {
   count,
   collect,
   peek,
+  peekAll,
   view,
+  apply,
+  exec,
 } from "../src/stack-ops.mjs";
 
 describe("stack-ops", () => {
@@ -210,13 +213,69 @@ describe("stack-ops", () => {
     spy.mockRestore();
   });
 
-  it("view logs entire stack without consuming", () => {
-    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const s = new Stack();
-    s.push(1, 2, 3);
-    view(s);
-    expect(spy).toHaveBeenCalledWith(1, 2, 3);
-    expect(s.toArray()).toEqual([1, 2, 3]);
-    spy.mockRestore();
+  describe("peek", () => {
+    it("logs top without consuming it", () => {
+      const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+      const s = new Stack();
+      s.push(42);
+      peek(s);
+      expect(spy).toHaveBeenCalledWith(42);
+      expect(s.toArray()).toEqual([42]);
+      spy.mockRestore();
+    });
+  });
+
+  describe("peekAll", () => {
+    it("logs entire stack without consuming", () => {
+      const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+      const s = new Stack();
+      s.push(1, 2, 3);
+      peekAll(s);
+      expect(spy).toHaveBeenCalledWith(1, 2, 3);
+      expect(s.toArray()).toEqual([1, 2, 3]);
+      spy.mockRestore();
+    });
+  });
+
+  it("view is an alias for peekAll", () => {
+    expect(view).toBe(peekAll);
+  });
+
+  describe("apply", () => {
+    it("executes a block from the stack", async () => {
+      const s = new Stack();
+      s.push(2, 3);
+      s.push((stack) => {
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(a + b);
+      });
+      await apply(s);
+      expect(s.toArray()).toEqual([5]);
+    });
+
+    it("throws if top of stack is not a function", () => {
+      const s = new Stack();
+      s.push(42);
+      expect(() => apply(s)).toThrow();
+    });
+  });
+
+  describe("exec", () => {
+    it("is an alias for apply", () => {
+      expect(exec).toBe(apply);
+    });
+
+    it("executes a block from the stack", async () => {
+      const s = new Stack();
+      s.push(10, 20);
+      s.push((stack) => {
+        const b = stack.pop();
+        const a = stack.pop();
+        stack.push(a * b);
+      });
+      await exec(s);
+      expect(s.toArray()).toEqual([200]);
+    });
   });
 });

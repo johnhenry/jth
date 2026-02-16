@@ -14,26 +14,26 @@
 3.14159 :PI;
 
 // Use the custom operators
-5 square @;    // 25
+5 square peek;    // 25
 drop;
-3 cube @;      // 27
+3 cube peek;      // 27
 drop;
-PI @;          // 3.14159
+PI peek;          // 3.14159
 drop;
 
 // Operators can call other operators
 #[ square square ] :fourth-power;
-2 fourth-power @;   // 16
+2 fourth-power peek;   // 16
 drop;
 
 // Define an "abs-diff" operator that computes |a - b|
 #[ - abs ] :abs-diff;
-10 3 abs-diff @;    // 7
+10 3 abs-diff peek;    // 7
 drop;
-3 10 abs-diff @;    // 7
+3 10 abs-diff peek;    // 7
 drop;
 
 // Define a "hypotenuse" operator using Pythagorean theorem
 #[ square swap square + sqrt ] :hypotenuse;
-3 4 hypotenuse @;   // 5
+3 4 hypotenuse peek;   // 5
 drop;

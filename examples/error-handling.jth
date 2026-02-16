@@ -2,7 +2,7 @@
 
 // try catches errors from a block and pushes the Error onto the stack
 #[ "something went wrong" throw ] try;
-error? @;   // true — top of stack is an Error
+error? peek;   // true — top of stack is an Error
 drop;
 
 // Without try, throw would halt the program.
@@ -10,8 +10,8 @@ drop;
 
 // Successful blocks push their result normally
 #[ 2 3 + ] try;
-dupe @;      // 5
-error? @;    // false — 5 is not an Error
+dupe peek;      // 5
+error? peek;    // false — 5 is not an Error
 drop;
 
 // Conditional error handling
@@ -24,9 +24,9 @@ drop;
 ] :check-error;
 
 #[ "bad" throw ] try;
-check-error @;    // "it failed"
+check-error peek;    // "it failed"
 drop;
 
 #[ 42 ] try;
-check-error @;    // "it worked"
+check-error peek;    // "it worked"
 drop;
