@@ -130,3 +130,47 @@ describe("string-ops", () => {
     expect(s.toArray()).toEqual(["world"]);
   });
 });
+
+describe("string-ops predicate aliases", () => {
+  it("starts? (startsWith) returns true for matching prefix", () => {
+    const s = new Stack();
+    s.push("hello world", "hello");
+    startsWith(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("starts? (startsWith) returns false for non-matching prefix", () => {
+    const s = new Stack();
+    s.push("hello world", "world");
+    startsWith(s);
+    expect(s.toArray()).toEqual([false]);
+  });
+
+  it("ends? (endsWith) returns true for matching suffix", () => {
+    const s = new Stack();
+    s.push("hello world", "world");
+    endsWith(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("ends? (endsWith) returns false for non-matching suffix", () => {
+    const s = new Stack();
+    s.push("hello world", "hello");
+    endsWith(s);
+    expect(s.toArray()).toEqual([false]);
+  });
+
+  it("index-of (indexOf) returns position of substring", () => {
+    const s = new Stack();
+    s.push("hello world", "world");
+    indexOf(s);
+    expect(s.toArray()).toEqual([6]);
+  });
+
+  it("index-of (indexOf) returns -1 when not found", () => {
+    const s = new Stack();
+    s.push("hello world", "xyz");
+    indexOf(s);
+    expect(s.toArray()).toEqual([-1]);
+  });
+});

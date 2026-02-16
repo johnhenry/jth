@@ -70,6 +70,14 @@ export function registerAll() {
   registry.set(">", comparison.gt);
   registry.set(">=", comparison.gte);
   registry.set("<=>", comparison.spaceship);
+  // Predicate-style comparison aliases
+  registry.set("eq?", comparison.equal);
+  registry.set("ne?", comparison.notEqual);
+  registry.set("!=", comparison.notEqual);
+  registry.set("lt?", comparison.lt);
+  registry.set("le?", comparison.lte);
+  registry.set("gt?", comparison.gt);
+  registry.set("ge?", comparison.gte);
 
   // Logic
   registry.set("&&", logic.and);
@@ -102,6 +110,13 @@ export function registerAll() {
   registry.set("trim", stringOps.trim);
   registry.set("strcat", stringOps.strcat);
   registry.set("strseq", stringOps.strseq);
+  registry.set("startsWith", stringOps.startsWith);
+  registry.set("endsWith", stringOps.endsWith);
+  registry.set("indexOf", stringOps.indexOf);
+  // Predicate-style string aliases
+  registry.set("starts?", stringOps.startsWith);
+  registry.set("ends?", stringOps.endsWith);
+  registry.set("index-of", stringOps.indexOf);
 
   // Type ops
   registry.set("typeof", typeOps.typeOf);
