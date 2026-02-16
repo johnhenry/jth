@@ -305,6 +305,19 @@ export function lex(source) {
     addToken(TokenType.COMMENT, text, startLine, startCol);
   }
 
+  function readHashComment(startLine, startCol) {
+    advance(); // skip #
+    let text = "";
+    // Skip leading space if present
+    if (pos < source.length && current() === " ") {
+      advance();
+    }
+    while (pos < source.length && current() !== "\n") {
+      text += advance();
+    }
+    addToken(TokenType.COMMENT, text, startLine, startCol);
+  }
+
   function readColon(startLine, startCol) {
     advance(); // skip first :
 
@@ -384,6 +397,12 @@ export function lex(source) {
       advance(); // #
       advance(); // [
       addToken(TokenType.BLOCK_OPEN, "#[", startLine, startCol);
+      continue;
+    }
+
+    // Hash comment: # (but not #[, which is handled above)
+    if (ch === "#") {
+      readHashComment(startLine, startCol);
       continue;
     }
 

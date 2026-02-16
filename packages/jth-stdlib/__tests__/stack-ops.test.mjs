@@ -10,6 +10,7 @@ import {
   dropHalf,
   copy,
   dupe,
+  dup,
   retrieve,
   dig,
   bury,
@@ -20,6 +21,7 @@ import {
   seed,
   reverse,
   count,
+  depth,
   collect,
   peek,
   view,
@@ -218,5 +220,47 @@ describe("stack-ops", () => {
     expect(spy).toHaveBeenCalledWith(1, 2, 3);
     expect(s.toArray()).toEqual([1, 2, 3]);
     spy.mockRestore();
+  });
+
+  describe("dup (alias of dupe)", () => {
+    it("duplicates the top item just like dupe", () => {
+      const s = new Stack();
+      s.push(1, 2, 3);
+      dup(s);
+      expect(s.toArray()).toEqual([1, 2, 3, 3]);
+    });
+
+    it("is the same function as dupe", () => {
+      expect(dup).toBe(dupe);
+    });
+  });
+
+  describe("depth (alias of count)", () => {
+    it("pushes stack length without consuming, just like count", () => {
+      const s = new Stack();
+      s.push(10, 20, 30);
+      depth(s);
+      expect(s.toArray()).toEqual([10, 20, 30, 3]);
+    });
+
+    it("is the same function as count", () => {
+      expect(depth).toBe(count);
+    });
+  });
+
+  describe("spread as word alias", () => {
+    it("pops an array and pushes elements individually onto stack", () => {
+      const s = new Stack();
+      s.push([1, 2, 3]);
+      spread(s);
+      expect(s.toArray()).toEqual([1, 2, 3]);
+    });
+
+    it("preserves items already on stack below the array", () => {
+      const s = new Stack();
+      s.push(99, [4, 5, 6]);
+      spread(s);
+      expect(s.toArray()).toEqual([99, 4, 5, 6]);
+    });
   });
 });

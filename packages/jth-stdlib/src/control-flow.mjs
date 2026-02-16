@@ -99,9 +99,25 @@ export const keepIf = op(2)((value, condition) => (condition ? [value] : []));
 export const dropIf = op(2)((value, condition) => (condition ? [] : [value]));
 
 // times: { block } N times -- executes block N times
+// Also supports N { block } times (reversed argument order)
 export const timesOp = (stack) => {
-  const n = stack.pop();
-  const block = stack.pop();
+  let top = stack.pop();
+  let second = stack.pop();
+  // Detect argument order: support both [block] N and N [block]
+  let n, block;
+  if (typeof top === "number" && typeof second === "function") {
+    // Standard order: [block] N times
+    n = top;
+    block = second;
+  } else if (typeof top === "function" && typeof second === "number") {
+    // Reversed order: N [block] times
+    n = second;
+    block = top;
+  } else {
+    // Fallback to original behavior (top = n, second = block)
+    n = top;
+    block = second;
+  }
   for (let i = 0; i < n; i++) {
     if (typeof block === "function") block(stack);
   }

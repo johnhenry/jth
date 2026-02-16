@@ -137,3 +137,7 @@ export const peek = (stack) => {
 export const view = (stack) => {
   console.log(...stack.toArray());
 };
+
+// Aliases
+export const dup = dupe;
+export const depth = count;
