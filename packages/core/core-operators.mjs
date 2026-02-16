@@ -1,4 +1,4 @@
-import { setObj } from "./operators.mjs"; //jth-core/operators
+import { setObj, set } from "./operators.mjs"; //jth-core/operators
 import { applyLastN } from "./tools/index.mjs"; //"jth-tools"
 import {
   and,
@@ -97,6 +97,8 @@ setObj({
   else: ELSE,
   elseif: ELSEIF,
 });
+
+
 
 const defaultDynamicOperators = new Map();
 // Incrementors

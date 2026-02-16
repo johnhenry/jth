@@ -74,3 +74,41 @@ export const set = (...assingments) => {
     return [...stack, target];
   };
 };
+
+/**
+ * @description Drills down into a dictionary to get a nested value
+ * @param {any} assingments
+ * @returns {function}
+ */
+export const drill = (...keys) => {
+  return (...stack) => {
+    let target = stack.pop();
+    for (const key of keys) {
+      if (!target) {
+        break;
+      }
+      target = target[key];
+    }
+    return [...stack, target];
+  };
+}
+/**
+ * @description Drills down into a dictionary to set a nested value
+ * @param {any} assingments
+ * @returns {function}
+ */
+export const drillSet = (...keys) => {
+  return (...stack) => {
+    const value = keys.pop();
+    let target = stack[stack.length - 1];
+    const lastKey = keys.pop();
+    for (const key of keys) {
+      if (!target[key]) {
+        target[key] = {};
+      }
+      target = target[key];
+    }
+    target[lastKey] = value;
+    return stack;
+  };
+};

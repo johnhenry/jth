@@ -11,8 +11,10 @@ export * from "./sequences/index.mjs";
 export * from "./range/index.mjs";
 export * from "./dict/index.mjs";
 export * from "./iterator/index.mjs";
+export * from "./ai/ollama.mjs";
 
 import { wait } from "./async/index.mjs";
+import {staticOperators} from "./operators.mjs";
 
 export * from "./bitwise-logic/index.mjs";
 
@@ -609,6 +611,56 @@ export const executeWait = (...stack) => wait(...execute(...stack));
 export const executeWaitSpread = async (...stack) =>
   spread(...(await executeWait(...stack)));
 
+
+
+
+/**
+ * @description Translate a possibly negative index into a non-negative index from the front or back of an array
+ *
+ * @param {number} n - The position (non-negative from back, negative from front).
+ * @param {number} length - The array length.
+ * @note Out-of-bounds values are not handled and may return invalid indices.
+ * @returns {number} The translated array index.
+ */
+const fromEitherEnd = (index, length) =>
+  index < 0 ? ~index : length + ~index;
+
+/**
+ * @description Get nth item from the top stack and move it to the top
+ * @param {number} n
+ * @returns {function}
+ */
+export const dig = attackStack(
+  (n) =>
+    (...stack) => {
+      const index = fromEitherEnd(n, stack.length);
+      if(index >= 0 && index < stack.length){
+        const [item] = stack.splice(index, 1);
+        stack.push(item);
+      }
+      return stack;
+    },
+  1
+);
+
+/**
+ * @description Opposite Of Dig: Move the top item n items down the stack
+ * @param {number} n
+ * @returns {function}
+ */
+export const bury = attackStack(
+  (n) =>
+    (...stack) => {
+      const index = fromEitherEnd(n, stack.length);
+      if (index >= 0 && index < stack.length) {
+        const item  = stack.pop();
+        stack.splice(index, 0, item);
+      }
+      return stack;
+    },
+  1
+);
+
 ////////////////
 // Experimental
 ////////////////
@@ -656,7 +708,6 @@ export const loops = {
 export const loop = (condition = loops.IMMUTABLE) => {
   return (...stack) => {
     const func = stack.pop();
-
     if (typeof condition === "number") {
       for (let i = 0; i < condition; i++) {
         stack = func(...stack);
@@ -666,7 +717,60 @@ export const loop = (condition = loops.IMMUTABLE) => {
         stack = func(...stack);
       }
     }
-
     return [...stack];
   };
 };
+
+import {set} from "./operators.mjs";
+
+
+/**
+ * @description define a value on the stack
+ * ```jth
+ *  1 'one' define
+ * ```
+ * @param {function} condition
+ * @returns {function}
+ */
+export const def = (name)=> (...stack) => {
+  if(!name){
+    throw new Error("def requires a name")
+  }
+  const value = stack.pop();
+  set(name, (...stack) => [...stack, value]);
+  return stack;
+}
+/**
+ * @description save a program on the stack for execution
+ * ```jth
+ * [+] 'add2' save
+ * ```
+ * @param {function} condition
+ * @returns {function}
+ */
+
+export const save = (name, options={}) =>(...stack) => {
+  if(!name){
+    throw new Error("save requires a name")
+  }
+  const value = stack.pop();
+  const limit = options.limit ?? Infinity
+  set(name, async (...stack) => {
+    if(limit === Infinity){
+      return processN()(...stack, ...value)
+    }
+    // pop items off the stack to limit
+    const args = [];
+    for(let i=0; i<limit; i++){
+      if(stack.length){
+        args.unshift(stack.pop())
+      }else{
+        break;
+      }
+    }
+    return  [...stack, ... await processN()(...args, ...value)]
+
+  });
+  return stack;
+}
+

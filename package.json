@@ -28,5 +28,8 @@
   "devDependencies": {
     "jth-cli": "file:packages/cli",
     "jth-core": "file:packages/core"
+  },
+  "dependencies": {
+    "ollama": "^0.5.18"
   }
 }

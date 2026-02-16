@@ -48,4 +48,5 @@ export const operators = (o) => {
     }
   }
 };
+export { staticOperators, dynamicOperators };
 export default operators;
