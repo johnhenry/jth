@@ -116,8 +116,10 @@ export function registerAll() {
   // Serialization
   registry.set("into-json", serialization.intoJson);
   registry.set("to-json", serialization.toJson);
+  registry.set("from-json", serialization.fromJson);
   registry.set("into-lines", serialization.intoLines);
   registry.set("to-lines", serialization.toLines);
+  registry.set("from-lines", serialization.fromLines);
 
   // Array ops
   registry.set("push", arrayOps.push);
