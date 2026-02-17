@@ -23,7 +23,7 @@ jth run hello.jth
 Compile and execute inline jth code.
 
 ```bash
-jth run -c '"hello world" @;'
+jth run -c '"hello world" peek;'
 ```
 
 ### `jth compile <file> [output]`
@@ -40,7 +40,7 @@ jth compile math.jth output.mjs   # writes output.mjs
 Compile inline jth code and print the resulting JavaScript to stdout.
 
 ```bash
-jth compile -c '1 2 + @;'
+jth compile -c '1 2 + peek;'
 ```
 
 ### Flags
@@ -57,10 +57,10 @@ jth compile -c '1 2 + @;'
 jth run program.jth
 
 # Quick one-liner
-jth run -c '5 3 + @;'
+jth run -c '5 3 + peek;'
 
 # Inspect compiled output
-jth compile -c '1 2 + dup * @;'
+jth compile -c '1 2 + dup * peek;'
 ```
 
 ---

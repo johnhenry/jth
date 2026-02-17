@@ -25,7 +25,7 @@ npm install jth-stdlib
 | Serialization    | `to-json`, `from-json`, etc.                       |
 | Combinators      | `apply`, `compose`, `dip`, `bi`, etc.              |
 | Async            | `await`, `promise`, etc.                           |
-| Meta             | `@` (print), `$$` (stack dump), etc.               |
+| Meta             | `peek` (print), `peek-all` (stack dump), etc.      |
 | Iterator         | `iter`, `next`, `take`, etc.                       |
 | Sequences        | `range`, `iota`, `fibonacci`, etc.                 |
 | Statistics       | `mean`, `median`, `stdev`, etc.                    |
