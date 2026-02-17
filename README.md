@@ -3,7 +3,7 @@
 A stack-based programming language that compiles to JavaScript.
 
 ```jth
-"Hello, World!" @;
+"Hello, World!" peek;
 ```
 
 In jth, values are pushed onto a stack. Operators pop their arguments off the stack, do their work, and push results back. It is a simple model that turns out to be surprisingly powerful.
@@ -25,7 +25,7 @@ jth run hello.jth
 ### Run inline code
 
 ```bash
-jth run -c '2 3 + @;'
+jth run -c '2 3 + peek;'
 # Output: 5
 ```
 
@@ -57,11 +57,11 @@ Every value you write gets pushed onto the stack:
 true;     // stack: [42, "hello", true]
 ```
 
-The `@` operator peeks at the top of the stack and logs it without removing it. The `@@` operator logs the entire stack.
+The `peek` operator logs the top of the stack without removing it. The `peek-all` operator logs the entire stack.
 
 ```jth
-42 @;     // logs: 42, stack: [42]
-1 2 3 @@; // logs: 1 2 3, stack: [1, 2, 3]
+42 peek;     // logs: 42, stack: [42]
+1 2 3 peek-all; // logs: 1 2 3, stack: [1, 2, 3]
 ```
 
 Supported value types:
@@ -116,14 +116,14 @@ A block is an anonymous function wrapped in `#[ ]`. It operates on the stack whe
 
 ```jth
 #[ dupe * ] :square;   // define "square" as an operator
-5 square @;            // 25
+5 square peek;         // 25
 ```
 
 `:name` pops the top of the stack and registers it as a named operator. Blocks become callable operators; plain values (numbers, strings) are pushed onto the stack when the operator is used.
 
 ```jth
 3.14159 :PI;
-PI @;   // 3.14159 — PI pushes the value onto the stack
+PI peek;   // 3.14159 — PI pushes the value onto the stack
 ```
 
 `::name` pops a value into a JavaScript `const`. This is primarily used for interop with inline JS — it is *not* accessible as a jth operator name.
@@ -135,7 +135,7 @@ PI @;   // 3.14159 — PI pushes the value onto the stack
 ```jth
 // Syntax: #[ false-block ] #[ true-block ] condition if
 
-#[ "odd" ] #[ "even" ] 10 2 % 0 = if @;
+#[ "odd" ] #[ "even" ] 10 2 % 0 = if peek;
 // 10 % 2 = 0, 0 = 0 is true, so "even" is printed
 ```
 
@@ -155,7 +155,7 @@ dupe 5 % 0 = #[ drop "Buzz" ] swap elseif
 **times** — runs a block N times:
 
 ```jth
-#[ "hi" @ ] 3 times;
+#[ "hi" peek ] 3 times;
 // logs "hi" three times
 ```
 
@@ -172,7 +172,7 @@ dupe 5 % 0 = #[ drop "Buzz" ] swap elseif
 
 ```jth
 #[ "oops" throw ] try;   // stack: [Error("oops")]
-error? @;                 // true
+error? peek;              // true
 ```
 
 **throw** pops a message and throws an error. **error?** checks whether the top of the stack is an Error.
@@ -182,8 +182,8 @@ error? @;                 // true
 Arrays use square brackets with space-separated values:
 
 ```jth
-[1 2 3] @;         // [1, 2, 3]
-[1 2 3] 4 push @;  // [1, 2, 3, 4]
+[1 2 3] peek;         // [1, 2, 3]
+[1 2 3] 4 push peek;  // [1, 2, 3, 4]
 [1 2 3] ...;       // spreads onto stack: 1, 2, 3
 ```
 
@@ -192,10 +192,10 @@ Array operators include `push`, `pop`, `shift`, `unshift`, `flatten`, `suppose` 
 ### Strings
 
 ```jth
-"hello" upper @;              // "HELLO"
-"hello" "world" strcat @;     // "helloworld"
-"hello world" len @;          // 11
-"  hello  " trim @;           // "hello"
+"hello" upper peek;              // "HELLO"
+"hello" "world" strcat peek;     // "helloworld"
+"hello world" len peek;          // 11
+"  hello  " trim peek;           // "hello"
 ```
 
 ### Objects
@@ -203,20 +203,20 @@ Array operators include `push`, `pop`, `shift`, `unshift`, `flatten`, `suppose` 
 Objects use `{ }` with alternating key-value pairs:
 
 ```jth
-{ "name" "jth" "version" 2 } @;
+{ "name" "jth" "version" 2 } peek;
 // { name: "jth", version: 2 }
 
-{ "a" 1 "b" 2 } keys @;      // ["a", "b"]
-{ "a" 1 "b" 2 } values @;    // [1, 2]
+{ "a" 1 "b" 2 } keys peek;      // ["a", "b"]
+{ "a" 1 "b" 2 } values peek;    // [1, 2]
 ```
 
 ### Comments
 
-`//` starts a comment and also acts as a statement terminator:
+Both `//` and `#` start comments. `//` also acts as a statement terminator:
 
 ```jth
-42 @  // this logs 42
-7 @   // and this logs 7
+42 peek  // this logs 42
+7 peek   // and this logs 7
 ```
 
 ### Imports and Exports
@@ -225,7 +225,7 @@ Import operators from another jth file:
 
 ```jth
 ::import "./math.jth" { square cube };
-5 square @;   // 25
+5 square peek;   // 25
 ```
 
 Export operators from a module:
@@ -254,9 +254,9 @@ For non-commutative operators, the prefix number is the left operand: `3-` means
 Double parentheses embed raw JavaScript. The expression is treated as a value:
 
 ```jth
-((Math.random())) @;           // random number
+((Math.random())) peek;           // random number
 ((x => x * 2)) :double;
-5 double @;                    // 10
+5 double peek;                    // 10
 ```
 
 ### Async
@@ -264,7 +264,7 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 `_` awaits a promise. `__` runs Promise.all on an array of promises:
 
 ```jth
-((fetch("https://api.example.com/data"))) _ @;
+((fetch("https://api.example.com/data"))) _ peek;
 ```
 
 ---
@@ -275,13 +275,13 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `+` | Addition | `2 3 +` => `5` |
-| `-` | Subtraction | `10 3 -` => `7` |
-| `*` | Multiplication | `4 5 *` => `20` |
-| `/` | Division | `15 4 /` => `3.75` |
-| `%` | Modulo | `17 5 %` => `2` |
+| `+` / `plus` | Addition | `2 3 +` => `5` |
+| `-` / `minus` | Subtraction | `10 3 -` => `7` |
+| `*` / `mul` | Multiplication | `4 5 *` => `20` |
+| `/` / `div` | Division | `15 4 /` => `3.75` |
+| `%` / `mod` | Modulo | `17 5 %` => `2` |
 | `%%` | Remainder | `17 5 %%` => `2` |
-| `**` | Exponentiation | `2 8 **` => `256` |
+| `**` / `pow` | Exponentiation | `2 8 **` => `256` |
 | `++` | Increment | `5 ++` => `6` |
 | `--` | Decrement | `5 --` => `4` |
 | `abs` | Absolute value | `-5 abs` => `5` |
@@ -311,25 +311,28 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `clear` | Clear the stack | `1 2 3 clear` => `[]` |
 | `...` | Spread (array to stack) | `[1 2 3] ...` => `1 2 3` on stack |
 | `drop` | Remove top | `1 2 drop` => `[1]` |
-| `dupe` | Duplicate top | `5 dupe` => `[5, 5]` |
+| `dupe` / `dup` | Duplicate top | `5 dupe` => `[5, 5]` |
 | `copy` | Duplicate entire stack | `1 2 copy` => `[1, 2, 1, 2]` |
 | `swap` | Swap top two | `1 2 swap` => `[2, 1]` |
+| `over` | Copy second to top | `1 2 over` => `[1, 2, 1]` |
+| `rot` | Rotate third to top | `1 2 3 rot` => `[2, 3, 1]` |
 | `reverse` | Reverse stack | `1 2 3 reverse` => `[3, 2, 1]` |
-| `count` | Push stack depth | `1 2 count` => `[1, 2, 2]` |
+| `count` / `depth` | Push stack depth | `1 2 count` => `[1, 2, 2]` |
 | `collect` | All items to array | `1 2 3 collect` => `[[1, 2, 3]]` |
-| `@` | Peek/log top | `42 @` => logs `42` |
-| `@@` | View/log all | `1 2 @@` => logs `1 2` |
+| `peek` | Peek/log top | `42 peek` => logs `42` |
+| `peek-all` | View/log all | `1 2 peek-all` => logs `1 2` |
 
 ### Comparison
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `=` | Strict equal | `3 3 =` => `true` |
+| `=` / `eq?` | Strict equal | `3 3 =` => `true` |
 | `==` | Loose equal | `3 "3" ==` => `true` |
-| `<` | Less than | `2 5 <` => `true` |
-| `<=` | Less than or equal | `3 3 <=` => `true` |
-| `>` | Greater than | `5 2 >` => `true` |
-| `>=` | Greater than or equal | `3 3 >=` => `true` |
+| `!=` / `ne?` | Not equal | `3 4 !=` => `true` |
+| `<` / `lt?` | Less than | `2 5 <` => `true` |
+| `<=` / `le?` | Less than or equal | `3 3 <=` => `true` |
+| `>` / `gt?` | Greater than | `5 2 >` => `true` |
+| `>=` / `ge?` | Greater than or equal | `3 3 >=` => `true` |
 | `<=>` | Spaceship (three-way) | `3 5 <=>` => `-1` |
 
 ### Logic
@@ -355,7 +358,10 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `drop-when` | Drop if truthy | `42 true drop-when` => `[]` |
 | `keep-if` | Keep value if truthy | `42 true keep-if` => `42` |
 | `drop-if` | Drop value if truthy | `42 true drop-if` => `[]` |
-| `times` | Repeat block N times | `#[ "hi" @ ] 3 times` |
+| `times` | Repeat block N times | `#[ "hi" peek ] 3 times` |
+| `while` | Loop while condition truthy | `#[ body ] #[ cond ] while` |
+| `until` | Loop until condition truthy | `#[ body ] #[ cond ] until` |
+| `break` | Exit current loop | `break` |
 
 ### Error Handling
 
@@ -388,6 +394,8 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `function?` | Is function? | `#[ ] function?` => `true` |
 | `empty?` | Is empty? | `"" empty?` => `true` |
 | `contains?` | Contains element? | `[1 2 3] 2 contains?` => `true` |
+| `starts?` | Starts with prefix? | `"hello" "hel" starts?` => `true` |
+| `ends?` | Ends with suffix? | `"hello" "llo" ends?` => `true` |
 
 ### Arrays
 
@@ -420,9 +428,11 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | Operator | Description | Example |
 |----------|-------------|---------|
 | `into-json` | Stringify to JSON | `{ "a" 1 } into-json` => `'{"a":1}'` |
-| `to-json` | Parse JSON string | `'{"a":1}' to-json` => `{a: 1}` |
+| `from-json` | Parse JSON string | `'{"a":1}' from-json` => `{a: 1}` |
+| `to-json` | Parse JSON (legacy alias for from-json) | `'{"a":1}' to-json` => `{a: 1}` |
 | `into-lines` | Join by newline | `["a" "b"] into-lines` => `"a\nb"` |
-| `to-lines` | Split by newline | `"a\nb" to-lines` => `["a","b"]` |
+| `from-lines` | Split by newline | `"a\nb" from-lines` => `["a","b"]` |
+| `to-lines` | Split by newline (legacy alias for from-lines) | `"a\nb" to-lines` => `["a","b"]` |
 
 ### Async
 
@@ -435,10 +445,20 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `$` | Execute block | `#[ 2 3 + ] $` => `5` |
+| `apply` / `exec` | Execute block | `#[ 2 3 + ] apply` => `5` |
+| `$` | Execute block (legacy) | `#[ 2 3 + ] $` => `5` |
 | `$$` | Execute and spread | `#[ 2 3 + ] $$` |
 | `<<-` | Rewind all | Moves pointer to start |
 | `->>` | Skip all | Moves pointer to end |
+
+### Combinators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `each` | Apply block to each stack item | `1 2 3 #[ 2 * ] each` |
+| `fanout` | Run value through multiple blocks | `5 #[ 2 * ] #[ 1 + ] fanout` => `10, 6` |
+| `zip` | Pair elements from two arrays | `[1 2] ["a" "b"] zip` => `[[1,"a"],[2,"b"]]` |
+| `compose` | Combine blocks into pipeline | `#[ 2 * ] #[ 1 + ] compose` |
 
 ### Iterators
 
