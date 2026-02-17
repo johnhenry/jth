@@ -1,0 +1,11 @@
+{
+  "name": "jth-eval",
+  "version": "0.3.0",
+  "type": "module",
+  "main": "src/index.mjs",
+  "dependencies": {
+    "jth-compiler": "0.3.0",
+    "jth-runtime": "0.3.0",
+    "jth-stdlib": "0.3.0"
+  }
+}

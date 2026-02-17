@@ -11,7 +11,8 @@
     "packages/jth-cli",
     "packages/jth-repl",
     "packages/jth-ai",
-    "packages/jth-html"
+    "packages/jth-html",
+    "packages/jth-eval"
   ],
   "devDependencies": {
     "@types/node": "^25.3.0",
