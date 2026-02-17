@@ -263,7 +263,7 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 
 ### Async
 
-`_` awaits a promise. `__` runs Promise.all on an array of promises:
+`_` awaits a promise. `__` runs Promise.all on all items on the stack:
 
 ```jth
 ((fetch("https://api.example.com/data"))) _ peek;
@@ -282,7 +282,7 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `*` / `mul` | Multiplication | `4 5 *` => `20` |
 | `/` / `div` | Division | `15 4 /` => `3.75` |
 | `%` / `mod` | Modulo | `17 5 %` => `2` |
-| `%%` | Remainder | `17 5 %%` => `2` |
+| `%%` | Remainder | `-17 5 %%` => `-2` |
 | `**` / `pow` | Exponentiation | `2 8 **` => `256` |
 | `++` | Increment | `5 ++` => `6` |
 | `--` | Decrement | `5 --` => `4` |
@@ -335,7 +335,7 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `<=` / `le?` | Less than or equal | `3 3 <=` => `true` |
 | `>` / `gt?` | Greater than | `5 2 >` => `true` |
 | `>=` / `ge?` | Greater than or equal | `3 3 >=` => `true` |
-| `<=>` | Spaceship (three-way) | `3 5 <=>` => `-1` |
+| `<=>` | Spaceship (three-way) | `3 5 <=>` => `1` |
 
 ### Logic
 
@@ -361,8 +361,8 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `keep-if` | Keep value if truthy | `42 true keep-if` => `42` |
 | `drop-if` | Drop value if truthy | `42 true drop-if` => `[]` |
 | `times` | Repeat block N times | `#[ "hi" peek ] 3 times` |
-| `while` | Loop while condition truthy | `#[ body ] #[ cond ] while` |
-| `until` | Loop until condition truthy | `#[ body ] #[ cond ] until` |
+| `while` | Loop while condition truthy | `#[ cond ] #[ body ] while` |
+| `until` | Loop until condition truthy | `#[ cond ] #[ body ] until` |
 | `break` | Exit current loop | `break` |
 
 ### Error Handling
@@ -383,6 +383,9 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `trim` | Trim whitespace | `" hi " trim` => `"hi"` |
 | `strcat` | Concatenate | `"ab" "cd" strcat` => `"abcd"` |
 | `strseq` | Reverse concat | `"ab" "cd" strseq` => `"cdab"` |
+| `startsWith` / `starts?` | Starts with prefix? | `"hello" "hel" starts?` => `true` |
+| `endsWith` / `ends?` | Ends with suffix? | `"hello" "llo" ends?` => `true` |
+| `indexOf` / `index-of` | Index of substring | `"hello" "ell" indexOf` => `1` |
 
 ### Type Checking
 
@@ -396,8 +399,6 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `function?` | Is function? | `#[ ] function?` => `true` |
 | `empty?` | Is empty? | `"" empty?` => `true` |
 | `contains?` | Contains element? | `[1 2 3] 2 contains?` => `true` |
-| `starts?` | Starts with prefix? | `"hello" "hel" starts?` => `true` |
-| `ends?` | Ends with suffix? | `"hello" "llo" ends?` => `true` |
 
 ### Arrays
 
@@ -423,7 +424,7 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | `values` | Get values | `{ "a" 1 } values` => `[1]` |
 | `entries` | Get entries | `{ "a" 1 } entries` => `[["a",1]]` |
 | `merge` | Merge objects | `obj1 obj2 merge` |
-| `record` | Build from pairs | `[["a" 1]] record` => `{a: 1}` |
+| `record` | Build object from stack pairs (variadic) | `1 "a" record` => `{a: 1}` |
 
 ### Serialization
 
@@ -441,7 +442,7 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 | Operator | Description | Example |
 |----------|-------------|---------|
 | `_` | Await a promise | `promise _` |
-| `__` | Promise.all | `[p1 p2] __` |
+| `__` | Promise.all (variadic, consumes stack) | `p1 p2 __` |
 
 ### Meta / Execution
 
@@ -525,7 +526,7 @@ jth --help, -h              # Show help
 
 ## Project Structure
 
-jth is organized as a monorepo with 7 packages:
+jth is organized as a monorepo with 9 packages:
 
 | Package | Description |
 |---------|-------------|
@@ -535,6 +536,8 @@ jth is organized as a monorepo with 7 packages:
 | **jth-cli** | Command-line interface for running and compiling |
 | **jth-repl** | Interactive REPL |
 | **jth-ai** | Ollama AI integration |
+| **jth-html** | HTML generation operators |
+| **jth-eval** | Evaluation utilities |
 | **jth-types** | Internal type definitions |
 
 ---

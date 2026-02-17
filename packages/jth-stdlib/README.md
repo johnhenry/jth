@@ -12,23 +12,23 @@ npm install jth-stdlib
 
 | Category         | Examples                                           |
 |------------------|----------------------------------------------------|
-| Arithmetic       | `+`, `-`, `*`, `/`, `%`, `**`, etc.                |
-| Stack            | `swap`, `dup`, `drop`, `over`, `rot`, etc.         |
-| Comparison       | `==`, `<`, `>`, `<=`, `>=`, `<=>`, etc.            |
-| Logic            | `&&`, `||`, `!`, etc.                              |
-| Control flow     | `if`, `iif`, `while`, `times`, `each`, etc.        |
-| Error handling   | `try`, `throw`, etc.                               |
-| String           | `concat`, `split`, `upper`, `lower`, etc.          |
-| Type             | `typeof`, `to-int`, `to-float`, `to-string`, etc.  |
-| Array            | `sort`, `reverse`, `flatten`, `map`, `filter`, etc.|
-| Dictionary       | `keys`, `values`, `get`, `assoc`, etc.             |
-| Serialization    | `to-json`, `from-json`, etc.                       |
-| Combinators      | `apply`, `compose`, `dip`, `bi`, etc.              |
-| Async            | `await`, `promise`, etc.                           |
-| Meta             | `peek` (print), `peek-all` (stack dump), etc.      |
-| Iterator         | `iter`, `next`, `take`, etc.                       |
-| Sequences        | `range`, `iota`, `fibonacci`, etc.                 |
-| Statistics       | `mean`, `median`, `stdev`, etc.                    |
+| Arithmetic       | `+`, `-`, `*`, `/`, `%`, `**`, `++`, `--`, etc.    |
+| Stack            | `swap`, `dup`, `drop`, `over`, `rot`, `peek`, etc. |
+| Comparison       | `=`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `<=>`, `eq?`, `lt?`, etc. |
+| Logic            | `&&`, `\|\|`, `~~`, `not`, `xor`, `nand`, `nor`   |
+| Control flow     | `if`, `elseif`, `else`, `times`, `while`, `until`, `break`, `when`, etc. |
+| Error handling   | `try`, `throw`, `error?`                           |
+| String           | `strcat`, `strseq`, `upper`, `lower`, `trim`, `len`, `starts?`, `ends?` |
+| Type             | `typeof`, `number?`, `string?`, `array?`, `nil?`, `empty?`, `contains?` |
+| Array            | `push`, `pop`, `shift`, `unshift`, `map`, `filter`, `reduce`, `fold`, `bend` |
+| Dictionary       | `keys`, `values`, `entries`, `merge`, `record`     |
+| Serialization    | `into-json`, `from-json`, `into-lines`, `from-lines` |
+| Combinators      | `each`, `fanout`, `zip`, `compose`                 |
+| Async            | `_` (await), `__` (Promise.all)                    |
+| Meta             | `$` (execute), `$$` (execute-spread), `<<-`, `->>`  |
+| Iterator         | `iter`, `next`, `..` (exhaust)                     |
+| Sequences        | `fibonacci`                                        |
+| Statistics       | `mean`, `median`, `mode`, `modes`                  |
 | Hyperoperations  | `***`, `****`, etc. (variadic hyperoperators)       |
 | Dynamic          | Pattern-based operators (e.g., `2+`, `3*`)         |
 
