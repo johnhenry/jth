@@ -26,12 +26,15 @@ export function registerAll() {
   registry.set("\u2205", stackOps.noop);
   registry.set("clear", stackOps.clear);
   registry.set("...", stackOps.spread);
+  registry.set("spread", stackOps.spread);
   registry.set("drop", stackOps.drop);
   registry.set("dupe", stackOps.dupe);
+  registry.set("dup", stackOps.dup);
   registry.set("copy", stackOps.copy);
   registry.set("swap", stackOps.swap);
   registry.set("reverse", stackOps.reverse);
   registry.set("count", stackOps.count);
+  registry.set("depth", stackOps.depth);
   registry.set("collect", stackOps.collect);
   registry.set("peek", stackOps.peek);
   registry.set("peek-all", stackOps.peekAll);

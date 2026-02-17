@@ -567,6 +567,33 @@ describe("lexer: comments", () => {
     expect(tokens[1].type).toBe(TokenType.OPERATOR);
     expect(tokens[1].value).toBe("/");
   });
+
+  it("should lex # comment as COMMENT", () => {
+    const tok = first("# this is a comment");
+    expect(tok.type).toBe(TokenType.COMMENT);
+    expect(tok.value).toBe("this is a comment");
+  });
+
+  it("should lex # comment after code", () => {
+    const tokens = lexNoEof("42 # a number");
+    expect(tokens).toHaveLength(2);
+    expect(tokens[0].type).toBe(TokenType.NUMBER);
+    expect(tokens[0].value).toBe(42);
+    expect(tokens[1].type).toBe(TokenType.COMMENT);
+    expect(tokens[1].value).toBe("a number");
+  });
+
+  it("should produce no non-comment tokens for a line that is only a # comment", () => {
+    const tokens = lexNoEof("# this is a comment");
+    const nonComment = tokens.filter((t) => t.type !== TokenType.COMMENT);
+    expect(nonComment).toHaveLength(0);
+  });
+
+  it("should not confuse #[ block open with # comment", () => {
+    const tok = first("#[");
+    expect(tok.type).toBe(TokenType.BLOCK_OPEN);
+    expect(tok.value).toBe("#[");
+  });
 });
 
 // ---------------------------------------------------------------------------

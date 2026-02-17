@@ -152,3 +152,7 @@ export const apply = (stack) => {
 
 // exec: alias for apply
 export const exec = apply;
+
+// Aliases
+export const dup = dupe;
+export const depth = count;

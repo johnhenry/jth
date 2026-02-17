@@ -313,6 +313,41 @@ describe("control-flow", () => {
       timesOp(s);
       expect(s.toArray()).toEqual([42]);
     });
+
+    it("supports N [block] times order (number first, block second)", () => {
+      const s = new Stack();
+      s.push(0);
+      const block = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+      };
+      // N [block] times -- number pushed first, then block
+      s.push(3, block);
+      timesOp(s);
+      expect(s.toArray()).toEqual([3]);
+    });
+
+    it("N [block] times gives same result as [block] N times", () => {
+      const block = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 10);
+      };
+
+      // [block] N times (original order)
+      const s1 = new Stack();
+      s1.push(0);
+      s1.push(block, 5);
+      timesOp(s1);
+
+      // N [block] times (reversed order)
+      const s2 = new Stack();
+      s2.push(0);
+      s2.push(5, block);
+      timesOp(s2);
+
+      expect(s1.toArray()).toEqual(s2.toArray());
+      expect(s1.toArray()).toEqual([50]);
+    });
   });
 
   describe("loop", () => {
