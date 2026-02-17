@@ -144,6 +144,12 @@ export function registerAll() {
   registry.set("merge", dictOps.merge);
   registry.set("record", dictOps.record);
 
+  // Combinators
+  registry.set("each", combinators.each);
+  registry.set("fanout", combinators.fanout);
+  registry.set("zip", combinators.zip);
+  registry.set("compose", combinators.compose);
+
   // Async ops
   registry.set("_", asyncOps.wait);
   registry.set("__", asyncOps.waitAll);
