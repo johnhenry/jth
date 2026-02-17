@@ -66,6 +66,13 @@ export function registerAll() {
   registry.set("log", arithmetic.log);
   registry.set("min", arithmetic.min);
   registry.set("max", arithmetic.max);
+  // Word-form aliases
+  registry.set("plus", arithmetic.plus);
+  registry.set("minus", arithmetic.minus);
+  registry.set("mul", arithmetic.mul);
+  registry.set("div", arithmetic.div);
+  registry.set("mod", arithmetic.mod);
+  registry.set("pow", arithmetic.pow);
 
   // Comparison
   registry.set("=", comparison.equal);
@@ -136,10 +143,13 @@ export function registerAll() {
   registry.set("empty?", typeOps.isEmpty);
   registry.set("contains?", typeOps.contains);
 
-  // Serialization
+  // Serialization (canonical: into-X = serialize, from-X = parse/decode)
   registry.set("into-json", serialization.intoJson);
-  registry.set("to-json", serialization.toJson);
+  registry.set("from-json", serialization.fromJson);
   registry.set("into-lines", serialization.intoLines);
+  registry.set("from-lines", serialization.fromLines);
+  // Backward-compatible aliases
+  registry.set("to-json", serialization.toJson);
   registry.set("to-lines", serialization.toLines);
 
   // Array ops

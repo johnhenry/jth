@@ -21,6 +21,9 @@ import {
   log,
   min,
   max,
+  mul,
+  div,
+  pow,
 } from "../src/arithmetic.mjs";
 
 describe("arithmetic", () => {
@@ -198,5 +201,85 @@ describe("arithmetic", () => {
     plus(s);
     inc(s);
     expect(s.toArray()).toEqual([6]);
+  });
+});
+
+describe("word-form arithmetic aliases", () => {
+  it("plus adds two numbers", () => {
+    const s = new Stack();
+    s.push(3, 4);
+    plus(s);
+    expect(s.toArray()).toEqual([7]);
+  });
+
+  it("minus subtracts two numbers", () => {
+    const s = new Stack();
+    s.push(10, 3);
+    minus(s);
+    expect(s.toArray()).toEqual([7]);
+  });
+
+  it("mul multiplies two numbers", () => {
+    const s = new Stack();
+    s.push(6, 7);
+    mul(s);
+    expect(s.toArray()).toEqual([42]);
+  });
+
+  it("mul is the same operation as times", () => {
+    const s1 = new Stack();
+    s1.push(5, 8);
+    mul(s1);
+
+    const s2 = new Stack();
+    s2.push(5, 8);
+    times(s2);
+
+    expect(s1.toArray()).toEqual(s2.toArray());
+  });
+
+  it("div divides two numbers", () => {
+    const s = new Stack();
+    s.push(20, 4);
+    div(s);
+    expect(s.toArray()).toEqual([5]);
+  });
+
+  it("div is the same operation as divide", () => {
+    const s1 = new Stack();
+    s1.push(15, 3);
+    div(s1);
+
+    const s2 = new Stack();
+    s2.push(15, 3);
+    divide(s2);
+
+    expect(s1.toArray()).toEqual(s2.toArray());
+  });
+
+  it("mod computes modulo", () => {
+    const s = new Stack();
+    s.push(7, 3);
+    mod(s);
+    expect(s.toArray()).toEqual([1]);
+  });
+
+  it("pow raises to a power", () => {
+    const s = new Stack();
+    s.push(2, 10);
+    pow(s);
+    expect(s.toArray()).toEqual([1024]);
+  });
+
+  it("pow is the same operation as exp", () => {
+    const s1 = new Stack();
+    s1.push(3, 4);
+    pow(s1);
+
+    const s2 = new Stack();
+    s2.push(3, 4);
+    exp(s2);
+
+    expect(s1.toArray()).toEqual(s2.toArray());
   });
 });

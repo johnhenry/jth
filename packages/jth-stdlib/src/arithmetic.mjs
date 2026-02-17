@@ -20,3 +20,8 @@ export const trunc = op(1)((a) => [Math.trunc(a)]);
 export const log = op(1)((a) => [Math.log(a)]);
 export const min = variadic((...args) => [Math.min(...args)]);
 export const max = variadic((...args) => [Math.max(...args)]);
+
+// Word-form aliases
+export const mul = times;
+export const div = divide;
+export const pow = exp;
