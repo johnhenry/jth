@@ -141,14 +141,14 @@ describe("createEvaluator", () => {
     expect(ev.toArray()).toEqual(["hello world"]);
   });
 
-  // ── @ (peek operator) logs without consuming ───────────────────
+  // ── peek operator logs without consuming ───────────────────
 
-  it("@ operator logs top item without consuming it", async () => {
+  it("peek operator logs top item without consuming it", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
     const ev = createEvaluator();
-    await ev.evaluate("42 @;");
+    await ev.evaluate("42 peek;");
     expect(spy).toHaveBeenCalledWith(42);
-    // Stack should still contain 42 since @ only peeks
+    // Stack should still contain 42 since peek only peeks
     expect(ev.toArray()).toEqual([42]);
     spy.mockRestore();
   });
