@@ -145,12 +145,14 @@ export function registerAll() {
 
   // Serialization (canonical: into-X = serialize, from-X = parse/decode)
   registry.set("into-json", serialization.intoJson);
+  registry.set("to-json", serialization.toJson);
   registry.set("from-json", serialization.fromJson);
   registry.set("into-lines", serialization.intoLines);
   registry.set("from-lines", serialization.fromLines);
   // Backward-compatible aliases
   registry.set("to-json", serialization.toJson);
   registry.set("to-lines", serialization.toLines);
+  registry.set("from-lines", serialization.fromLines);
 
   // Array ops
   registry.set("push", arrayOps.push);
