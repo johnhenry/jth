@@ -40,6 +40,8 @@ export function registerAll() {
   registry.set("peek-all", stackOps.peekAll);
   registry.set("apply", stackOps.apply);
   registry.set("exec", stackOps.exec);
+  registry.set("over", stackOps.over);
+  registry.set("rot", stackOps.rot);
 
   // Arithmetic
   registry.set("+", arithmetic.plus);

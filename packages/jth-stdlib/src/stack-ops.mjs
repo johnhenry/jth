@@ -156,3 +156,9 @@ export const exec = apply;
 // Aliases
 export const dup = dupe;
 export const depth = count;
+
+// over: copy second item to top (Forth: a b -- a b a)
+export const over = op(2)((a, b) => [a, b, a]);
+
+// rot: rotate top three items (Forth: a b c -- b c a)
+export const rot = op(3)((a, b, c) => [b, c, a]);
