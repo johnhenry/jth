@@ -3,6 +3,7 @@ import { Stack } from "jth-runtime";
 import {
   equal,
   coercedEqual,
+  notEqual,
   lt,
   lte,
   gt,
@@ -121,5 +122,70 @@ describe("comparison", () => {
     s.push(5, 10);
     spaceship(s);
     expect(s.toArray()).toEqual([1]);
+  });
+});
+
+describe("predicate-style comparisons", () => {
+  it("notEqual returns true for different values", () => {
+    const s = new Stack();
+    s.push(3, 4);
+    notEqual(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("notEqual returns false for identical values", () => {
+    const s = new Stack();
+    s.push(5, 5);
+    notEqual(s);
+    expect(s.toArray()).toEqual([false]);
+  });
+
+  it("notEqual uses strict inequality (no type coercion)", () => {
+    const s = new Stack();
+    s.push(1, "1");
+    notEqual(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("eq? behaves like equal (alias test)", () => {
+    const s = new Stack();
+    s.push(3, 3);
+    equal(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("ne? behaves like notEqual (alias test)", () => {
+    const s = new Stack();
+    s.push(3, 4);
+    notEqual(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("lt? behaves like lt (alias test)", () => {
+    const s = new Stack();
+    s.push(2, 5);
+    lt(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("le? behaves like lte (alias test)", () => {
+    const s = new Stack();
+    s.push(5, 5);
+    lte(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("gt? behaves like gt (alias test)", () => {
+    const s = new Stack();
+    s.push(5, 3);
+    gt(s);
+    expect(s.toArray()).toEqual([true]);
+  });
+
+  it("ge? behaves like gte (alias test)", () => {
+    const s = new Stack();
+    s.push(5, 5);
+    gte(s);
+    expect(s.toArray()).toEqual([true]);
   });
 });
