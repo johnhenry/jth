@@ -91,6 +91,9 @@ export function registerAll() {
   registry.set("keep-if", controlFlow.keepIf);
   registry.set("drop-if", controlFlow.dropIf);
   registry.set("times", controlFlow.timesOp);
+  registry.set("while", controlFlow.whileOp);
+  registry.set("until", controlFlow.untilOp);
+  registry.set("break", controlFlow.breakOp);
 
   // Error handling
   registry.set("try", errorHandling.tryOp);

@@ -47,7 +47,7 @@ export const elseifOp = (stack) => {
   const condStack = ensureCondStack(stack);
 
   if (condStack.length === 0) {
-    // No preceding `if` — treat as no-op (defensive)
+    // No preceding if — treat as no-op (defensive)
     return;
   }
 
@@ -99,9 +99,25 @@ export const keepIf = op(2)((value, condition) => (condition ? [value] : []));
 export const dropIf = op(2)((value, condition) => (condition ? [] : [value]));
 
 // times: { block } N times -- executes block N times
+// Also supports N { block } times (reversed argument order)
 export const timesOp = (stack) => {
-  const n = stack.pop();
-  const block = stack.pop();
+  let top = stack.pop();
+  let second = stack.pop();
+  // Detect argument order: support both [block] N and N [block]
+  let n, block;
+  if (typeof top === "number" && typeof second === "function") {
+    // Standard order: [block] N times
+    n = top;
+    block = second;
+  } else if (typeof top === "function" && typeof second === "number") {
+    // Reversed order: N [block] times
+    n = second;
+    block = top;
+  } else {
+    // Fallback to original behavior (top = n, second = block)
+    n = top;
+    block = second;
+  }
   for (let i = 0; i < n; i++) {
     if (typeof block === "function") block(stack);
   }
@@ -112,5 +128,73 @@ export const loop = (n) => (stack) => {
   const block = stack.pop();
   for (let i = 0; i < n; i++) {
     if (typeof block === "function") block(stack);
+  }
+};
+
+// BreakSignal: sentinel error thrown by break to exit while/until loops early.
+// While/until loops catch this to implement early exit.
+// If thrown outside a loop, it propagates as a normal error.
+export class BreakSignal extends Error {
+  constructor() {
+    super("break");
+    this.name = "BreakSignal";
+  }
+}
+
+// break: throws BreakSignal to exit the current while/until loop
+export const breakOp = (stack) => {
+  throw new BreakSignal();
+};
+
+// while: [condition-block] [body-block] while
+// Execute body while condition block leaves truthy value on stack.
+// Pops both blocks from the stack. Then repeatedly:
+//   1. Execute condition block (it should push a value onto the stack)
+//   2. Pop the condition result
+//   3. If falsy, exit the loop
+//   4. If truthy, execute the body block, then repeat
+export const whileOp = (stack) => {
+  const bodyBlock = stack.pop();
+  const condBlock = stack.pop();
+
+  const MAX_ITERATIONS = 1_000_000;
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
+    // Execute condition block -- it should push a boolean/truthy value
+    if (typeof condBlock === "function") condBlock(stack);
+    const condResult = stack.pop();
+    if (!condResult) break;
+
+    // Execute body block
+    try {
+      if (typeof bodyBlock === "function") bodyBlock(stack);
+    } catch (e) {
+      if (e instanceof BreakSignal) break;
+      throw e;
+    }
+  }
+};
+
+// until: [condition-block] [body-block] until
+// Execute body until condition block leaves truthy value on stack.
+// Same structure as while but with inverted condition check:
+// the loop continues while condition is FALSY, stops when it becomes TRUTHY.
+export const untilOp = (stack) => {
+  const bodyBlock = stack.pop();
+  const condBlock = stack.pop();
+
+  const MAX_ITERATIONS = 1_000_000;
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
+    // Execute condition block
+    if (typeof condBlock === "function") condBlock(stack);
+    const condResult = stack.pop();
+    if (condResult) break; // stop when condition becomes truthy
+
+    // Execute body block
+    try {
+      if (typeof bodyBlock === "function") bodyBlock(stack);
+    } catch (e) {
+      if (e instanceof BreakSignal) break;
+      throw e;
+    }
   }
 };

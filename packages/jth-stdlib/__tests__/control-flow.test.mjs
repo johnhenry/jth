@@ -10,6 +10,10 @@ import {
   dropIf,
   timesOp,
   loop,
+  whileOp,
+  untilOp,
+  breakOp,
+  BreakSignal,
 } from "../src/control-flow.mjs";
 import { apply, exec } from "../src/stack-ops.mjs";
 
@@ -35,15 +39,10 @@ describe("control-flow", () => {
 
     it("does nothing if block is not a function (3-arg)", () => {
       const s = new Stack();
-      // All 3 values are functions to stay in 3-arg mode
-      const falseBlock = "not-a-fn";
       const trueBlock = "also-not-a-fn";
       const dummyFn = () => {};
-      // Stack: [dummyFn, "also-not-a-fn", 1]
-      // peek below trueBlock is dummyFn → 3-arg mode
       s.push(dummyFn, trueBlock, 1);
       ifOp(s);
-      // chosen = trueBlock ("also-not-a-fn"), not a function → nothing executed
       expect(s.toArray()).toEqual([]);
     });
   });
@@ -59,7 +58,7 @@ describe("control-flow", () => {
 
     it("does not execute block when condition is falsy", () => {
       const s = new Stack();
-      s.push(42); // non-function below block → triggers 2-arg mode
+      s.push(42);
       const block = (stack) => stack.push("matched");
       s.push(block, false);
       ifOp(s);
@@ -132,101 +131,78 @@ describe("control-flow", () => {
   describe("if/elseif/else chain", () => {
     it("matches first branch", () => {
       const s = new Stack();
-      s.push(15); // non-function below → 2-arg
-
+      s.push(15);
       const b1 = (stack) => stack.push("fizzbuzz");
       s.push(b1, true);
       ifOp(s);
-
       const b2 = (stack) => stack.push("fizz");
       s.push(b2, false);
       elseifOp(s);
-
       const b3 = (stack) => stack.push("buzz");
       s.push(b3, false);
       elseifOp(s);
-
       const b4 = (stack) => {};
       s.push(b4);
       elseOp(s);
-
       expect(s.toArray()).toEqual([15, "fizzbuzz"]);
     });
 
     it("matches second branch (elseif)", () => {
       const s = new Stack();
       s.push(9);
-
       const b1 = (stack) => stack.push("fizzbuzz");
       s.push(b1, false);
       ifOp(s);
-
       const b2 = (stack) => stack.push("fizz");
       s.push(b2, true);
       elseifOp(s);
-
       const b3 = (stack) => stack.push("buzz");
       s.push(b3, false);
       elseifOp(s);
-
       const b4 = (stack) => {};
       s.push(b4);
       elseOp(s);
-
       expect(s.toArray()).toEqual([9, "fizz"]);
     });
 
     it("falls through to else", () => {
       const s = new Stack();
       s.push(7);
-
       const b1 = (stack) => stack.push("fizzbuzz");
       s.push(b1, false);
       ifOp(s);
-
       const b2 = (stack) => stack.push("fizz");
       s.push(b2, false);
       elseifOp(s);
-
       const b3 = (stack) => stack.push("buzz");
       s.push(b3, false);
       elseifOp(s);
-
       const b4 = (stack) => stack.push("default");
       s.push(b4);
       elseOp(s);
-
       expect(s.toArray()).toEqual([7, "default"]);
     });
 
     it("handles nested if/elseif/else chains", () => {
       const s = new Stack();
       s.push(42);
-
-      // Outer if — false
       const outerBlock = (stack) => stack.push("outer-if");
       s.push(outerBlock, false);
       ifOp(s);
-
-      // Outer else — runs, and inside it we do a nested chain
       const outerElse = (stack) => {
-        // Inner if/elseif/else
         stack.push("inner-value");
         const innerB1 = (st) => st.push("inner-if");
         stack.push(innerB1, false);
         ifOp(stack);
-
         const innerB2 = (st) => st.push("inner-elseif");
         stack.push(innerB2, true);
         elseifOp(stack);
-
         const innerB3 = (st) => st.push("inner-else");
         stack.push(innerB3);
         elseOp(stack);
       };
       s.push(outerElse);
       elseOp(s);
-
       expect(s.toArray()).toEqual([42, "inner-value", "inner-elseif"]);
     });
   });
@@ -273,7 +249,6 @@ describe("control-flow", () => {
       const s = new Stack();
       s.push(10, 42, false);
       dropWhen(s);
-      // Should keep 42 because condition is falsy
       expect(s.toArray()).toEqual([10, 42]);
     });
 
@@ -371,6 +346,179 @@ describe("control-flow", () => {
   describe("exec (from stack-ops)", () => {
     it("is an alias for apply", () => {
       expect(exec).toBe(apply);
+    });
+  });
+
+  describe("while loop", () => {
+    it("repeats body while condition is truthy", () => {
+      const s = new Stack();
+      s.push(0);
+      const condBlock = (stack) => {
+        stack.dup();
+        const val = stack.pop();
+        stack.push(val < 5);
+      };
+      const bodyBlock = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+      };
+      s.push(condBlock, bodyBlock);
+      whileOp(s);
+      expect(s.toArray()).toEqual([5]);
+    });
+
+    it("does not execute body if condition is initially false", () => {
+      const s = new Stack();
+      s.push(10);
+      const condBlock = (stack) => {
+        stack.dup();
+        const val = stack.pop();
+        stack.push(val < 5);
+      };
+      const bodyBlock = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+      };
+      s.push(condBlock, bodyBlock);
+      whileOp(s);
+      expect(s.toArray()).toEqual([10]);
+    });
+
+    it("handles multiple iterations accumulating values", () => {
+      const s = new Stack();
+      s.push(1);
+      const condBlock = (stack) => {
+        stack.dup();
+        const val = stack.pop();
+        stack.push(val <= 3);
+      };
+      const bodyBlock = (stack) => {
+        stack.dup();
+        const top = stack.pop();
+        stack.push(top + 1);
+      };
+      s.push(condBlock, bodyBlock);
+      whileOp(s);
+      expect(s.toArray()).toEqual([1, 2, 3, 4]);
+    });
+
+    it("works with zero iterations when condition is immediately false", () => {
+      const s = new Stack();
+      s.push(false);
+      const condBlock = (stack) => {
+        // condition just checks top of stack (which is false)
+      };
+      const bodyBlock = (stack) => {
+        stack.push("should not appear");
+      };
+      s.push(condBlock, bodyBlock);
+      whileOp(s);
+      expect(s.toArray()).toEqual([]);
+    });
+  });
+
+  describe("until loop", () => {
+    it("repeats body until condition becomes truthy", () => {
+      const s = new Stack();
+      s.push(0);
+      const condBlock = (stack) => {
+        stack.dup();
+        const val = stack.pop();
+        stack.push(val === 5);
+      };
+      const bodyBlock = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+      };
+      s.push(condBlock, bodyBlock);
+      untilOp(s);
+      expect(s.toArray()).toEqual([5]);
+    });
+
+    it("does not execute body if condition is immediately truthy", () => {
+      const s = new Stack();
+      s.push(5);
+      const condBlock = (stack) => {
+        stack.dup();
+        const val = stack.pop();
+        stack.push(val === 5);
+      };
+      const bodyBlock = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+      };
+      s.push(condBlock, bodyBlock);
+      untilOp(s);
+      expect(s.toArray()).toEqual([5]);
+    });
+
+    it("executes body when condition is initially falsy", () => {
+      const s = new Stack();
+      s.push(0);
+      const condBlock = (stack) => {
+        stack.dup();
+        const val = stack.pop();
+        stack.push(val > 0);
+      };
+      const bodyBlock = (stack) => {
+        stack.push(42);
+      };
+      s.push(condBlock, bodyBlock);
+      untilOp(s);
+      expect(s.toArray()).toEqual([0, 42]);
+    });
+  });
+
+  describe("break", () => {
+    it("exits while loop early", () => {
+      const s = new Stack();
+      s.push(0);
+      const condBlock = (stack) => {
+        stack.push(true);
+      };
+      const bodyBlock = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+        stack.dup();
+        const top = stack.pop();
+        if (top >= 3) {
+          throw new BreakSignal();
+        }
+      };
+      s.push(condBlock, bodyBlock);
+      whileOp(s);
+      expect(s.toArray()).toEqual([3]);
+    });
+
+    it("exits until loop early", () => {
+      const s = new Stack();
+      s.push(0);
+      const condBlock = (stack) => {
+        stack.push(false);
+      };
+      const bodyBlock = (stack) => {
+        const val = stack.pop();
+        stack.push(val + 1);
+        stack.dup();
+        const top = stack.pop();
+        if (top >= 3) {
+          throw new BreakSignal();
+        }
+      };
+      s.push(condBlock, bodyBlock);
+      untilOp(s);
+      expect(s.toArray()).toEqual([3]);
+    });
+
+    it("BreakSignal propagates when thrown outside a loop", () => {
+      expect(() => {
+        throw new BreakSignal();
+      }).toThrow(BreakSignal);
+    });
+
+    it("breakOp throws BreakSignal when called as stack operator", () => {
+      const s = new Stack();
+      expect(() => breakOp(s)).toThrow(BreakSignal);
     });
   });
 });
