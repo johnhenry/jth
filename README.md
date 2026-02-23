@@ -1,5 +1,7 @@
 # jth
 
+<img src="scorecard.png" width="100%">
+
 A stack-based programming language that compiles to JavaScript.
 
 ```jth
