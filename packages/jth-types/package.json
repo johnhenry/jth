@@ -2,12 +2,12 @@
   "name": "jth-types",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.mjs",
-    "./tokens": "./src/tokens.mjs",
-    "./ast": "./src/ast.mjs",
-    "./errors": "./src/errors.mjs",
-    "./interfaces": "./src/interfaces.mjs"
+    ".": "./src/index.ts",
+    "./tokens": "./src/tokens.ts",
+    "./ast": "./src/ast.ts",
+    "./errors": "./src/errors.ts",
+    "./interfaces": "./src/interfaces.ts"
   }
 }

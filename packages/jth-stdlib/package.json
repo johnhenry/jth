@@ -2,9 +2,9 @@
   "name": "jth-stdlib",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.mjs"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "jth-types": "0.3.0",
