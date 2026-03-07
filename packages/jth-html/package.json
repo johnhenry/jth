@@ -2,13 +2,13 @@
   "name": "jth-html",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.mjs",
-    "./nodes": "./src/nodes.mjs",
-    "./render": "./src/render.mjs",
-    "./operators": "./src/operators.mjs",
-    "./register": "./src/register.mjs"
+    ".": "./src/index.ts",
+    "./nodes": "./src/nodes.ts",
+    "./render": "./src/render.ts",
+    "./operators": "./src/operators.ts",
+    "./register": "./src/register.ts"
   },
   "dependencies": {
     "jth-runtime": "0.3.0"

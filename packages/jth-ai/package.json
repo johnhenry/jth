@@ -2,7 +2,7 @@
   "name": "jth-ai",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
   "dependencies": {
     "jth-runtime": "0.3.0"
   }

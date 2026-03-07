@@ -2,13 +2,13 @@
   "name": "jth-compiler",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.mjs",
-    "./lexer": "./src/lexer.mjs",
-    "./parser": "./src/parser.mjs",
-    "./codegen": "./src/codegen.mjs",
-    "./transform": "./src/transform.mjs"
+    ".": "./src/index.ts",
+    "./lexer": "./src/lexer.ts",
+    "./parser": "./src/parser.ts",
+    "./codegen": "./src/codegen.ts",
+    "./transform": "./src/transform.ts"
   },
   "dependencies": {
     "jth-types": "0.3.0",

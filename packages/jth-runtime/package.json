@@ -2,14 +2,14 @@
   "name": "jth-runtime",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.mjs",
-    "./stack": "./src/stack.mjs",
-    "./op": "./src/op.mjs",
-    "./meta": "./src/meta.mjs",
-    "./process-n": "./src/process-n.mjs",
-    "./registry": "./src/registry.mjs"
+    ".": "./src/index.ts",
+    "./stack": "./src/stack.ts",
+    "./op": "./src/op.ts",
+    "./meta": "./src/meta.ts",
+    "./process-n": "./src/process-n.ts",
+    "./registry": "./src/registry.ts"
   },
   "dependencies": {
     "jth-types": "0.3.0"
