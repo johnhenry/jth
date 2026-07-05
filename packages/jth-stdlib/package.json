@@ -1,6 +1,6 @@
 {
   "name": "jth-stdlib",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,7 +18,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-types": "0.3.0",
-    "jth-runtime": "0.3.0"
+    "jth-types": "^0.4.0",
+    "jth-runtime": "^0.4.0"
   }
 }
