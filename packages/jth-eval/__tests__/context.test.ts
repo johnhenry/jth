@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { JthContext } from "../src/context.mjs";
+import { JthContext } from "../src/context.ts";
 
 describe("JthContext", () => {
   let ctx;

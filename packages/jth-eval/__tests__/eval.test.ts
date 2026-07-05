@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { op, variadic } from "jth-runtime";
-import { evalJth } from "../src/eval.mjs";
+import { evalJth } from "../src/eval.ts";
 
 describe("evalJth", () => {
   describe("basic evaluation", () => {

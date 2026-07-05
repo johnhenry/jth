@@ -2,7 +2,13 @@
   "name": "jth-eval",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./eval": "./src/eval.ts",
+    "./context": "./src/context.ts",
+    "./scoped-registry": "./src/scoped-registry.ts"
+  },
   "dependencies": {
     "jth-types": "0.3.0",
     "jth-compiler": "0.3.0",

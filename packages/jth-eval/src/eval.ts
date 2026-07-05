@@ -1,26 +1,46 @@
 import { Stack, registry, op } from "jth-runtime";
+import type { StackOperator } from "jth-runtime";
 import { run } from "jth-compiler";
 import "jth-stdlib";
-import { ScopedRegistry } from "./scoped-registry.mjs";
+import { ScopedRegistry } from "./scoped-registry.ts";
 
 // Operators considered IO/shell/network for "restricted" sandbox mode.
 // Currently jth-stdlib has no such operators, but this future-proofs the list.
-const RESTRICTED_OPS = new Set([]);
+const RESTRICTED_OPS = new Set<string>([]);
+
+export type SandboxOption = boolean | "restricted" | string[];
+
+export interface EvalOptions {
+  /** Named values injected as zero-arity operators. */
+  values?: Record<string, unknown>;
+  /** Custom operator functions. */
+  operators?: Record<string, StackOperator>;
+  /** Pre-load the stack before evaluation. */
+  stack?: unknown[];
+  /** Max execution time in ms (default: 5000). */
+  timeout?: number;
+  /** Control stdlib availability. */
+  sandbox?: SandboxOption;
+  /** Capture console.log output (default: true). */
+  captureOutput?: boolean;
+}
+
+export interface EvalResult {
+  /** Top of the stack after execution (undefined if empty). */
+  value: unknown;
+  /** Full stack contents after execution. */
+  stack: unknown[];
+  /** Captured console output ("" unless captureOutput). */
+  output: string;
+}
 
 /**
  * One-shot jth evaluation.
- *
- * @param {string} code - jth source code to evaluate
- * @param {object} [options]
- * @param {Record<string, any>} [options.values] - Named values injected as zero-arity operators
- * @param {Record<string, Function>} [options.operators] - Custom operator functions
- * @param {any[]} [options.stack] - Pre-load the stack before evaluation
- * @param {number} [options.timeout] - Max execution time in ms (default: 5000)
- * @param {boolean|"restricted"|string[]} [options.sandbox] - Control stdlib availability
- * @param {boolean} [options.captureOutput] - Capture console.log output (default: true)
- * @returns {Promise<EvalResult>}
  */
-export async function evalJth(code, options = {}) {
+export async function evalJth(
+  code: string,
+  options: EvalOptions = {}
+): Promise<EvalResult> {
   const {
     values = {},
     operators = {},
@@ -73,7 +93,7 @@ export async function evalJth(code, options = {}) {
 /**
  * Build an allowlist Set for sandbox mode, or null for no filtering.
  */
-function buildAllowlist(sandbox) {
+function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
   if (sandbox === false) return null; // Full access
 
   if (sandbox === true) {
@@ -103,16 +123,16 @@ function buildAllowlist(sandbox) {
  * Collect all currently registered operator names from the global registry.
  * We probe known operator names since the registry doesn't expose iteration.
  */
-function collectGlobalNames() {
+function collectGlobalNames(): Set<string> {
   // We'll use a known comprehensive list of all stdlib operators
   const names = [
     // Stack ops
-    "noop", "\u2205", "clear", "...", "spread", "drop", "dupe", "dup", "copy",
+    "noop", "∅", "clear", "...", "spread", "drop", "dupe", "dup", "copy",
     "swap", "reverse", "count", "depth", "collect", "peek", "peek-all",
     "apply", "exec", "over", "rot",
     // Arithmetic
-    "+", "-", "*", "\u22C5", "/", "\u00F7", "**", "%", "%%", "++", "--",
-    "\u03A3", "\u03A0", "abs", "|\uD835\uDC65|", "\u221A", "sqrt",
+    "+", "-", "*", "⋅", "/", "÷", "**", "%", "%%", "++", "--",
+    "Σ", "Π", "abs", "|𝑥|", "√", "sqrt",
     "floor", "ceil", "round", "trunc", "log", "min", "max",
     "plus", "minus", "mul", "div", "mod", "pow",
     // Comparison
@@ -149,10 +169,10 @@ function collectGlobalNames() {
     // Sequences
     "fibonacci",
     // Statistics
-    "x\u0304", "mean", "median", "mode", "modes",
+    "x̄", "mean", "median", "mode", "modes",
   ];
 
-  const found = new Set();
+  const found = new Set<string>();
   for (const name of names) {
     if (registry.has(name)) {
       found.add(name);

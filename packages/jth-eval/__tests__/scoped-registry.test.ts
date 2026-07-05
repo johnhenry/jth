@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { registry } from "jth-runtime";
 import "jth-stdlib";
-import { ScopedRegistry } from "../src/scoped-registry.mjs";
+import { ScopedRegistry } from "../src/scoped-registry.ts";
 
 describe("ScopedRegistry", () => {
   let scoped;

@@ -1,5 +1,19 @@
 import { registry } from "jth-runtime";
+import type { StackOperator } from "jth-runtime";
 import { JthRuntimeError } from "jth-types";
+
+type DynamicFactory = (
+  name: string,
+  pattern: RegExp
+) => StackOperator | undefined;
+
+export interface ScopedRegistryOptions {
+  /**
+   * If set, only these operator names are allowed to resolve from the
+   * global registry. null = allow all.
+   */
+  allowlist?: Set<string> | null;
+}
 
 /**
  * ScopedRegistry wraps the global registry with a local overlay.
@@ -7,16 +21,11 @@ import { JthRuntimeError } from "jth-types";
  * to the global registry. Sandbox mode filters global fallback through an allowlist.
  */
 export class ScopedRegistry {
-  #local = new Map();
-  #dynamicLocal = [];
-  #allowlist = null; // null = no filtering, Set = only these names allowed from global
+  #local = new Map<string, StackOperator>();
+  #dynamicLocal: Array<{ pattern: RegExp; factory: DynamicFactory }> = [];
+  #allowlist: Set<string> | null = null; // null = no filtering, Set = only these names allowed from global
 
-  /**
-   * @param {object} [options]
-   * @param {Set<string>|null} [options.allowlist] - If set, only these operator names
-   *   are allowed to resolve from the global registry. null = allow all.
-   */
-  constructor(options = {}) {
+  constructor(options: ScopedRegistryOptions = {}) {
     if (options.allowlist) {
       this.#allowlist = options.allowlist;
     }
@@ -25,7 +34,7 @@ export class ScopedRegistry {
   /**
    * Register an operator in the local scope.
    */
-  set(name, fn) {
+  set(name: string, fn: StackOperator): void {
     this.#local.set(name, fn);
   }
 
@@ -33,7 +42,7 @@ export class ScopedRegistry {
    * Get an operator. Checks local first, then global (with allowlist filtering).
    * Returns undefined if not found.
    */
-  get(name) {
+  get(name: string): StackOperator | undefined {
     if (this.#local.has(name)) return this.#local.get(name);
 
     // Check local dynamic patterns
@@ -51,7 +60,7 @@ export class ScopedRegistry {
   /**
    * Get an operator or throw if not found.
    */
-  resolve(name) {
+  resolve(name: string): StackOperator {
     const fn = this.get(name);
     if (!fn) {
       if (this.#allowlist && !this.#allowlist.has(name) && registry.has(name)) {
@@ -75,28 +84,28 @@ export class ScopedRegistry {
   /**
    * Check if an operator exists (local or allowed global).
    */
-  has(name) {
+  has(name: string): boolean {
     return this.get(name) !== undefined;
   }
 
   /**
    * Remove an operator from the local scope only.
    */
-  remove(name) {
+  remove(name: string): boolean {
     return this.#local.delete(name);
   }
 
   /**
    * Register a dynamic pattern in the local scope.
    */
-  setDynamic(pattern, factory) {
+  setDynamic(pattern: RegExp, factory: DynamicFactory): void {
     this.#dynamicLocal.push({ pattern, factory });
   }
 
   /**
    * Clear the local scope only. Does not affect global registry.
    */
-  clear() {
+  clear(): void {
     this.#local.clear();
     this.#dynamicLocal.length = 0;
   }

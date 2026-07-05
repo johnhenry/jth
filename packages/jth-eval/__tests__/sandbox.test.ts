@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { evalJth } from "../src/eval.mjs";
-import { JthContext } from "../src/context.mjs";
+import { evalJth } from "../src/eval.ts";
+import { JthContext } from "../src/context.ts";
 
 describe("Sandbox modes", () => {
   describe("sandbox: false (default, full access)", () => {

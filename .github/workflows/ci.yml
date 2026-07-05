@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # TODO(#20): jth-eval is still plain .mjs with no tsconfig; once it is
-      # converted to TypeScript and joins the project-reference graph,
-      # `tsc -b` will cover it too.
       - name: Typecheck
         run: npm run typecheck
 
