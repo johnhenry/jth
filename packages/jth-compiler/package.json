@@ -8,7 +8,8 @@
     "./lexer": "./src/lexer.ts",
     "./parser": "./src/parser.ts",
     "./codegen": "./src/codegen.ts",
-    "./transform": "./src/transform.ts"
+    "./transform": "./src/transform.ts",
+    "./run": "./src/run.ts"
   },
   "dependencies": {
     "jth-types": "0.3.0",

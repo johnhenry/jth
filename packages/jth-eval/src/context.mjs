@@ -1,5 +1,5 @@
-import { Stack, processN, op } from "jth-runtime";
-import { lex, parse, generate } from "jth-compiler";
+import { Stack, op } from "jth-runtime";
+import { run } from "jth-compiler";
 import "jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.mjs";
 
@@ -51,52 +51,19 @@ export class JthContext {
     this.#assertNotDisposed();
     const timeout = options.timeout ?? this.#timeout;
 
-    const tokens = lex(code);
-    const ast = parse(tokens);
-    const js = generate(ast, { preamble: false });
+    // Execute through the shared jth-compiler run() pipeline against the
+    // persistent stack and (possibly sandboxed) registry.
+    const { value, output } = await run(code, {
+      stack: this.#stack,
+      registry: this.#registry,
+      timeoutMs: timeout,
+      captureLog: this.#captureOutput,
+    });
 
-    const fn = new Function(
-      "stack",
-      "processN",
-      "registry",
-      `return (async () => { ${js} })();`
-    );
-
-    const outputLines = [];
-    const origLog = console.log;
-    if (this.#captureOutput) {
-      console.log = (...args) => {
-        outputLines.push(args.map(String).join(" "));
-      };
-    }
-
-    try {
-      const execution = fn(this.#stack, processN, this.#registry);
-
-      if (timeout > 0) {
-        await Promise.race([
-          execution,
-          new Promise((_, reject) =>
-            setTimeout(
-              () => reject(new Error(`Evaluation timed out after ${timeout}ms`)),
-              timeout
-            )
-          ),
-        ]);
-      } else {
-        await execution;
-      }
-    } finally {
-      if (this.#captureOutput) {
-        console.log = origLog;
-      }
-    }
-
-    const resultStack = this.#stack.toArray();
     return {
-      value: resultStack.length > 0 ? resultStack[resultStack.length - 1] : undefined,
-      stack: resultStack,
-      output: outputLines.join("\n"),
+      value,
+      stack: this.#stack.toArray(),
+      output,
     };
   }
 

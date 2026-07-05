@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { existsSync, unlinkSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { Script } from "node:vm";
 import { compile, deriveOutputPath } from "../src/compile.ts";
 
 // ── compile() with inline code ──────────────────────────────────────
@@ -85,13 +86,13 @@ describe("compile: inline code", () => {
 
   it("produced output is syntactically valid JavaScript (body)", () => {
     const js = compile("1 2 + peek;", { isCode: true });
-    // Strip import lines (new Function cannot parse ES module imports).
+    // Strip import lines (a plain script cannot parse ES module imports).
     // Validate only the executable body is syntactically correct.
     const body = js
       .split("\n")
       .filter((line) => !line.startsWith("import "))
       .join("\n");
-    expect(() => new Function(`return (async () => { ${body} })`)).not.toThrow();
+    expect(() => new Script(`(async () => { ${body} })`)).not.toThrow();
   });
 });
 

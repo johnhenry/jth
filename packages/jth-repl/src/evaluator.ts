@@ -1,5 +1,5 @@
-import { Stack, processN, registry } from "jth-runtime";
-import { lex, parse, generate } from "jth-compiler";
+import { Stack } from "jth-runtime";
+import { run } from "jth-compiler";
 import "jth-stdlib";
 
 /**
@@ -11,23 +11,11 @@ export function createEvaluator() {
 
   return {
     /**
-     * Compile and evaluate jth source against the persistent stack.
+     * Compile and evaluate jth source against the persistent stack
+     * (via the shared jth-compiler run() pipeline).
      */
     async evaluate(source: string): Promise<Stack> {
-      const tokens = lex(source);
-      const ast = parse(tokens);
-      const js = generate(ast, { preamble: false });
-
-      // The generated code references `stack`, `processN`, and `registry`.
-      // Wrap in an async IIFE so top-level `await processN(...)` works.
-      const fn = new Function(
-        "stack",
-        "processN",
-        "registry",
-        `return (async () => {\n${js}\n})();`,
-      ) as (stack: Stack, processN: any, registry: any) => Promise<void>;
-
-      await fn(stack, processN, registry);
+      await run(source, { stack });
       return stack;
     },
 
