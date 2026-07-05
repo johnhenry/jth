@@ -46,11 +46,38 @@ function sanitize(name: string): string {
     .replace(/\?$/, "_p");
 }
 
+export interface GenerateOptions {
+  preamble?: boolean;
+  /**
+   * When true, InlineJSExpression nodes (`((...))`) throw at compile time
+   * with code OP_NOT_ALLOWED. Used by sandboxed evaluation (jth-eval):
+   * inline JS trivially escapes any operator allowlist, so sandboxes must
+   * reject it before any code runs.
+   */
+  forbidInlineJS?: boolean;
+}
+
+/**
+ * Module-scope compile flag: set for the duration of a generate() call.
+ * generate() is the only entry point and is synchronous, so this cannot
+ * interleave across compilations.
+ */
+let inlineJSForbidden = false;
+
 /**
  * Generate JavaScript source from a jth AST.
  */
-export function generate(ast: ProgramNodeType, options: { preamble?: boolean } = {}): string {
-  const { preamble = true } = options;
+export function generate(ast: ProgramNodeType, options: GenerateOptions = {}): string {
+  const { preamble = true, forbidInlineJS = false } = options;
+  inlineJSForbidden = forbidInlineJS;
+  try {
+    return generateProgram(ast, preamble);
+  } finally {
+    inlineJSForbidden = false;
+  }
+}
+
+function generateProgram(ast: ProgramNodeType, preamble: boolean): string {
   const lines: string[] = [];
 
   if (preamble) {
@@ -157,6 +184,14 @@ function generateExpression(node: any): string {
     }
 
     case "InlineJSExpression":
+      if (inlineJSForbidden) {
+        throw new JthRuntimeError(
+          "Inline JS ((...)) is not allowed in sandbox mode",
+          node?.line,
+          node?.column,
+          "OP_NOT_ALLOWED"
+        );
+      }
       return node.code;
 
     case "Definition":

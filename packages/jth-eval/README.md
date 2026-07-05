@@ -34,14 +34,26 @@ Options:
 
 | Value | Meaning |
 |-------|---------|
-| `false` | Full access to every registered operator |
+| `false` | Full access to every registered operator, inline JS allowed |
 | `true` | Bare mode: only injected `values`/`operators` resolve; all stdlib blocked |
-| `"restricted"` | **Currently a no-op** — grants full access (see limitation below) |
+| `"restricted"` | All statically registered pure ops allowed; side-effecting ops blocked (see policy) |
 | `string[]` | Explicit allowlist of global operator names |
 
-Blocked operators throw `JthRuntimeError` (`code: "SANDBOX_DENIED"`); unknown names throw `code: "UNKNOWN_OPERATOR"`.
+Blocked operators throw `JthRuntimeError` with `code: "OP_NOT_ALLOWED"`; unknown names throw `code: "UNKNOWN_OPERATOR"`.
 
-> **Known limitation ([#22](https://github.com/johnhenry/jth/issues/22)):** `"restricted"` mode does not yet restrict anything — the restricted-op set is empty and the mode falls back to full access. Inline JS (`((...))`) is also not blocked in any sandbox mode. Do not rely on the sandbox for isolation of untrusted code yet.
+### Restricted-mode policy (default-deny)
+
+- The allowlist is built by enumerating the registry (`registry.names()`) and removing `RESTRICTED_OPS` — the ops that touch the world outside the evaluation. In the default stdlib that is the console I/O pair **`peek` / `peek-all`**.
+- **Inline JS (`((...))`) is rejected at compile time** in *every* sandbox mode (`true`, `"restricted"`, and array allowlists) — it would trivially escape any operator allowlist. The whole program is rejected before any statement runs.
+- **Dynamic pattern ops** (`3+`, `2log`, `***`, …) are denied in restricted mode: patterns match open-ended name families and cannot be enumerated into an allowlist.
+
+```ts
+await evalJth("1 2 +;", { sandbox: "restricted" });      // ok → 3
+await evalJth('"hi" peek;', { sandbox: "restricted" });  // throws OP_NOT_ALLOWED
+await evalJth("((s)=>s.push(1));", { sandbox: "restricted" }); // throws OP_NOT_ALLOWED (compile time)
+```
+
+> The sandbox restricts which *operators* a program may call and blocks inline JS. It is not an OS-level isolation boundary: evaluation still runs in-process with host JS semantics (e.g. no memory limits, and a hot synchronous loop can only be cut off at statement boundaries by the timeout).
 
 ## `JthContext`
 

@@ -4,9 +4,29 @@ import { run } from "jth-compiler";
 import "jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.ts";
 
-// Operators considered IO/shell/network for "restricted" sandbox mode.
-// Currently jth-stdlib has no such operators, but this future-proofs the list.
-const RESTRICTED_OPS = new Set<string>([]);
+/**
+ * Restricted-op policy for `sandbox: "restricted"`:
+ *
+ * The allowlist is built from `registry.names()` (every statically
+ * registered operator) MINUS this set. Excluded here is every op that
+ * touches the world outside the evaluation (I/O, process, network,
+ * filesystem). jth-stdlib is almost entirely pure/computational; its only
+ * side-effecting ops are the console printers:
+ *
+ *   - `peek` / `peek-all` — write to the host console (console.log)
+ *
+ * Additionally, and independently of this set:
+ *   - Inline JS (`((...))`) is rejected at compile time in every sandbox
+ *     mode (it escapes any allowlist) — see forbidInlineJS below.
+ *   - Dynamic pattern ops (e.g. "3+", "2log", "***") are default-denied
+ *     in restricted mode because patterns cannot be enumerated into an
+ *     allowlist. Only the statically named ops resolve.
+ *
+ * If an op package that performs I/O or network access (none in the
+ * default registry today; jth-ai deliberately registers no jth words)
+ * ever registers globally, its op names must be added here.
+ */
+const RESTRICTED_OPS = new Set<string>(["peek", "peek-all"]);
 
 export type SandboxOption = boolean | "restricted" | string[];
 
@@ -76,11 +96,14 @@ export async function evalJth(
 
   // Execute through the shared jth-compiler run() pipeline, passing the
   // sandbox registry, timeout, and output capture through RunOptions.
+  // In any sandbox mode, inline JS is rejected at compile time — it would
+  // trivially escape the operator allowlist.
   const { value, output } = await run(code, {
     stack,
     registry: scopedRegistry,
     timeoutMs: timeout,
     captureLog: captureOutput,
+    forbidInlineJS: sandbox !== false,
   });
 
   return {
@@ -92,8 +115,9 @@ export async function evalJth(
 
 /**
  * Build an allowlist Set for sandbox mode, or null for no filtering.
+ * Shared by evalJth and JthContext.
  */
-function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
+export function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
   if (sandbox === false) return null; // Full access
 
   if (sandbox === true) {
@@ -102,9 +126,10 @@ function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
   }
 
   if (sandbox === "restricted") {
-    // All stdlib minus restricted ops — collect all registered names
-    // and exclude RESTRICTED_OPS
-    const all = collectGlobalNames();
+    // Default-deny: every statically registered op name, minus the
+    // restricted (side-effecting) set. Dynamic pattern ops are not
+    // enumerable and therefore stay denied.
+    const all = new Set(registry.names());
     for (const name of RESTRICTED_OPS) {
       all.delete(name);
     }
@@ -117,66 +142,4 @@ function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
   }
 
   return null;
-}
-
-/**
- * Collect all currently registered operator names from the global registry.
- * We probe known operator names since the registry doesn't expose iteration.
- */
-function collectGlobalNames(): Set<string> {
-  // We'll use a known comprehensive list of all stdlib operators
-  const names = [
-    // Stack ops
-    "noop", "∅", "clear", "...", "spread", "drop", "dupe", "dup", "copy",
-    "swap", "reverse", "count", "depth", "collect", "peek", "peek-all",
-    "apply", "exec", "over", "rot",
-    // Arithmetic
-    "+", "-", "*", "⋅", "/", "÷", "**", "%", "%%", "++", "--",
-    "Σ", "Π", "abs", "|𝑥|", "√", "sqrt",
-    "floor", "ceil", "round", "trunc", "log", "min", "max",
-    "plus", "minus", "mul", "div", "mod", "pow",
-    // Comparison
-    "=", "==", "<", "<=", ">", ">=", "<=>",
-    "eq?", "ne?", "!=", "lt?", "le?", "gt?", "ge?",
-    // Logic
-    "&&", "||", "xor", "nand", "nor", "~~", "not",
-    // Control flow
-    "if", "elseif", "else", "when", "drop-when", "keep-if", "drop-if",
-    "times", "while", "until", "break",
-    // Error handling
-    "try", "throw", "error?",
-    // String ops
-    "len", "upper", "lower", "trim", "strcat", "strseq",
-    "startsWith", "endsWith", "indexOf", "starts?", "ends?", "index-of",
-    // Type ops
-    "typeof", "number?", "string?", "array?", "nil?", "function?",
-    "empty?", "contains?",
-    // Serialization
-    "into-json", "to-json", "from-json", "into-lines", "from-lines", "to-lines",
-    // Array ops
-    "push", "pop", "shift", "unshift", "suppose", "flatten",
-    "map", "filter", "reduce", "fold", "bend",
-    // Dict ops
-    "keys", "values", "entries", "merge", "record",
-    // Combinators
-    "each", "fanout", "zip", "compose",
-    // Async ops
-    "_", "__",
-    // Meta ops
-    "$", "$$", "<<-", "->>",
-    // Iterator ops
-    "next", "iter", "..",
-    // Sequences
-    "fibonacci",
-    // Statistics
-    "x̄", "mean", "median", "mode", "modes",
-  ];
-
-  const found = new Set<string>();
-  for (const name of names) {
-    if (registry.has(name)) {
-      found.add(name);
-    }
-  }
-  return found;
 }

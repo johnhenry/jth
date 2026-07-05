@@ -68,7 +68,7 @@ export class ScopedRegistry {
           `Operator not allowed in sandbox: ${name}`,
           undefined,
           undefined,
-          "SANDBOX_DENIED"
+          "OP_NOT_ALLOWED"
         );
       }
       throw new JthRuntimeError(

@@ -3,6 +3,7 @@ import { JthRuntimeError } from "jth-types";
 import { run } from "jth-compiler";
 import "jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.ts";
+import { buildAllowlist } from "./eval.ts";
 import type { SandboxOption, EvalResult } from "./eval.ts";
 
 export interface JthContextOptions {
@@ -23,6 +24,7 @@ export class JthContext {
   #registry: ScopedRegistry;
   #timeout: number;
   #captureOutput: boolean;
+  #forbidInlineJS: boolean;
   #disposed = false;
 
   constructor(options: JthContextOptions = {}) {
@@ -31,17 +33,10 @@ export class JthContext {
     this.#captureOutput = captureOutput;
     this.#stack = new Stack();
 
-    // Build allowlist if sandbox mode is set
-    let allowlist: Set<string> | null = null;
-    if (sandbox === true) {
-      allowlist = new Set();
-    } else if (sandbox === "restricted") {
-      // All stdlib names (restricted ops excluded — none currently)
-      allowlist = null; // full access for now, since no restricted ops exist
-    } else if (Array.isArray(sandbox)) {
-      allowlist = new Set(sandbox);
-    }
-
+    // Sandbox: shared allowlist policy (see eval.ts). In any sandbox mode,
+    // inline JS is rejected at compile time — it escapes the allowlist.
+    const allowlist = buildAllowlist(sandbox);
+    this.#forbidInlineJS = sandbox !== false;
     this.#registry = new ScopedRegistry({ allowlist });
   }
 
@@ -62,6 +57,7 @@ export class JthContext {
       registry: this.#registry,
       timeoutMs: timeout,
       captureLog: this.#captureOutput,
+      forbidInlineJS: this.#forbidInlineJS,
     });
 
     return {

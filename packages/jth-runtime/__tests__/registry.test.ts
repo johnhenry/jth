@@ -92,3 +92,42 @@ describe("registry", () => {
     expect(fn()).toBe("first");
   });
 });
+
+describe("registry enumeration", () => {
+  beforeEach(() => {
+    registry.clear();
+  });
+
+  it("names() lists all static operator names", () => {
+    registry.set("alpha", () => {});
+    registry.set("beta", () => {});
+    expect(registry.names().sort()).toEqual(["alpha", "beta"]);
+  });
+
+  it("names() is empty after clear()", () => {
+    registry.set("x", () => {});
+    registry.clear();
+    expect(registry.names()).toEqual([]);
+  });
+
+  it("names() does not include dynamic pattern matches", () => {
+    registry.setDynamic(/^dyn-/, () => () => {});
+    expect(registry.names()).toEqual([]);
+    // ...even though the dynamic op resolves:
+    expect(registry.has("dyn-thing")).toBe(true);
+  });
+
+  it("dynamicPatterns() lists registered patterns", () => {
+    const p1 = /^dyn-/;
+    const p2 = /^\d+log$/;
+    registry.setDynamic(p1, () => () => {});
+    registry.setDynamic(p2, () => () => {});
+    expect(registry.dynamicPatterns()).toEqual([p1, p2]);
+  });
+
+  it("names() reflects remove()", () => {
+    registry.set("gone", () => {});
+    registry.remove("gone");
+    expect(registry.names()).toEqual([]);
+  });
+});

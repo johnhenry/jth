@@ -73,6 +73,23 @@ export const registry = {
     return registry.get(name) !== undefined;
   },
 
+  /**
+   * Enumerate the names of all registered static operators.
+   * Dynamic pattern ops (setDynamic) match open-ended name families
+   * (e.g. "3+", "2log") and have no fixed names, so they are NOT
+   * included — use dynamicPatterns() to inspect those.
+   */
+  names(): string[] {
+    return [...staticOps.keys()];
+  },
+
+  /**
+   * The patterns of all registered dynamic operator factories.
+   */
+  dynamicPatterns(): RegExp[] {
+    return dynamicOps.map((d) => d.pattern);
+  },
+
   remove(name: string): boolean {
     return staticOps.delete(name);
   },
