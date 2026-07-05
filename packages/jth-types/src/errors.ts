@@ -30,8 +30,12 @@ export class JthParserError extends JthError {
 }
 
 export class JthRuntimeError extends JthError {
-  constructor(message: string, line?: number, column?: number) {
+  /** Machine-readable error code, e.g. "ITERATION_LIMIT", "UNKNOWN_OPERATOR". */
+  code: string | null;
+
+  constructor(message: string, line?: number, column?: number, code?: string) {
     super(message, line, column);
     this.name = "JthRuntimeError";
+    this.code = code ?? null;
   }
 }
