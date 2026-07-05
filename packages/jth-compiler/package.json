@@ -14,5 +14,8 @@
   "dependencies": {
     "jth-types": "0.3.0",
     "jth-runtime": "0.3.0"
+  },
+  "devDependencies": {
+    "jth-stdlib": "0.3.0"
   }
 }

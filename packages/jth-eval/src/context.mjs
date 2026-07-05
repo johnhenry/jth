@@ -1,4 +1,5 @@
 import { Stack, op } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
 import { run } from "jth-compiler";
 import "jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.mjs";
@@ -145,7 +146,12 @@ export class JthContext {
 
   #assertNotDisposed() {
     if (this.#disposed) {
-      throw new Error("JthContext has been disposed");
+      throw new JthRuntimeError(
+        "JthContext has been disposed",
+        undefined,
+        undefined,
+        "CONTEXT_DISPOSED"
+      );
     }
   }
 }

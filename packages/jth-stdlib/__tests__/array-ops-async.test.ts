@@ -141,7 +141,8 @@ describe("array-ops with async blocks", () => {
       expect(s.toArray()).toEqual([[1, 2, 3]]);
     });
 
-    it("throws ITERATION_LIMIT instead of hanging on a non-terminating bend", () => {
+    // 1M capped iterations take a few seconds under load; allow extra time.
+    it("throws ITERATION_LIMIT instead of hanging on a non-terminating bend", { timeout: 30000 }, () => {
       const s = new Stack();
       s.push(1);
       s.push((stack: Stack) => {

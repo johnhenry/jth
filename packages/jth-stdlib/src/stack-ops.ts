@@ -1,5 +1,13 @@
 import { op, variadic } from "jth-runtime";
 import type { Stack } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
+
+/** Human-readable type name of a runtime value (for error messages). */
+export function typeName(value: unknown): string {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
 
 // noop: do nothing
 export const noop = op(0)(() => []);
@@ -146,7 +154,12 @@ export const view = peekAll;
 export const apply = (stack: Stack) => {
   const block = stack.pop();
   if (typeof block !== "function") {
-    throw new TypeError("apply: top of stack is not a function/block");
+    throw new JthRuntimeError(
+      `apply: top of stack is not a function/block (got ${typeName(block)})`,
+      undefined,
+      undefined,
+      "TYPE_ERROR"
+    );
   }
   return block(stack);
 };

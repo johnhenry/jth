@@ -1,4 +1,5 @@
 import { registry } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
 
 /**
  * ScopedRegistry wraps the global registry with a local overlay.
@@ -54,9 +55,19 @@ export class ScopedRegistry {
     const fn = this.get(name);
     if (!fn) {
       if (this.#allowlist && !this.#allowlist.has(name) && registry.has(name)) {
-        throw new Error(`Operator not allowed in sandbox: ${name}`);
+        throw new JthRuntimeError(
+          `Operator not allowed in sandbox: ${name}`,
+          undefined,
+          undefined,
+          "SANDBOX_DENIED"
+        );
       }
-      throw new Error(`Unknown operator: ${name}`);
+      throw new JthRuntimeError(
+        `Unknown operator: ${name}`,
+        undefined,
+        undefined,
+        "UNKNOWN_OPERATOR"
+      );
     }
     return fn;
   }

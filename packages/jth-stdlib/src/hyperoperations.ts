@@ -1,7 +1,14 @@
 import { op, registry } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
 
 const bigH = (n: bigint, a: bigint, b: bigint): bigint => {
-  if (n < 0n || a < 0n || b < 0n) throw Error("Non-negative integers only");
+  if (n < 0n || a < 0n || b < 0n)
+    throw new JthRuntimeError(
+      "Non-negative integers only",
+      undefined,
+      undefined,
+      "HYPEROP_DOMAIN"
+    );
   if (n === 0n) return a + 1n;
   if (n === 1n) return a + b;
   if (n === 2n) return a * b;
@@ -25,7 +32,12 @@ export const hyperoperation = (n: any) => (a: any, b: any = 0n) => {
       return Infinity;
     }
   }
-  throw Error("All arguments must be integers or BigInts");
+  throw new JthRuntimeError(
+    "All arguments must be integers or BigInts",
+    undefined,
+    undefined,
+    "HYPEROP_DOMAIN"
+  );
 };
 
 export function registerHyperops() {

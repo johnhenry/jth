@@ -310,9 +310,13 @@ describe("exports", () => {
 // ── Top-level await ───────────────────────────────────────────
 
 describe("top-level await", () => {
-  it("statements use await processN", () => {
+  it("statements use await processN (position-wrapped)", () => {
     const js = gen("1 2 +;");
-    expect(js).toMatch(/^await processN/);
+    expect(js).toContain("await processN(stack, [");
+    // Statements are wrapped in a try/rethrow that annotates errors with
+    // the statement's source position (see #14).
+    expect(js).toMatch(/^try \{ await processN/);
+    expect(js).toContain("e.line = 1");
   });
 
   it("definitions do not use await for block shortcut", () => {
