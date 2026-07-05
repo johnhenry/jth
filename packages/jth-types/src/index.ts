@@ -7,7 +7,6 @@ export {
   BooleanLiteral,
   NullLiteral,
   UndefinedLiteral,
-  IdentifierNode,
   OperatorCallNode,
   ArrayLiteral,
   BlockLiteral,
@@ -18,7 +17,6 @@ export {
   ImportNode,
   ExportNode,
   StatementNode,
-  CommentNode,
 } from "./ast.ts";
 export type {
   ASTNode,
@@ -29,7 +27,6 @@ export type {
   BooleanLiteralType,
   NullLiteralType,
   UndefinedLiteralType,
-  IdentifierNodeType,
   OperatorCallNodeType,
   ArrayLiteralType,
   BlockLiteralType,
@@ -40,7 +37,6 @@ export type {
   ImportNodeType,
   ExportNodeType,
   StatementNodeType,
-  CommentNodeType,
 } from "./ast.ts";
 export {
   JthError,
@@ -48,5 +44,5 @@ export {
   JthParserError,
   JthRuntimeError,
 } from "./errors.ts";
-export { UNLIMITED, CALLING_CONTEXT } from "./interfaces.ts";
+export { UNLIMITED } from "./interfaces.ts";
 export type { MetaAnnotations } from "./interfaces.ts";

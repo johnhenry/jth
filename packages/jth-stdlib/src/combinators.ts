@@ -66,18 +66,3 @@ export const fanout = (stack: Stack) => {
     stack.push(...s.toArray());
   }
 };
-
-// tap: execute block without consuming values (clone -> execute -> discard clone)
-// Legacy/internal — not registered as a jth word.
-export const tap = (block: (s: Stack) => void) => (stack: Stack) => {
-  const clone = stack.clone();
-  block(clone);
-};
-
-// dip: pop top, execute block on rest, push top back
-// Legacy/internal — not registered as a jth word.
-export const dip = (block: (s: Stack) => void) => (stack: Stack) => {
-  const top = stack.pop();
-  block(stack);
-  stack.push(top);
-};

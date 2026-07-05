@@ -54,14 +54,6 @@ export const suppose = op(2)((collection, item) => {
   return [collection, item];
 });
 
-// array: collect top N items into array
-export const array = (n = Infinity) => (stack: Stack) => {
-  const arr =
-    n === Infinity ? stack.toArray() : stack.popN(Math.min(n, stack.length));
-  if (n === Infinity) stack.clear();
-  stack.push(arr);
-};
-
 // flatten: flatten arrays
 export const flatten = variadic((...args) => {
   const flat: unknown[] = [];
@@ -74,31 +66,6 @@ export const flatten = variadic((...args) => {
   doFlat(args);
   return flat;
 });
-
-// sort: sort the stack. Configurable: sort() = ascending, sort(false) = descending
-export const sort =
-  (ascending = true) =>
-  (stack: Stack) => {
-    const arr = stack.toArray();
-    const cmp = ascending
-      ? (a: any, b: any) => (a === b ? 0 : a < b ? -1 : 1)
-      : (a: any, b: any) => (a === b ? 0 : a > b ? -1 : 1);
-    arr.sort(cmp);
-    stack.clear();
-    stack.push(...arr);
-  };
-
-// randomize: shuffle the stack
-export const randomize = (stack: Stack) => {
-  const arr = stack.toArray();
-  // Fisher-Yates shuffle
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  stack.clear();
-  stack.push(...arr);
-};
 
 // map: [array] #[ block ] map -- apply block to each element, return new array
 // Block-aware: each element gets its own isolated Stack.
@@ -177,23 +144,4 @@ export const bendOp = (stack: Stack) => {
   }
 
   stack.push(result);
-};
-
-// Legacy configurable versions (not registered, kept for internal use)
-export const map = (fn: (v: any) => any) => (stack: Stack) => {
-  const arr = stack.toArray();
-  stack.clear();
-  stack.push(...arr.map(fn));
-};
-
-export const filter = (fn: (v: any) => any) => (stack: Stack) => {
-  const arr = stack.toArray();
-  stack.clear();
-  stack.push(...arr.filter(fn));
-};
-
-export const reduce = (fn: (acc: any, val: any) => any, init: any) => (stack: Stack) => {
-  const arr = stack.toArray();
-  stack.clear();
-  stack.push(arr.reduce(fn, init));
 };

@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
   ProgramNode, NumberLiteral, StringLiteral, BooleanLiteral,
-  NullLiteral, UndefinedLiteral, IdentifierNode, OperatorCallNode,
+  NullLiteral, UndefinedLiteral, OperatorCallNode,
   ArrayLiteral, BlockLiteral, JSObjectLiteral, InlineJSExpression,
   DefinitionNode, ValueDefinitionNode, ImportNode, ExportNode,
-  StatementNode, CommentNode,
+  StatementNode,
 } from "../src/ast.ts";
 
 describe("AST nodes", () => {
@@ -39,11 +39,6 @@ describe("AST nodes", () => {
     expect(node).toEqual({ type: "UndefinedLiteral", value: undefined, line: 1, column: 1 });
   });
 
-  it("IdentifierNode", () => {
-    const node = IdentifierNode("foo", 1, 1);
-    expect(node).toEqual({ type: "Identifier", name: "foo", line: 1, column: 1 });
-  });
-
   it("OperatorCallNode", () => {
     const node = OperatorCallNode("sort", [true], 1, 1);
     expect(node.type).toBe("OperatorCall");
@@ -63,7 +58,7 @@ describe("AST nodes", () => {
   });
 
   it("BlockLiteral", () => {
-    const node = BlockLiteral([IdentifierNode("dupe", 1, 3)], 1, 1);
+    const node = BlockLiteral([OperatorCallNode("dupe", [], 1, 3)], 1, 1);
     expect(node.type).toBe("BlockLiteral");
     expect(node.body).toHaveLength(1);
   });
@@ -108,11 +103,5 @@ describe("AST nodes", () => {
     const node = StatementNode([NumberLiteral(1, 1, 1)]);
     expect(node.type).toBe("Statement");
     expect(node.expressions).toHaveLength(1);
-  });
-
-  it("CommentNode", () => {
-    const node = CommentNode("this is a comment", 1, 1);
-    expect(node.type).toBe("Comment");
-    expect(node.text).toBe("this is a comment");
   });
 });

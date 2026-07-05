@@ -124,14 +124,6 @@ export const timesOp = (stack: Stack) => {
   }
 };
 
-// loop: { block } N loop -- execute block N times (configured)
-export const loop = (n: number) => (stack: Stack) => {
-  const block = stack.pop();
-  for (let i = 0; i < n; i++) {
-    if (typeof block === "function") block(stack);
-  }
-};
-
 // BreakSignal: sentinel error thrown by break to exit while/until loops early.
 // While/until loops catch this to implement early exit.
 // If thrown outside a loop, it propagates as a normal error.
