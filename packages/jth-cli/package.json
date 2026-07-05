@@ -28,5 +28,6 @@
     "jth-types": "^0.4.0",
     "jth-repl": "^0.4.0",
     "esbuild": "^0.27.3"
-  }
+  },
+  "license": "MIT"
 }

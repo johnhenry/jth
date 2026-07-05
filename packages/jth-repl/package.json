@@ -26,5 +26,6 @@
     "jth-runtime": "^0.4.0",
     "jth-compiler": "^0.4.0",
     "jth-stdlib": "^0.4.0"
-  }
+  },
+  "license": "MIT"
 }
