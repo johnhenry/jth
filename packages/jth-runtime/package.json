@@ -1,17 +1,44 @@
 {
   "name": "jth-runtime",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./stack": "./src/stack.ts",
-    "./op": "./src/op.ts",
-    "./meta": "./src/meta.ts",
-    "./process-n": "./src/process-n.ts",
-    "./registry": "./src/registry.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./stack": {
+      "types": "./dist/stack.d.ts",
+      "default": "./dist/stack.js"
+    },
+    "./op": {
+      "types": "./dist/op.d.ts",
+      "default": "./dist/op.js"
+    },
+    "./meta": {
+      "types": "./dist/meta.d.ts",
+      "default": "./dist/meta.js"
+    },
+    "./process-n": {
+      "types": "./dist/process-n.d.ts",
+      "default": "./dist/process-n.js"
+    },
+    "./registry": {
+      "types": "./dist/registry.d.ts",
+      "default": "./dist/registry.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-types": "0.3.0"
-  }
+    "jth-types": "^0.4.0"
+  },
+  "license": "MIT"
 }

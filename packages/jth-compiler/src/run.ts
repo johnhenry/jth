@@ -35,6 +35,12 @@ export interface RunOptions {
   timeoutMs?: number;
   /** Capture console.log lines emitted during execution. */
   captureLog?: boolean;
+  /**
+   * Reject inline JS (`((...))`) at compile time with OP_NOT_ALLOWED.
+   * Sandboxed consumers (jth-eval) set this: inline JS trivially escapes
+   * any operator allowlist.
+   */
+  forbidInlineJS?: boolean;
 }
 
 export interface RunResult {
@@ -57,9 +63,10 @@ export async function run(source: string, opts: RunOptions = {}): Promise<RunRes
     stack = new Stack(),
     timeoutMs = 0,
     captureLog = false,
+    forbidInlineJS = false,
   } = opts;
 
-  const js = transform(source, { preamble: false });
+  const js = transform(source, { preamble: false, forbidInlineJS });
 
   // The generated code references `stack`, `processN`, and `registry`.
   // Wrap in an async IIFE so top-level `await processN(...)` works.

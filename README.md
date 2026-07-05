@@ -17,8 +17,10 @@ In jth, values are pushed onto a stack. Operators pop their arguments off the st
 ### Install
 
 ```bash
-npm install -g jth-cli
+npm install -g jth-lang
 ```
+
+(The npm package is `jth-lang`; the installed binary is `jth`.)
 
 ### Run a program
 
@@ -535,7 +537,7 @@ jth is organized as a monorepo with 9 packages:
 | **jth-runtime** | Stack VM, `processN`, `op()` helper, operator registry |
 | **jth-compiler** | Lexer, parser, code generator, transform pipeline |
 | **jth-stdlib** | Standard library (~110 operators) |
-| **jth-cli** | Command-line interface for running and compiling |
+| **jth-lang** | Command-line interface for running and compiling (binary: `jth`; directory: `packages/jth-cli`) |
 | **jth-repl** | Interactive REPL |
 | **jth-ai** | Ollama AI integration |
 | **jth-html** | HTML generation operators |
@@ -550,12 +552,44 @@ jth is organized as a monorepo with 9 packages:
 # Install dependencies
 npm install
 
-# Run all tests
+# Build every package to dist/ (ESM + .d.ts, via tsup)
+npm run build
+
+# Run all tests (builds first — see note below)
 npm test
+
+# Fast unit-test iteration (requires a previous build)
+npm run test:unit
 
 # Run tests in watch mode
 npm run test:watch
 
 # Run end-to-end tests
 npm run test:e2e
+
+# Typecheck (requires a previous build: cross-package types resolve
+# through each package's dist/*.d.ts)
+npm run typecheck
 ```
+
+### Contributing notes: build vs. dev resolution
+
+Every publishable package points its `main`/`types`/`exports` at `dist/`
+(built by `tsup` from `src/`, config in each package's `tsup.config.ts` +
+`tsconfig.build.json`). Cross-package imports (`jth-runtime`,
+`jth-types/ast`, …) therefore resolve to **built output** — in tests, in
+`tsc -b`, and at runtime. To keep that coherent:
+
+- `npm test` **always builds first**, so tests and the spawned CLI binary
+  (`packages/jth-cli/dist/bin/jth.js`) exercise fresh output.
+- After editing source, re-run `npm run build` (or use `npm test`) before
+  `npm run test:unit` / `npm run typecheck`, or you'll see stale code.
+- Relative imports within a package (`../src/foo.ts`) still resolve to
+  source under vitest/tsx, so pure unit tests iterate without a rebuild.
+- The CLI is published as **jth-lang** (binary `jth`), built as plain
+  node JS — `tsx` is a dev-only dependency. `jth compile` emits a
+  self-contained bundle by default (`--no-bundle` for the bare form), and
+  `jth run` executes a bundled temp module with plain node.
+- A slow smoke test (`test/smoke/pack-install.test.ts`) npm-packs
+  jth-lang + deps, installs them in a temp dir outside the repo, and runs
+  the installed binary.

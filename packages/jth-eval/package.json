@@ -1,12 +1,39 @@
 {
   "name": "jth-eval",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
-  "main": "src/index.mjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./eval": {
+      "types": "./dist/eval.d.ts",
+      "default": "./dist/eval.js"
+    },
+    "./context": {
+      "types": "./dist/context.d.ts",
+      "default": "./dist/context.js"
+    },
+    "./scoped-registry": {
+      "types": "./dist/scoped-registry.d.ts",
+      "default": "./dist/scoped-registry.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
   "dependencies": {
-    "jth-types": "0.3.0",
-    "jth-compiler": "0.3.0",
-    "jth-runtime": "0.3.0",
-    "jth-stdlib": "0.3.0"
-  }
+    "jth-types": "^0.4.0",
+    "jth-compiler": "^0.4.0",
+    "jth-runtime": "^0.4.0",
+    "jth-stdlib": "^0.4.0"
+  },
+  "license": "MIT"
 }

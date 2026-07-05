@@ -67,6 +67,11 @@ describe("compile: inline code", () => {
     expect(js).not.toContain(".jth");
   });
 
+  it("passes through bare package imports (opt-in op packages like jth-html)", () => {
+    const js = compile('::import "jth-html";', { isCode: true });
+    expect(js).toContain('import "jth-html";');
+  });
+
   it("compiles export statements", () => {
     const js = compile("::export square cube;", { isCode: true });
     expect(js).toContain("export { square, cube }");

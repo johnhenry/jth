@@ -1,21 +1,48 @@
 {
   "name": "jth-compiler",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./lexer": "./src/lexer.ts",
-    "./parser": "./src/parser.ts",
-    "./codegen": "./src/codegen.ts",
-    "./transform": "./src/transform.ts",
-    "./run": "./src/run.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lexer": {
+      "types": "./dist/lexer.d.ts",
+      "default": "./dist/lexer.js"
+    },
+    "./parser": {
+      "types": "./dist/parser.d.ts",
+      "default": "./dist/parser.js"
+    },
+    "./codegen": {
+      "types": "./dist/codegen.d.ts",
+      "default": "./dist/codegen.js"
+    },
+    "./transform": {
+      "types": "./dist/transform.d.ts",
+      "default": "./dist/transform.js"
+    },
+    "./run": {
+      "types": "./dist/run.d.ts",
+      "default": "./dist/run.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-types": "0.3.0",
-    "jth-runtime": "0.3.0"
+    "jth-types": "^0.4.0",
+    "jth-runtime": "^0.4.0"
   },
   "devDependencies": {
-    "jth-stdlib": "0.3.0"
-  }
+    "jth-stdlib": "^0.4.0"
+  },
+  "license": "MIT"
 }

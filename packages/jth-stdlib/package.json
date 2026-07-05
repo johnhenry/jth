@@ -1,13 +1,25 @@
 {
   "name": "jth-stdlib",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-types": "0.3.0",
-    "jth-runtime": "0.3.0"
-  }
+    "jth-types": "^0.4.0",
+    "jth-runtime": "^0.4.0"
+  },
+  "license": "MIT"
 }
