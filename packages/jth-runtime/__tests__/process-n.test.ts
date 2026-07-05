@@ -359,3 +359,61 @@ describe("processN", () => {
     expect(s.toArray()).toEqual([1, 2, "a", "b"]);
   });
 });
+
+describe("processN async auto-promotion edge cases", () => {
+  const asyncDouble = op(1)(async (a) => {
+    await new Promise((r) => setTimeout(r, 5));
+    return [a * 2];
+  });
+  const syncInc = op(1)((a) => [a + 1]);
+
+  it("mixed sync and async ops execute in order with correct results", async () => {
+    const s = new Stack();
+    // sync -> async (promotes) -> sync (after promotion) -> async -> sync
+    const result = processN(s, [3, syncInc, asyncDouble, syncInc, asyncDouble, syncInc]);
+    expect(typeof (result as Promise<Stack>).then).toBe("function");
+    await result;
+    // ((3+1)*2 + 1) * 2 + 1 = 19
+    expect(s.toArray()).toEqual([19]);
+  });
+
+  it("values after the first async op are still processed in order", async () => {
+    const s = new Stack();
+    await processN(s, [1, asyncDouble, 10, 20, syncInc]);
+    expect(s.toArray()).toEqual([2, 10, 21]);
+  });
+
+  it("observable execution order is strictly sequential across the promotion", async () => {
+    const order: string[] = [];
+    const a = op(0)(() => { order.push("sync-1"); return []; });
+    const b = op(0)(async () => {
+      await new Promise((r) => setTimeout(r, 10));
+      order.push("async");
+      return [];
+    });
+    const c = op(0)(() => { order.push("sync-2"); return []; });
+    const s = new Stack();
+    await processN(s, [a, b, c]);
+    expect(order).toEqual(["sync-1", "async", "sync-2"]);
+  });
+
+  it("stays fully synchronous when no op returns a promise", () => {
+    const s = new Stack();
+    const result = processN(s, [1, syncInc, syncInc]);
+    expect(result).toBe(s); // no Promise on the sync fast path
+    expect(s.toArray()).toEqual([3]);
+  });
+
+  it("meta annotations still apply after async promotion (persist)", async () => {
+    const s = new Stack();
+    const asyncIncPersist = annotate(
+      op(1)(async (a) => {
+        await new Promise((r) => setTimeout(r, 1));
+        return [a + 1];
+      }),
+      { persist: 2 }
+    );
+    await processN(s, [0, asyncIncPersist]);
+    expect(s.toArray()).toEqual([3]); // ran 1 + 2 persisted times
+  });
+});
