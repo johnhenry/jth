@@ -43,13 +43,6 @@ export interface UndefinedLiteralType {
   column: number;
 }
 
-export interface IdentifierNodeType {
-  type: "Identifier";
-  name: string;
-  line: number;
-  column: number;
-}
-
 export interface OperatorCallNodeType {
   type: "OperatorCall";
   name: string;
@@ -125,13 +118,6 @@ export interface StatementNodeType {
   expressions: ASTNode[];
 }
 
-export interface CommentNodeType {
-  type: "Comment";
-  text: string;
-  line: number;
-  column: number;
-}
-
 export type ASTNode =
   | ProgramNodeType
   | NumberLiteralType
@@ -139,7 +125,6 @@ export type ASTNode =
   | BooleanLiteralType
   | NullLiteralType
   | UndefinedLiteralType
-  | IdentifierNodeType
   | OperatorCallNodeType
   | ArrayLiteralType
   | BlockLiteralType
@@ -149,8 +134,7 @@ export type ASTNode =
   | ValueDefinitionNodeType
   | ImportNodeType
   | ExportNodeType
-  | StatementNodeType
-  | CommentNodeType;
+  | StatementNodeType;
 
 export function ProgramNode(body: ASTNode[]): ProgramNodeType {
   return { type: "Program", body };
@@ -174,10 +158,6 @@ export function NullLiteral(line: number, column: number): NullLiteralType {
 
 export function UndefinedLiteral(line: number, column: number): UndefinedLiteralType {
   return { type: "UndefinedLiteral", value: undefined, line, column };
-}
-
-export function IdentifierNode(name: string, line: number, column: number): IdentifierNodeType {
-  return { type: "Identifier", name, line, column };
 }
 
 export function OperatorCallNode(name: string, args: unknown[] | null | undefined, line: number, column: number): OperatorCallNodeType {
@@ -218,8 +198,4 @@ export function ExportNode(names: string[], line: number, column: number): Expor
 
 export function StatementNode(expressions: ASTNode[]): StatementNodeType {
   return { type: "Statement", expressions };
-}
-
-export function CommentNode(text: string, line: number, column: number): CommentNodeType {
-  return { type: "Comment", text, line, column };
 }

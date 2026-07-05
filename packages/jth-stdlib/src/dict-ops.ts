@@ -1,4 +1,5 @@
 import { op, variadic } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
 
 export const get = (key: string) => op(1)((obj: any) => [obj[key]]);
 export const set = (key: string, value: any) =>
@@ -36,7 +37,12 @@ export const merge = op(2)((a, b) => [{ ...a, ...b }]);
 export const hasKey = (key: string) => op(1)((obj: any) => [key in obj]);
 export const record = variadic((...args) => {
   if (args.length % 2 !== 0)
-    throw new Error("record requires even number of args");
+    throw new JthRuntimeError(
+      `record requires even number of args (got ${args.length})`,
+      undefined,
+      undefined,
+      "RECORD_ODD_ARGS"
+    );
   const obj: Record<string, unknown> = {};
   for (let i = 0; i < args.length; i += 2) obj[args[i + 1] as string] = args[i];
   return [obj];

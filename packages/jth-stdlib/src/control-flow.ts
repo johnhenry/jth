@@ -124,14 +124,6 @@ export const timesOp = (stack: Stack) => {
   }
 };
 
-// loop: { block } N loop -- execute block N times (configured)
-export const loop = (n: number) => (stack: Stack) => {
-  const block = stack.pop();
-  for (let i = 0; i < n; i++) {
-    if (typeof block === "function") block(stack);
-  }
-};
-
 // BreakSignal: sentinel error thrown by break to exit while/until loops early.
 // While/until loops catch this to implement early exit.
 // If thrown outside a loop, it propagates as a normal error.
@@ -147,6 +139,12 @@ export const breakOp = (stack: Stack) => {
   throw new BreakSignal();
 };
 
+/**
+ * Shared iteration cap for potentially-unbounded loops (while/until/bend).
+ * Prevents non-terminating programs from hanging the host.
+ */
+export const MAX_ITERATIONS = 1_000_000;
+
 // while: [condition-block] [body-block] while
 // Execute body while condition block leaves truthy value on stack.
 // Pops both blocks from the stack. Then repeatedly:
@@ -158,7 +156,6 @@ export const whileOp = (stack: Stack) => {
   const bodyBlock = stack.pop();
   const condBlock = stack.pop();
 
-  const MAX_ITERATIONS = 1_000_000;
   for (let i = 0; i < MAX_ITERATIONS; i++) {
     // Execute condition block -- it should push a boolean/truthy value
     if (typeof condBlock === "function") condBlock(stack);
@@ -183,7 +180,6 @@ export const untilOp = (stack: Stack) => {
   const bodyBlock = stack.pop();
   const condBlock = stack.pop();
 
-  const MAX_ITERATIONS = 1_000_000;
   for (let i = 0; i < MAX_ITERATIONS; i++) {
     // Execute condition block
     if (typeof condBlock === "function") condBlock(stack);

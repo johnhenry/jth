@@ -1,4 +1,40 @@
+import { JthRuntimeError } from "jth-types";
 import type { StackOperator } from "./op.ts";
+
+/** Levenshtein distance, used to suggest the nearest known operator. */
+function editDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  const row = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    let prev = row[0];
+    row[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const tmp = row[j];
+      row[j] = Math.min(
+        row[j] + 1,
+        row[j - 1] + 1,
+        prev + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+      prev = tmp;
+    }
+  }
+  return row[n];
+}
+
+/** Find the closest registered operator name (edit distance <= 2), if any. */
+function suggestOperator(name: string): string | undefined {
+  let best: string | undefined;
+  let bestDist = 3; // only suggest reasonably close names
+  for (const known of staticOps.keys()) {
+    const d = editDistance(name, known);
+    if (d < bestDist) {
+      bestDist = d;
+      best = known;
+    }
+  }
+  return best;
+}
 
 type DynamicFactory = (name: string, pattern: RegExp) => StackOperator | undefined;
 
@@ -20,7 +56,16 @@ export const registry = {
 
   resolve(name: string): StackOperator {
     const fn = registry.get(name);
-    if (!fn) throw new Error(`Unknown operator: ${name}`);
+    if (!fn) {
+      const suggestion = suggestOperator(name);
+      const hint = suggestion ? ` (did you mean "${suggestion}"?)` : "";
+      throw new JthRuntimeError(
+        `Unknown operator: ${name}${hint}`,
+        undefined,
+        undefined,
+        "UNKNOWN_OPERATOR"
+      );
+    }
     return fn;
   },
 

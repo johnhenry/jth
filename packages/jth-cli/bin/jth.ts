@@ -83,6 +83,19 @@ switch (command) {
     process.exit(1);
 }
 
+
+/**
+ * Print an error, including source position (line:col) for jth errors
+ * that carry one (JthError subclasses: lexer/parser/runtime errors).
+ */
+function reportError(err: any): void {
+  if (err && err.line != null) {
+    console.error(`${err.name ?? "Error"} at ${err.line}:${err.column ?? 0}: ${err.message}`);
+  } else {
+    console.error(`Error: ${err?.message ?? err}`);
+  }
+}
+
 // ── Command handlers ────────────────────────────────────────────────
 
 async function handleRepl(): Promise<void> {
@@ -96,7 +109,7 @@ async function handleRun(argv: string[]): Promise<void> {
     const exitCode = await run(input, { isCode });
     process.exit(exitCode);
   } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+    reportError(err);
     process.exit(1);
   }
 }
@@ -116,7 +129,7 @@ function handleCompile(argv: string[]): void {
       console.error(`Compiled: ${input} -> ${output}`);
     }
   } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+    reportError(err);
     process.exit(1);
   }
 }

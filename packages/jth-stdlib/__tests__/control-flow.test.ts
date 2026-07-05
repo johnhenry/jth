@@ -9,7 +9,6 @@ import {
   keepIf,
   dropIf,
   timesOp,
-  loop,
   whileOp,
   untilOp,
   breakOp,
@@ -347,20 +346,6 @@ describe("control-flow", () => {
 
       expect(s1.toArray()).toEqual(s2.toArray());
       expect(s1.toArray()).toEqual([50]);
-    });
-  });
-
-  describe("loop", () => {
-    it("executes block configured number of times", () => {
-      const s = new Stack();
-      s.push(0);
-      const block = (stack) => {
-        const val = stack.pop();
-        stack.push(val + 10);
-      };
-      s.push(block);
-      loop(5)(s);
-      expect(s.toArray()).toEqual([50]);
     });
   });
 

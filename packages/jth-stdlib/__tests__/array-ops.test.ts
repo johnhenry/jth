@@ -6,12 +6,7 @@ import {
   shift,
   unshift,
   suppose,
-  array,
   flatten,
-  sort,
-  map,
-  filter,
-  reduce,
   mapOp,
   filterOp,
   reduceOp,
@@ -108,22 +103,6 @@ describe("array-ops", () => {
     });
   });
 
-  describe("array", () => {
-    it("collects all items into array when n is Infinity", () => {
-      const s = new Stack();
-      s.push(1, 2, 3);
-      array()(s);
-      expect(s.toArray()).toEqual([[1, 2, 3]]);
-    });
-
-    it("collects N items into array", () => {
-      const s = new Stack();
-      s.push(1, 2, 3, 4);
-      array(2)(s);
-      expect(s.toArray()).toEqual([1, 2, [3, 4]]);
-    });
-  });
-
   describe("flatten", () => {
     it("flattens nested arrays", () => {
       const s = new Stack();
@@ -137,49 +116,6 @@ describe("array-ops", () => {
       s.push(1, 2, 3);
       flatten(s);
       expect(s.toArray()).toEqual([1, 2, 3]);
-    });
-  });
-
-  describe("sort", () => {
-    it("sorts ascending by default", () => {
-      const s = new Stack();
-      s.push(3, 1, 2);
-      sort()(s);
-      expect(s.toArray()).toEqual([1, 2, 3]);
-    });
-
-    it("sorts descending when ascending=false", () => {
-      const s = new Stack();
-      s.push(3, 1, 2);
-      sort(false)(s);
-      expect(s.toArray()).toEqual([3, 2, 1]);
-    });
-  });
-
-  describe("legacy map (JS function)", () => {
-    it("applies function to each item", () => {
-      const s = new Stack();
-      s.push(1, 2, 3);
-      map((x) => x * 2)(s);
-      expect(s.toArray()).toEqual([2, 4, 6]);
-    });
-  });
-
-  describe("legacy filter (JS function)", () => {
-    it("keeps items matching predicate", () => {
-      const s = new Stack();
-      s.push(1, 2, 3, 4, 5);
-      filter((x) => x % 2 === 0)(s);
-      expect(s.toArray()).toEqual([2, 4]);
-    });
-  });
-
-  describe("legacy reduce (JS function)", () => {
-    it("reduces stack to single value", () => {
-      const s = new Stack();
-      s.push(1, 2, 3, 4);
-      reduce((acc, x) => acc + x, 0)(s);
-      expect(s.toArray()).toEqual([10]);
     });
   });
 

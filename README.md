@@ -1,5 +1,7 @@
 # jth
 
+[![CI](https://github.com/johnhenry/jth/actions/workflows/ci.yml/badge.svg)](https://github.com/johnhenry/jth/actions/workflows/ci.yml)
+
 <img src="scorecard.png" width="100%">
 
 A stack-based programming language that compiles to JavaScript.

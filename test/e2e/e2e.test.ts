@@ -1,5 +1,5 @@
 /**
- * End-to-end integration tests for jth 2.0.
+ * End-to-end integration tests for jth.
  *
  * These tests exercise the full pipeline: jth source code is lexed, parsed,
  * code-generated, and then evaluated against the runtime with the standard
@@ -7,30 +7,17 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { Stack, processN, registry } from "jth-runtime";
-import { lex, parse, generate, transform } from "jth-compiler";
+import { Stack, registry } from "jth-runtime";
+import { run, transform } from "jth-compiler";
 import "jth-stdlib";
 
 // ---------------------------------------------------------------------------
 // Helper: evaluate jth source and return the resulting stack as an array.
+// Executes through the shared jth-compiler run() pipeline.
 // ---------------------------------------------------------------------------
 
 async function evalJth(source: string): Promise<unknown[]> {
-  const stack = new Stack();
-  const tokens = lex(source);
-  const ast = parse(tokens);
-  const js = generate(ast, { preamble: false });
-
-  // Wrap the generated code in an async function that has access to
-  // runtime primitives via closure parameters.
-  const fn = new Function(
-    "stack",
-    "processN",
-    "registry",
-    `return (async () => { ${js} })();`
-  );
-
-  await fn(stack, processN, registry);
+  const { stack } = await run(source);
   return stack.toArray();
 }
 

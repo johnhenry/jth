@@ -1,5 +1,6 @@
 import { op } from "jth-runtime";
 import type { Stack } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
 
 // try: { block } try -> executes block, pushes Error on failure
 export const tryOp = (stack: Stack) => {
@@ -13,7 +14,7 @@ export const tryOp = (stack: Stack) => {
 
 // throw: "message" throw -> throws an error
 export const throwOp = op(1)((msg) => {
-  throw new Error(String(msg));
+  throw new JthRuntimeError(String(msg), undefined, undefined, "USER_THROW");
 });
 
 // error?: check if top of stack is an Error

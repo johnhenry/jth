@@ -6,6 +6,35 @@
  */
 
 import type { ProgramNodeType } from "jth-types/ast";
+import { JthRuntimeError } from "jth-types";
+
+/**
+ * Source position of a statement: the first expression that carries one.
+ */
+function statementPosition(exprs: any[]): { line: number; column: number } | null {
+  for (const e of exprs) {
+    if (e && typeof e.line === "number") {
+      return { line: e.line, column: typeof e.column === "number" ? e.column : 0 };
+    }
+  }
+  return null;
+}
+
+/**
+ * Wrap a compiled processN call in a try/rethrow that annotates any thrown
+ * error with the statement's source line/column (statement-level source
+ * positions — the MVP of runtime source mapping). Errors that already carry
+ * a position (e.g. from a nested statement) keep it.
+ */
+function wrapWithPosition(code: string, pos: { line: number; column: number } | null): string {
+  if (!pos) return code;
+  return (
+    `try { ${code} } ` +
+    `catch (e) { ` +
+    `if (e && typeof e === "object" && e.line == null) { e.line = ${pos.line}; e.column = ${pos.column}; } ` +
+    `throw e; }`
+  );
+}
 
 /**
  * Sanitize a jth identifier to a valid JS identifier.
@@ -28,6 +57,19 @@ export function generate(ast: ProgramNodeType, options: { preamble?: boolean } =
     lines.push('import { Stack, processN, registry } from "jth-runtime";');
     lines.push('import "jth-stdlib";');
     lines.push("const stack = new Stack();");
+    // Standalone execution (node): print "line:col: message" for jth errors
+    // instead of a raw stack trace, so the CLI reports source positions.
+    lines.push(
+      'if (typeof process !== "undefined" && typeof process.on === "function") {\n' +
+        '  process.on("uncaughtException", (err) => {\n' +
+        '    if (err && err.line != null) {\n' +
+        '      console.error(`${err.name ?? "Error"} at ${err.line}:${err.column ?? 0}: ${err.message}`);\n' +
+        "      process.exit(1);\n" +
+        "    }\n" +
+        "    throw err;\n" +
+        "  });\n" +
+        "}"
+    );
   }
 
   for (const stmt of ast.body) {
@@ -62,7 +104,10 @@ function generateStatement(stmt: any): string {
 
   // Normal statement — await processN(stack, [...])
   const items = exprs.map(generateExpression);
-  return `await processN(stack, [${items.join(", ")}]);`;
+  return wrapWithPosition(
+    `await processN(stack, [${items.join(", ")}]);`,
+    statementPosition(exprs)
+  );
 }
 
 /**
@@ -123,7 +168,12 @@ function generateExpression(node: any): string {
       return `((s) => { globalThis[${JSON.stringify(node.name)}] = s.pop(); })`;
 
     default:
-      throw new Error(`Unknown AST node type in codegen: ${node.type}`);
+      throw new JthRuntimeError(
+        `Unknown AST node type in codegen: ${node.type}`,
+        node?.line,
+        node?.column,
+        "UNKNOWN_NODE"
+      );
   }
 }
 
@@ -177,7 +227,11 @@ function generateDefinition(name: string, bodyExprs: any[]): string {
 
   // General case: evaluate body, pop result, register
   const items = bodyExprs.map(generateExpression);
-  return `await processN(stack, [${items.join(", ")}]);\nconst ${jsName} = stack.pop();\nregistry.set(${JSON.stringify(name)}, ${jsName});`;
+  const body = wrapWithPosition(
+    `await processN(stack, [${items.join(", ")}]);`,
+    statementPosition(bodyExprs)
+  );
+  return `${body}\nconst ${jsName} = stack.pop();\nregistry.set(${JSON.stringify(name)}, ${jsName});`;
 }
 
 /**
@@ -188,7 +242,11 @@ function generateValueDefinition(name: string, bodyExprs: any[]): string {
 
   if (bodyExprs.length > 0) {
     const items = bodyExprs.map(generateExpression);
-    return `await processN(stack, [${items.join(", ")}]);\nconst ${jsName} = stack.pop();`;
+    const body = wrapWithPosition(
+      `await processN(stack, [${items.join(", ")}]);`,
+      statementPosition(bodyExprs)
+    );
+    return `${body}\nconst ${jsName} = stack.pop();`;
   }
   return `const ${jsName} = stack.pop();`;
 }

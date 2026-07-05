@@ -1,5 +1,5 @@
-import { Stack, processN, registry, op, variadic } from "jth-runtime";
-import { lex, parse, generate } from "jth-compiler";
+import { Stack, registry, op } from "jth-runtime";
+import { run } from "jth-compiler";
 import "jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.mjs";
 
@@ -54,53 +54,19 @@ export async function evalJth(code, options = {}) {
     stack.push(...preloadStack);
   }
 
-  // Compile jth to JS
-  const tokens = lex(code);
-  const ast = parse(tokens);
-  const js = generate(ast, { preamble: false });
+  // Execute through the shared jth-compiler run() pipeline, passing the
+  // sandbox registry, timeout, and output capture through RunOptions.
+  const { value, output } = await run(code, {
+    stack,
+    registry: scopedRegistry,
+    timeoutMs: timeout,
+    captureLog: captureOutput,
+  });
 
-  // Build the execution function
-  const fn = new Function(
-    "stack",
-    "processN",
-    "registry",
-    `return (async () => { ${js} })();`
-  );
-
-  // Set up output capture
-  const outputLines = [];
-  const origLog = console.log;
-  if (captureOutput) {
-    console.log = (...args) => {
-      outputLines.push(args.map(String).join(" "));
-    };
-  }
-
-  try {
-    // Execute with timeout
-    const execution = fn(stack, processN, scopedRegistry);
-
-    if (timeout > 0) {
-      await Promise.race([
-        execution,
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error(`Evaluation timed out after ${timeout}ms`)), timeout)
-        ),
-      ]);
-    } else {
-      await execution;
-    }
-  } finally {
-    if (captureOutput) {
-      console.log = origLog;
-    }
-  }
-
-  const resultStack = stack.toArray();
   return {
-    value: resultStack.length > 0 ? resultStack[resultStack.length - 1] : undefined,
-    stack: resultStack,
-    output: outputLines.join("\n"),
+    value,
+    stack: stack.toArray(),
+    output,
   };
 }
 

@@ -1,5 +1,7 @@
-import { op, variadic } from "jth-runtime";
+import { op, variadic, processN } from "jth-runtime";
 import { Stack } from "jth-runtime";
+import { JthRuntimeError } from "jth-types";
+import { MAX_ITERATIONS } from "./control-flow.ts";
 
 // push: push item onto array (bottom=arr, top=item)
 export const push = op(2)((arr, item) => {
@@ -54,14 +56,6 @@ export const suppose = op(2)((collection, item) => {
   return [collection, item];
 });
 
-// array: collect top N items into array
-export const array = (n = Infinity) => (stack: Stack) => {
-  const arr =
-    n === Infinity ? stack.toArray() : stack.popN(Math.min(n, stack.length));
-  if (n === Infinity) stack.clear();
-  stack.push(arr);
-};
-
 // flatten: flatten arrays
 export const flatten = variadic((...args) => {
   const flat: unknown[] = [];
@@ -75,73 +69,88 @@ export const flatten = variadic((...args) => {
   return flat;
 });
 
-// sort: sort the stack. Configurable: sort() = ascending, sort(false) = descending
-export const sort =
-  (ascending = true) =>
-  (stack: Stack) => {
-    const arr = stack.toArray();
-    const cmp = ascending
-      ? (a: any, b: any) => (a === b ? 0 : a < b ? -1 : 1)
-      : (a: any, b: any) => (a === b ? 0 : a > b ? -1 : 1);
-    arr.sort(cmp);
-    stack.clear();
-    stack.push(...arr);
-  };
-
-// randomize: shuffle the stack
-export const randomize = (stack: Stack) => {
-  const arr = stack.toArray();
-  // Fisher-Yates shuffle
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  stack.clear();
-  stack.push(...arr);
+// ── Block runner ─────────────────────────────────────────────────────
+// Each element gets its own isolated Stack; the block runs against it via
+// processN, so thenable results are detected/awaited with exactly the same
+// sync-fast-path / async-promotion semantics as the rest of the language.
+// Returns the isolated stack, or a Promise of it if the block was async.
+const runBlock = (block: unknown, ...seed: unknown[]): Stack | Promise<Stack> => {
+  const s = new Stack();
+  s.push(...seed);
+  if (typeof block !== "function") return s;
+  return processN(s, [block]) as Stack | Promise<Stack>;
 };
 
+const isThenable = (v: unknown): v is Promise<Stack> =>
+  !!v && typeof (v as Promise<unknown>).then === "function";
+
 // map: [array] #[ block ] map -- apply block to each element, return new array
-// Block-aware: each element gets its own isolated Stack.
-export const mapOp = (stack: Stack) => {
+// Block-aware: each element gets its own isolated Stack. Sync unless a
+// block turns out to be async, in which case a Promise is returned.
+export const mapOp = (stack: Stack): void | Promise<void> => {
   const block = stack.pop();
   const arr = stack.pop() as any[];
-  const result = [];
-  for (const elem of arr) {
-    const s = new Stack();
-    s.push(elem);
-    if (typeof block === "function") block(s);
-    result.push(s.pop());
+  const result: unknown[] = [];
+  for (let i = 0; i < arr.length; i++) {
+    const r = runBlock(block, arr[i]);
+    if (isThenable(r)) {
+      // Async promotion: finish this element and the rest asynchronously
+      return (async () => {
+        result.push((await r).pop());
+        for (i++; i < arr.length; i++) {
+          result.push((await runBlock(block, arr[i])).pop());
+        }
+        stack.push(result);
+      })();
+    }
+    result.push(r.pop());
   }
   stack.push(result);
 };
 
 // filter: [array] #[ block ] filter -- keep elements where block returns truthy
-// Block-aware: each element gets its own isolated Stack.
-export const filterOp = (stack: Stack) => {
+// Block-aware: each element gets its own isolated Stack. Sync unless a
+// block turns out to be async, in which case a Promise is returned.
+export const filterOp = (stack: Stack): void | Promise<void> => {
   const block = stack.pop();
   const arr = stack.pop() as any[];
-  const result = [];
-  for (const elem of arr) {
-    const s = new Stack();
-    s.push(elem);
-    if (typeof block === "function") block(s);
-    if (s.pop()) result.push(elem);
+  const result: unknown[] = [];
+  for (let i = 0; i < arr.length; i++) {
+    const r = runBlock(block, arr[i]);
+    if (isThenable(r)) {
+      return (async () => {
+        if ((await r).pop()) result.push(arr[i]);
+        for (i++; i < arr.length; i++) {
+          if ((await runBlock(block, arr[i])).pop()) result.push(arr[i]);
+        }
+        stack.push(result);
+      })();
+    }
+    if (r.pop()) result.push(arr[i]);
   }
   stack.push(result);
 };
 
 // reduce: [array] init #[ block ] reduce -- accumulate over array with block
 // Block-aware: each iteration gets its own isolated Stack with [acc, element].
-export const reduceOp = (stack: Stack) => {
+// Sync unless a block turns out to be async, in which case a Promise is returned.
+export const reduceOp = (stack: Stack): void | Promise<void> => {
   const block = stack.pop();
   const init = stack.pop();
   const arr = stack.pop() as any[];
   let acc = init;
-  for (const elem of arr) {
-    const s = new Stack();
-    s.push(acc, elem);
-    if (typeof block === "function") block(s);
-    acc = s.pop();
+  for (let i = 0; i < arr.length; i++) {
+    const r = runBlock(block, acc, arr[i]);
+    if (isThenable(r)) {
+      return (async () => {
+        acc = (await r).pop();
+        for (i++; i < arr.length; i++) {
+          acc = (await runBlock(block, acc, arr[i])).pop();
+        }
+        stack.push(acc);
+      })();
+    }
+    acc = r.pop();
   }
   stack.push(acc);
 };
@@ -153,47 +162,66 @@ export const foldOp = reduceOp;
 // Produces an array from a seed value.
 // predicate: given seed, returns truthy to continue
 // step: given seed, should leave [value, nextSeed] on stack
-export const bendOp = (stack: Stack) => {
+// Capped at MAX_ITERATIONS (shared with while/until) so a non-terminating
+// bend throws instead of hanging. Sync unless a block turns out to be
+// async, in which case a Promise is returned.
+export const bendOp = (stack: Stack): void | Promise<void> => {
   const step = stack.pop();
   const predicate = stack.pop();
   let seed = stack.pop();
-  const result = [];
+  const result: unknown[] = [];
 
-  for (;;) {
-    // Test predicate
-    const ps = new Stack();
-    ps.push(seed);
-    if (typeof predicate === "function") predicate(ps);
-    if (!ps.pop()) break;
+  const iterationLimit = () =>
+    new JthRuntimeError(
+      `bend exceeded ${MAX_ITERATIONS} iterations (non-terminating predicate?)`,
+      undefined,
+      undefined,
+      "ITERATION_LIMIT"
+    );
 
-    // Execute step
-    const ss = new Stack();
-    ss.push(seed);
-    if (typeof step === "function") step(ss);
+  // Applies one step result: pops [value, nextSeed], records value.
+  const applyStep = (ss: Stack): void => {
     const nextSeed = ss.pop();
     const value = ss.pop();
     result.push(value);
     seed = nextSeed;
+  };
+
+  // Async continuation: same predicate/step logic, awaiting block results.
+  const continueAsync = async (
+    pending: Promise<Stack>,
+    phase: "predicate" | "step",
+    iterations: number
+  ): Promise<void> => {
+    for (;;) {
+      if (phase === "predicate") {
+        if (!(await pending).pop()) break;
+        phase = "step";
+        pending = Promise.resolve(runBlock(step, seed));
+        continue;
+      }
+      applyStep(await pending);
+      if (iterations++ >= MAX_ITERATIONS) throw iterationLimit();
+      phase = "predicate";
+      pending = Promise.resolve(runBlock(predicate, seed));
+    }
+    stack.push(result);
+  };
+
+  let iterations = 0;
+  for (;;) {
+    if (iterations++ >= MAX_ITERATIONS) throw iterationLimit();
+
+    // Test predicate
+    const pr = runBlock(predicate, seed);
+    if (isThenable(pr)) return continueAsync(pr, "predicate", iterations);
+    if (!pr.pop()) break;
+
+    // Execute step
+    const sr = runBlock(step, seed);
+    if (isThenable(sr)) return continueAsync(sr, "step", iterations);
+    applyStep(sr);
   }
 
   stack.push(result);
-};
-
-// Legacy configurable versions (not registered, kept for internal use)
-export const map = (fn: (v: any) => any) => (stack: Stack) => {
-  const arr = stack.toArray();
-  stack.clear();
-  stack.push(...arr.map(fn));
-};
-
-export const filter = (fn: (v: any) => any) => (stack: Stack) => {
-  const arr = stack.toArray();
-  stack.clear();
-  stack.push(...arr.filter(fn));
-};
-
-export const reduce = (fn: (acc: any, val: any) => any, init: any) => (stack: Stack) => {
-  const arr = stack.toArray();
-  stack.clear();
-  stack.push(arr.reduce(fn, init));
 };
