@@ -8,22 +8,28 @@
     "packages/jth-runtime",
     "packages/jth-compiler",
     "packages/jth-stdlib",
-    "packages/jth-cli",
     "packages/jth-repl",
-    "packages/jth-ai",
     "packages/jth-html",
-    "packages/jth-eval"
+    "packages/jth-ai",
+    "packages/jth-eval",
+    "packages/jth-cli"
   ],
   "devDependencies": {
     "@types/node": "^25.3.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^3.0.0"
   },
   "scripts": {
-    "test": "vitest run",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run build && vitest run",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "vitest run test/e2e/",
     "typecheck": "tsc -b"
+  },
+  "allowScripts": {
+    "esbuild@0.27.3": true
   }
 }

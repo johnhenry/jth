@@ -1,34 +1,39 @@
 /**
- * Integration tests for `jth run` through the REAL CLI spawn path:
- * compile to a temp .mjs, spawn node, inherit stdio, clean up.
+ * Integration tests for `jth run` through the REAL built CLI (plain node,
+ * no tsx): compile, bundle self-contained, spawn node, clean up.
+ *
+ * Requires a build (`npm run build`) — the root `npm test` script builds
+ * first. Temp dirs live in the OS temp dir on purpose: bundled output must
+ * run outside the monorepo tree.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync, readdirSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const BIN = resolve(__dirname, "..", "bin", "jth.ts");
-// Temp dirs live inside the repo tree: compiled output currently imports
-// bare "jth-runtime"/"jth-stdlib" specifiers, which only resolve against
-// the monorepo's node_modules (see #17 for the portability story).
-const REPO_ROOT = resolve(__dirname, "..", "..", "..");
+const BIN = resolve(__dirname, "..", "dist", "bin", "jth.js");
 
 function jth(args: string[], cwd: string) {
-  return spawnSync(process.execPath, ["--import", "tsx", BIN, ...args], {
+  return spawnSync(process.execPath, [BIN, ...args], {
     cwd,
     encoding: "utf-8",
     timeout: 60_000,
   });
 }
 
-describe("jth run (real CLI spawn path)", () => {
+describe("jth run (built CLI, spawn path)", () => {
   let dir: string;
 
   beforeEach(() => {
-    dir = mkdtempSync(join(REPO_ROOT, ".jth-run-test-"));
+    expect(
+      existsSync(BIN),
+      "dist/bin/jth.js missing — run `npm run build` first (root `npm test` does)"
+    ).toBe(true);
+    dir = mkdtempSync(join(tmpdir(), "jth-run-test-"));
   });
 
   afterEach(() => {
@@ -43,17 +48,15 @@ describe("jth run (real CLI spawn path)", () => {
     expect(result.stdout.trim()).toBe("hello from jth run");
   });
 
-  it("cleans up the temp .mjs written next to the source", () => {
+  it("writes nothing next to the user's source (temp file lives in os.tmpdir)", () => {
     const file = join(dir, "prog.jth");
     writeFileSync(file, "1 2 + peek;", "utf-8");
     const result = jth(["run", file], dir);
     expect(result.status).toBe(0);
-    // run() writes .jth-run-<hex>.mjs next to the source and removes it
-    // in a finally block — nothing but the source may remain.
     expect(readdirSync(dir)).toEqual(["prog.jth"]);
   });
 
-  it("cleans up the temp .mjs even when the program fails", () => {
+  it("leaves no litter even when the program fails", () => {
     const file = join(dir, "bad.jth");
     writeFileSync(file, "1 no-such-op;", "utf-8");
     const result = jth(["run", file], dir);
@@ -61,7 +64,7 @@ describe("jth run (real CLI spawn path)", () => {
     expect(readdirSync(dir)).toEqual(["bad.jth"]);
   });
 
-  it("runs inline code with -c (temp file in cwd, cleaned up)", () => {
+  it("runs inline code with -c", () => {
     const result = jth(["run", "-c", "6 7 * peek;"], dir);
     expect(result.status).toBe(0);
     expect(result.stdout.trim()).toBe("42");
@@ -78,10 +81,11 @@ describe("jth run (real CLI spawn path)", () => {
   });
 
   it("relative .jth imports resolve next to the source file", () => {
-    // lib.jth compiles to lib.mjs; main.jth imports it by relative path.
+    // Multi-file flow: compile the library unbundled (bare specifiers) so
+    // the main program's bundling step inlines it once.
     const lib = join(dir, "lib.jth");
     writeFileSync(lib, "#[ dupe * ] :square;\n::export square;", "utf-8");
-    const compiled = jth(["compile", lib], dir);
+    const compiled = jth(["compile", "--no-bundle", lib], dir);
     expect(compiled.status).toBe(0);
 
     const main = join(dir, "main.jth");
@@ -93,5 +97,51 @@ describe("jth run (real CLI spawn path)", () => {
     const result = jth(["run", main], dir);
     expect(result.status).toBe(0);
     expect(result.stdout.trim()).toBe("49");
+  });
+});
+
+describe("jth compile (built CLI)", () => {
+  let dir: string;
+
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), "jth-compile-test-"));
+  });
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("default output is a self-contained bundle runnable with plain node anywhere", () => {
+    const file = join(dir, "prog.jth");
+    writeFileSync(file, "20 22 + peek;", "utf-8");
+    const out = join(dir, "prog.mjs");
+    const compiled = jth(["compile", file, out], dir);
+    expect(compiled.status).toBe(0);
+
+    // Run from an unrelated directory with plain node — no jth packages
+    // installed there, no tsx.
+    const other = mkdtempSync(join(tmpdir(), "jth-elsewhere-"));
+    try {
+      const result = spawnSync(process.execPath, [out], {
+        cwd: other,
+        encoding: "utf-8",
+        timeout: 60_000,
+      });
+      expect(result.status).toBe(0);
+      expect(result.stdout.trim()).toBe("42");
+    } finally {
+      rmSync(other, { recursive: true, force: true });
+    }
+  });
+
+  it("--no-bundle emits the bare-specifier form", () => {
+    const file = join(dir, "prog.jth");
+    writeFileSync(file, "1 2 +;", "utf-8");
+    const out = join(dir, "bare.mjs");
+    const compiled = jth(["compile", "--no-bundle", file, out], dir);
+    expect(compiled.status).toBe(0);
+    const js = readFileSync(out, "utf-8");
+    expect(js).toContain('from "jth-runtime"');
+    expect(js).toContain('import "jth-stdlib"');
   });
 });

@@ -1,4 +1,4 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env node
 
 /**
  * jth CLI — compile and run .jth programs.
@@ -6,26 +6,34 @@
  * Usage:
  *   jth run <file>              Compile and run a .jth file
  *   jth run -c '<code>'         Compile and run inline jth code
- *   jth compile <file> [output] Compile a .jth file to .mjs
- *   jth compile -c '<code>'     Compile inline jth code to stdout
+ *   jth compile <file> [output] Compile a .jth file to a self-contained .mjs
+ *   jth compile --no-bundle <file> [output]
+ *                               Compile without bundling (bare jth-* imports)
+ *   jth compile -c '<code>'     Compile inline jth code to stdout (unbundled)
  *   jth repl                    Start interactive REPL
  *   jth --version | -v          Print version
  *   jth --help | -h             Print help
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compile, deriveOutputPath } from "../src/compile.ts";
+import { compile, compileBundled, deriveOutputPath } from "../src/compile.ts";
 import { run } from "../src/run.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function getVersion(): string {
-  const pkg = JSON.parse(
-    readFileSync(resolve(__dirname, "..", "package.json"), "utf-8")
-  );
-  return pkg.version;
+  // In dev the bin lives at <pkg>/bin/jth.ts (package.json one level up);
+  // built, it lives at <pkg>/dist/bin/jth.js (two levels up).
+  for (const rel of ["..", "../.."] as const) {
+    const candidate = resolve(__dirname, rel, "package.json");
+    if (existsSync(candidate)) {
+      const pkg = JSON.parse(readFileSync(candidate, "utf-8"));
+      if (pkg.name === "jth-lang") return pkg.version;
+    }
+  }
+  return "unknown";
 }
 
 const HELP = `
@@ -34,16 +42,24 @@ jth v${getVersion()} — stack-based language CLI
 Usage:
   jth run <file>              Compile and execute a .jth file
   jth run -c '<code>'         Compile and execute inline jth code
-  jth compile <file> [output] Compile a .jth file to .mjs
-  jth compile -c '<code>'     Compile inline jth code (prints to stdout)
+  jth compile <file> [output] Compile a .jth file to a self-contained .mjs
+                              (bundles jth-runtime + jth-stdlib; runs with
+                              plain \`node output.mjs\` anywhere)
+  jth compile --no-bundle <file> [output]
+                              Compile without bundling: output imports
+                              "jth-runtime"/"jth-stdlib" as bare specifiers
+                              (requires those packages to be installed)
+  jth compile -c '<code>'     Compile inline jth code (prints unbundled
+                              output to stdout)
   jth repl                    Start interactive REPL
   jth --version, -v           Print version
   jth --help, -h              Print this help message
 
 Examples:
   jth run hello.jth
-  jth run -c '"hello" @;'
-  jth compile math.jth math.mjs
+  jth run -c '"hello" peek;'
+  jth compile math.jth math.mjs && node math.mjs
+  jth compile --no-bundle math.jth
   jth compile -c '1 2 +;'
 `.trim();
 
@@ -70,7 +86,7 @@ switch (command) {
     break;
 
   case "compile":
-    handleCompile(rest);
+    await handleCompile(rest);
     break;
 
   case "repl":
@@ -114,19 +130,26 @@ async function handleRun(argv: string[]): Promise<void> {
   }
 }
 
-function handleCompile(argv: string[]): void {
-  const { isCode, input, extra } = parseInput(argv, "compile");
+async function handleCompile(argv: string[]): Promise<void> {
+  const bundle = !argv.includes("--no-bundle");
+  const filtered = argv.filter((a) => a !== "--no-bundle");
+  const { isCode, input, extra } = parseInput(filtered, "compile");
 
   try {
     if (isCode) {
-      // Inline code — always print to stdout
+      // Inline code — always print the unbundled form to stdout
       const js = compile(input, { isCode: true });
       console.log(js);
     } else {
       // File input
       const output = extra || deriveOutputPath(input);
-      compile(input, { isCode: false, output });
-      console.error(`Compiled: ${input} -> ${output}`);
+      if (bundle) {
+        await compileBundled(input, { isCode: false, output });
+        console.error(`Compiled (bundled): ${input} -> ${output}`);
+      } else {
+        compile(input, { isCode: false, output });
+        console.error(`Compiled: ${input} -> ${output}`);
+      }
     }
   } catch (err: any) {
     reportError(err);

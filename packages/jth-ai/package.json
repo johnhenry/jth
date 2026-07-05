@@ -2,10 +2,24 @@
   "name": "jth-ai",
   "version": "0.3.0",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./ollama": "./src/ollama.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./ollama": {
+      "types": "./dist/ollama.d.ts",
+      "default": "./dist/ollama.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "jth-runtime": "0.3.0"

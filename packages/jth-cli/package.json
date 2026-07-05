@@ -1,16 +1,32 @@
 {
-  "name": "jth-cli",
+  "name": "jth-lang",
   "version": "0.3.0",
+  "description": "jth — a stack-based language. CLI: compile and run .jth programs (binary: jth).",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "bin": {
-    "jth": "./bin/jth.ts"
+    "jth": "./dist/bin/jth.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "jth-compiler": "0.3.0",
     "jth-runtime": "0.3.0",
     "jth-stdlib": "0.3.0",
     "jth-types": "0.3.0",
-    "jth-repl": "0.3.0"
+    "jth-repl": "0.3.0",
+    "esbuild": "^0.27.3"
   }
 }

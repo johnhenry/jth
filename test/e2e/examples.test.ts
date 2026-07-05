@@ -13,10 +13,10 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..");
 
-/** Run the jth CLI with the given args, from the repo root. */
+/** Run the built jth CLI with the given args, from the repo root. */
 function jth(...args: string[]) {
-  const bin = resolve(repoRoot, "packages", "jth-cli", "bin", "jth.ts");
-  return spawnSync(process.execPath, ["--import", "tsx", bin, ...args], {
+  const bin = resolve(repoRoot, "packages", "jth-cli", "dist", "bin", "jth.js");
+  return spawnSync(process.execPath, [bin, ...args], {
     cwd: repoRoot,
     encoding: "utf-8",
     timeout: 60_000,
