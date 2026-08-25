@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { op, variadic } from "jth-runtime";
+import { op, variadic } from "@johnhenry/jth-runtime";
 import { evalJth } from "../src/eval.ts";
 
 describe("evalJth", () => {
@@ -193,7 +193,7 @@ describe("evalJth", () => {
     it("definitions are scoped and do not pollute global registry", async () => {
       await evalJth("#[ 1 ] :eval-test-unique-xyz;");
       // The global registry should not have this
-      const { registry } = await import("jth-runtime");
+      const { registry } = await import("@johnhenry/jth-runtime");
       expect(registry.has("eval-test-unique-xyz")).toBe(false);
     });
   });

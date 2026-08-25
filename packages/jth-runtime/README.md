@@ -1,11 +1,13 @@
 # jth-runtime
 
+> Previously published as `jth-runtime@0.4.0`.
+
 Core runtime engine for the jth stack-based language. Provides the stack data structure, item processing pipeline, operator construction helpers, function metadata annotations, and a global operator registry.
 
 ## Installation
 
 ```bash
-npm install jth-runtime
+npm install @johnhenry/jth-runtime
 ```
 
 ## API
@@ -63,7 +65,7 @@ Global operator registry used by compiled jth programs.
 ## Usage
 
 ```js
-import { Stack, processN, op, registry } from "jth-runtime";
+import { Stack, processN, op, registry } from "@johnhenry/jth-runtime";
 
 // Build a simple add operator
 const add = op(2)((a, b) => [a + b]);

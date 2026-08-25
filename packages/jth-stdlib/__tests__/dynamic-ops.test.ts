@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Stack, registry } from "jth-runtime";
-import { run } from "jth-compiler";
+import { Stack, registry } from "@johnhenry/jth-runtime";
+import { run } from "@johnhenry/jth-compiler";
 import "../src/index.ts";
 
 /** Resolve a dynamic op and apply it to a stack seeded with `top`. */

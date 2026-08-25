@@ -1,8 +1,8 @@
-import { TokenType } from "jth-types/tokens";
-import type { Token } from "jth-types/tokens";
-import * as AST from "jth-types/ast";
-import type { ProgramNodeType, ASTNode } from "jth-types/ast";
-import { JthParserError } from "jth-types/errors";
+import { TokenType } from "@johnhenry/jth-types/tokens";
+import type { Token } from "@johnhenry/jth-types/tokens";
+import * as AST from "@johnhenry/jth-types/ast";
+import type { ProgramNodeType, ASTNode } from "@johnhenry/jth-types/ast";
+import { JthParserError } from "@johnhenry/jth-types/errors";
 
 /**
  * Parse an array of tokens into a jth AST.

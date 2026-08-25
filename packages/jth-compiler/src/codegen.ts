@@ -5,8 +5,8 @@
  * persistent Stack, and processes each statement via processN.
  */
 
-import type { ProgramNodeType } from "jth-types/ast";
-import { JthRuntimeError } from "jth-types";
+import type { ProgramNodeType } from "@johnhenry/jth-types/ast";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 /**
  * Source position of a statement: the first expression that carries one.
@@ -81,8 +81,8 @@ function generateProgram(ast: ProgramNodeType, preamble: boolean): string {
   const lines: string[] = [];
 
   if (preamble) {
-    lines.push('import { Stack, processN, registry } from "jth-runtime";');
-    lines.push('import "jth-stdlib";');
+    lines.push('import { Stack, processN, registry } from "@johnhenry/jth-runtime";');
+    lines.push('import "@johnhenry/jth-stdlib";');
     lines.push("const stack = new Stack();");
     // Standalone execution (node): print "line:col: message" for jth errors
     // instead of a raw stack trace, so the CLI reports source positions.

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { JthRuntimeError } from "jth-types";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import { run } from "../src/run.ts";
-import "jth-stdlib";
+import "@johnhenry/jth-stdlib";
 
 async function captureError(source: string): Promise<any> {
   try {

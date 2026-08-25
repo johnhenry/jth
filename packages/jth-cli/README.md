@@ -1,13 +1,15 @@
-# jth-lang
+# jth
 
-Command-line interface for compiling and running jth programs. The npm package is **`jth-lang`** (the binary it installs is `jth`).
+> Previously published as `jth-lang@0.4.0` (itself renamed from `jth-cli@0.1.0`).
 
-> Renamed from `jth-cli`: the npm name `jth` is taken, so the CLI ships as `jth-lang`. The internal packages keep their names (`jth-runtime`, `jth-compiler`, …).
+Command-line interface for compiling and running jth programs. The npm package is **`@johnhenry/jth`** (the binary it installs is `jth`).
+
+> The unscoped npm name `jth` is owned by another user, which is why the package was originally shipped unscoped as `jth-lang`. Now that the CLI publishes under the `@johnhenry` scope, that constraint no longer applies — `@johnhenry/jth` is a distinct, available name regardless of who owns unscoped `jth`. The internal packages are published alongside it as `@johnhenry/jth-runtime`, `@johnhenry/jth-compiler`, …
 
 ## Installation
 
 ```bash
-npm install -g jth-lang
+npm install -g @johnhenry/jth
 ```
 
 ## Commands
@@ -32,7 +34,7 @@ jth run -c '"hello world" peek;'
 
 Compile a `.jth` file to a `.mjs` JavaScript module. If no output path is given, the output filename is derived from the input (replacing `.jth` with `.mjs`).
 
-By default the output is a **self-contained bundle** — jth-runtime and jth-stdlib are inlined, so `node output.mjs` works from any directory with nothing installed:
+By default the output is a **self-contained bundle** — @johnhenry/jth-runtime and @johnhenry/jth-stdlib are inlined, so `node output.mjs` works from any directory with nothing installed:
 
 ```bash
 jth compile math.jth              # writes math.mjs (bundled)
@@ -40,7 +42,7 @@ jth compile math.jth output.mjs   # writes output.mjs (bundled)
 node output.mjs                   # runs anywhere
 ```
 
-With `--no-bundle`, the output keeps bare `"jth-runtime"` / `"jth-stdlib"` imports — smaller and readable, for projects that have the jth packages installed (also the right form for library modules that a bundled main program will import):
+With `--no-bundle`, the output keeps bare `"@johnhenry/jth-runtime"` / `"@johnhenry/jth-stdlib"` imports — smaller and readable, for projects that have the jth packages installed (also the right form for library modules that a bundled main program will import):
 
 ```bash
 jth compile --no-bundle math.jth

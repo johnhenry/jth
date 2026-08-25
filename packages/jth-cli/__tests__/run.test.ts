@@ -141,7 +141,7 @@ describe("jth compile (built CLI)", () => {
     const compiled = jth(["compile", "--no-bundle", file, out], dir);
     expect(compiled.status).toBe(0);
     const js = readFileSync(out, "utf-8");
-    expect(js).toContain('from "jth-runtime"');
-    expect(js).toContain('import "jth-stdlib"');
+    expect(js).toContain('from "@johnhenry/jth-runtime"');
+    expect(js).toContain('import "@johnhenry/jth-stdlib"');
   });
 });

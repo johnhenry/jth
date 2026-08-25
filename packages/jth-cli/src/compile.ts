@@ -6,13 +6,13 @@
  *     module with jth-runtime/jth-stdlib inlined — `node out.mjs` works
  *     from any directory with no packages installed.
  *   - Bare (--no-bundle, and the default of the `compile()` API / inline
- *     `-c` output): the raw transform result, importing "jth-runtime" and
- *     "jth-stdlib" as bare specifiers — for users who have the jth
+ *     `-c` output): the raw transform result, importing "@johnhenry/jth-runtime" and
+ *     "@johnhenry/jth-stdlib" as bare specifiers — for users who have the jth
  *     packages installed in their project.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname, basename, extname } from "node:path";
-import { transform } from "jth-compiler";
+import { transform } from "@johnhenry/jth-compiler";
 import { bundleProgram } from "./bundle.ts";
 
 interface CompileOptions {

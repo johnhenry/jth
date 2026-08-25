@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { lex } from "../src/lexer.ts";
 import { parse } from "../src/parser.ts";
-import { JthParserError } from "jth-types/errors";
+import { JthParserError } from "@johnhenry/jth-types/errors";
 
 /**
  * Helper: lex then parse.

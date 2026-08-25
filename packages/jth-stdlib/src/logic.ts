@@ -1,4 +1,4 @@
-import { op } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
 
 export const and = op(2)((a, b) => [a && b]);
 export const or = op(2)((a, b) => [a || b]);

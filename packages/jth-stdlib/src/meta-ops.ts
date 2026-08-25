@@ -1,5 +1,5 @@
-import { processN } from "jth-runtime";
-import type { Stack } from "jth-runtime";
+import { processN } from "@johnhenry/jth-runtime";
+import type { Stack } from "@johnhenry/jth-runtime";
 
 // $: execute -- pop block and execute it
 export const execute = (stack: Stack) => {

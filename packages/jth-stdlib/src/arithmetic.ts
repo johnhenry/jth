@@ -1,4 +1,4 @@
-import { op, variadic } from "jth-runtime";
+import { op, variadic } from "@johnhenry/jth-runtime";
 
 export const plus = op(2)((a, b) => [a + b]);
 export const minus = op(2)((a, b) => [a - b]);

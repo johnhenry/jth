@@ -1,6 +1,6 @@
-import { op } from "jth-runtime";
-import type { Stack } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { op } from "@johnhenry/jth-runtime";
+import type { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 // try: { block } try -> executes block, pushes Error on failure
 export const tryOp = (stack: Stack) => {

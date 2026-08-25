@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { Stack, processN } from "jth-runtime";
+import { Stack, processN } from "@johnhenry/jth-runtime";
 import { execute, executeSpread } from "../src/meta-ops.ts";
-import { run } from "jth-compiler";
+import { run } from "@johnhenry/jth-compiler";
 import "../src/index.ts";
 
 describe("meta-ops: execute ($)", () => {
@@ -66,7 +66,7 @@ describe("meta-ops: registered ops via jth programs", () => {
   it("$$ executes an array as a program", async () => {
     const s = new Stack();
     // build [3 4 +] as data, then execute it
-    const { registry } = await import("jth-runtime");
+    const { registry } = await import("@johnhenry/jth-runtime");
     s.push([3, 4, registry.resolve("+")]);
     await processN(s, [registry.resolve("$$")]);
     expect(s.toArray()).toEqual([7]);

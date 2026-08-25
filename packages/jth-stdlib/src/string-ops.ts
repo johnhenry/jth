@@ -1,4 +1,4 @@
-import { op } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
 
 export const len = op(1)((a) => [a.length]);
 export const split = (delimiter = " ") => op(1)((str: any) => [str.split(delimiter)]);

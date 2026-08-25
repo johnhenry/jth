@@ -1,4 +1,4 @@
-import { op } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
 
 export const equal = op(2)((a, b) => [a === b]);
 export const coercedEqual = op(2)((a, b) => [a == b]);

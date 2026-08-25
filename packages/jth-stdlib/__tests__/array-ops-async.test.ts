@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Stack } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import { mapOp, filterOp, reduceOp, bendOp } from "../src/array-ops.ts";
 import { MAX_ITERATIONS } from "../src/control-flow.ts";
 

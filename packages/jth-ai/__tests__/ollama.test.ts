@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { Stack, processN } from "jth-runtime";
+import { Stack, processN } from "@johnhenry/jth-runtime";
 import { createInfer, conversation, extractContent } from "../src/ollama.ts";
 
 // Mock Ollama client

@@ -1,7 +1,7 @@
-import { Stack, op } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
-import { run } from "jth-compiler";
-import "jth-stdlib";
+import { Stack, op } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
+import { run } from "@johnhenry/jth-compiler";
+import "@johnhenry/jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.ts";
 import { buildAllowlist } from "./eval.ts";
 import type { SandboxOption, EvalResult } from "./eval.ts";

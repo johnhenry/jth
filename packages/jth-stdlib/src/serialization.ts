@@ -1,4 +1,4 @@
-import { op } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
 
 export const intoJson = op(1)((a) => [JSON.stringify(a)]);
 export const toJson = op(1)((a) => [JSON.parse(a)]);

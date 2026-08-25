@@ -1,5 +1,5 @@
-import { op, variadic } from "jth-runtime";
-import type { StackOperator } from "jth-runtime";
+import { op, variadic } from "@johnhenry/jth-runtime";
+import type { StackOperator } from "@johnhenry/jth-runtime";
 
 interface OllamaMessage {
   role: string;

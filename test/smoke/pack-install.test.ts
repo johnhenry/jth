@@ -1,15 +1,15 @@
 /**
- * SLOW smoke test: prove jth-lang is actually installable and usable
+ * SLOW smoke test: prove @johnhenry/jth is actually installable and usable
  * outside the monorepo.
  *
- * Flow: `npm pack` jth-lang and its workspace dependencies into a temp
- * dir OUTSIDE the repo, `npm install` the tarballs there (the tarball
- * versions satisfy each other's version ranges, so nothing jth-* is
- * fetched from the registry), then run the installed `jth` binary on a
+ * Flow: `npm pack` @johnhenry/jth and its workspace dependencies into a
+ * temp dir OUTSIDE the repo, `npm install` the tarballs there (the tarball
+ * versions satisfy each other's version ranges, so nothing @johnhenry/jth-*
+ * is fetched from the registry), then run the installed `jth` binary on a
  * hello program with plain node.
  *
  * Requires a build (root `npm test` builds first) and network access for
- * jth-lang's third-party dependency (esbuild).
+ * @johnhenry/jth's third-party dependency (esbuild).
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
@@ -22,14 +22,16 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..", "..");
 
-// jth-lang plus every jth-* package in its dependency closure.
+// @johnhenry/jth plus every @johnhenry/jth-* package in its dependency
+// closure. These are workspace DIRECTORY names under packages/, not npm
+// package names (npm pack runs with cwd = packages/<dir>).
 const PACKAGES = [
   "jth-types",
   "jth-runtime",
   "jth-compiler",
   "jth-stdlib",
   "jth-repl",
-  "jth-cli", // directory name; the package inside is "jth-lang"
+  "jth-cli", // directory name; the package inside is "@johnhenry/jth" (renamed from jth-lang, itself renamed from jth-cli)
 ];
 
 const INSTALL_TIMEOUT = 300_000;

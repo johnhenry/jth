@@ -1,4 +1,4 @@
-import { op, registry } from "jth-runtime";
+import { op, registry } from "@johnhenry/jth-runtime";
 
 // Register dynamic patterns: N+, N-, N*, N/, N%, N**, Nlog
 export function registerDynamicOps() {

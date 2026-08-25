@@ -62,8 +62,8 @@ describe("transform: source → JS round trip", () => {
 
   it("full preamble by default", () => {
     const js = transform("1 2 +;");
-    expect(js).toContain('import { Stack, processN, registry } from "jth-runtime"');
-    expect(js).toContain('import "jth-stdlib"');
+    expect(js).toContain('import { Stack, processN, registry } from "@johnhenry/jth-runtime"');
+    expect(js).toContain('import "@johnhenry/jth-stdlib"');
     expect(js).toContain("const stack = new Stack()");
   });
 

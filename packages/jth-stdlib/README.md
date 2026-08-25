@@ -1,11 +1,13 @@
 # jth-stdlib
 
-Standard library of operators for the jth language. Importing this package registers all built-in operators into the global `jth-runtime` registry.
+> Previously published as `jth-stdlib@0.4.0`.
+
+Standard library of operators for the jth language. Importing this package registers all built-in operators into the global `@johnhenry/jth-runtime` registry.
 
 ## Installation
 
 ```bash
-npm install jth-stdlib
+npm install @johnhenry/jth-stdlib
 ```
 
 ## Operator Categories
@@ -36,17 +38,17 @@ npm install jth-stdlib
 
 ```js
 // Simply import to register all operators
-import "jth-stdlib";
+import "@johnhenry/jth-stdlib";
 
 // Operators are now available in the global registry
-import { Stack, processN, registry } from "jth-runtime";
+import { Stack, processN, registry } from "@johnhenry/jth-runtime";
 
 const stack = new Stack();
 await processN(stack, [10, 3, registry.resolve("-")]);
 console.log(stack.peek()); // 7
 ```
 
-The standard library is automatically imported by compiled jth programs. You only need to import it explicitly when using `jth-runtime` directly from JavaScript.
+The standard library is automatically imported by compiled jth programs. You only need to import it explicitly when using `@johnhenry/jth-runtime` directly from JavaScript.
 
 ---
 

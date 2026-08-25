@@ -1,6 +1,12 @@
 {
-  "name": "jth-html",
-  "version": "0.4.0",
+  "name": "@johnhenry/jth-html",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnhenry/jth.git",
+    "directory": "packages/jth-html"
+  },
+  "homepage": "https://github.com/johnhenry/jth#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,7 +40,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-runtime": "^0.4.0"
+    "@johnhenry/jth-runtime": "^0.0.0"
   },
   "license": "MIT"
 }

@@ -1,7 +1,13 @@
 {
-  "name": "jth-lang",
-  "version": "0.4.0",
+  "name": "@johnhenry/jth",
+  "version": "0.0.0",
   "description": "jth — a stack-based language. CLI: compile and run .jth programs (binary: jth).",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnhenry/jth.git",
+    "directory": "packages/jth-cli"
+  },
+  "homepage": "https://github.com/johnhenry/jth#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,11 +28,11 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-compiler": "^0.4.0",
-    "jth-runtime": "^0.4.0",
-    "jth-stdlib": "^0.4.0",
-    "jth-types": "^0.4.0",
-    "jth-repl": "^0.4.0",
+    "@johnhenry/jth-compiler": "^0.0.0",
+    "@johnhenry/jth-runtime": "^0.0.0",
+    "@johnhenry/jth-stdlib": "^0.0.0",
+    "@johnhenry/jth-types": "^0.0.0",
+    "@johnhenry/jth-repl": "^0.0.0",
     "esbuild": "^0.27.3"
   },
   "license": "MIT"

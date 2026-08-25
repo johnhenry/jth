@@ -1,7 +1,7 @@
-import { Stack, registry, op } from "jth-runtime";
-import type { StackOperator } from "jth-runtime";
-import { run } from "jth-compiler";
-import "jth-stdlib";
+import { Stack, registry, op } from "@johnhenry/jth-runtime";
+import type { StackOperator } from "@johnhenry/jth-runtime";
+import { run } from "@johnhenry/jth-compiler";
+import "@johnhenry/jth-stdlib";
 import { ScopedRegistry } from "./scoped-registry.ts";
 
 /**

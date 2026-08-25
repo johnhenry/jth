@@ -1,6 +1,6 @@
-import { registry } from "jth-runtime";
-import type { StackOperator } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { registry } from "@johnhenry/jth-runtime";
+import type { StackOperator } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 type DynamicFactory = (
   name: string,

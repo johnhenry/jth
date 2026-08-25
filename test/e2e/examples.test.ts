@@ -1,7 +1,7 @@
 /**
  * End-to-end tests that run shipped example programs through the REAL CLI
  * (spawned process), proving the opt-in op-package load path works:
- * examples/html.jth declares `::import "jth-html";`, which the compiler
+ * examples/html.jth declares `::import "@johnhenry/jth-html";`, which the compiler
  * passes through so jth-html side-effect-registers its `h-*` ops.
  */
 

@@ -1,6 +1,6 @@
-import { op, variadic } from "jth-runtime";
-import type { Stack } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { op, variadic } from "@johnhenry/jth-runtime";
+import type { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 /** Human-readable type name of a runtime value (for error messages). */
 export function typeName(value: unknown): string {

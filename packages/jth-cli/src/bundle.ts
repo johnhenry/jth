@@ -2,16 +2,17 @@
  * Self-contained bundling of compiled jth programs.
  *
  * `jth compile` / `jth run` emit JavaScript whose preamble imports
- * "jth-runtime" and "jth-stdlib" (and possibly opt-in op packages like
- * "jth-html"). Those bare specifiers only resolve where the packages are
+ * "@johnhenry/jth-runtime" and "@johnhenry/jth-stdlib" (and possibly opt-in op packages like
+ * "@johnhenry/jth-html"). Those bare specifiers only resolve where the packages are
  * installed. To make compiled output portable — `node out.mjs` from any
  * directory — we bundle it with esbuild, inlining the jth packages.
  *
- * Resolution model: jth-* specifiers are resolved from THIS package's own
- * installation (the CLI declares jth-runtime/jth-stdlib/... as real
- * dependencies), so a globally installed jth-lang always finds its own
- * copies. Anything else (relative imports like "./lib.mjs", other npm
- * packages) resolves relative to the source file's directory.
+ * Resolution model: @johnhenry/jth-* specifiers are resolved from THIS
+ * package's own installation (the CLI declares @johnhenry/jth-runtime,
+ * @johnhenry/jth-stdlib, etc. as real dependencies), so a globally installed
+ * @johnhenry/jth always finds its own copies. Anything else (relative
+ * imports like "./lib.mjs", other npm packages) resolves relative to the
+ * source file's directory.
  */
 
 import { build } from "esbuild";
@@ -24,7 +25,7 @@ import { createRequire } from "node:module";
  * Returns a filesystem path, or null to fall back to default resolution
  * (which esbuild performs relative to the program's resolveDir — that lets
  * user projects supply their own op packages, e.g. a locally installed
- * jth-html when the CLI doesn't ship it).
+ * @johnhenry/jth-html when the CLI doesn't ship it).
  */
 function resolveFromCli(specifier: string): string | null {
   try {
@@ -46,7 +47,7 @@ function resolveFromCli(specifier: string): string | null {
 const jthResolverPlugin: Plugin = {
   name: "jth-package-resolver",
   setup(build) {
-    build.onResolve({ filter: /^jth-[a-z-]+(\/.*)?$/ }, (args) => {
+    build.onResolve({ filter: /^@johnhenry\/jth-[a-z-]+(\/.*)?$/ }, (args) => {
       const path = resolveFromCli(args.path);
       return path ? { path } : undefined;
     });

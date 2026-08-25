@@ -206,13 +206,13 @@ describe("JthContext", () => {
   describe("no global pollution", () => {
     it("definitions do not leak to global registry", async () => {
       await ctx.eval("#[ 1 ] :ctx-test-unique-abc;");
-      const { registry } = await import("jth-runtime");
+      const { registry } = await import("@johnhenry/jth-runtime");
       expect(registry.has("ctx-test-unique-abc")).toBe(false);
     });
 
     it("define() does not leak to global registry", async () => {
       ctx.define("ctx-test-unique-def", 42);
-      const { registry } = await import("jth-runtime");
+      const { registry } = await import("@johnhenry/jth-runtime");
       expect(registry.has("ctx-test-unique-def")).toBe(false);
     });
 

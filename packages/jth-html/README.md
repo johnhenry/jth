@@ -1,19 +1,21 @@
 # jth-html
 
-HTML DSL for jth: build HTML trees on the stack and render them to strings. Importing the package registers its operators with the global jth-runtime registry as a side effect.
+> Previously published as `jth-html@0.4.0`.
+
+HTML DSL for jth: build HTML trees on the stack and render them to strings. Importing the package registers its operators with the global @johnhenry/jth-runtime registry as a side effect.
 
 ## Installation
 
 ```bash
-npm install jth-html
+npm install @johnhenry/jth-html
 ```
 
 ## Loading the ops (opt-in)
 
-The compiler preamble only auto-loads `jth-stdlib` — the `h-*` ops are **not** available by default. A `.jth` program opts in with an import directive, which the compiler passes through so the package registers its ops at module load:
+The compiler preamble only auto-loads `@johnhenry/jth-stdlib` — the `h-*` ops are **not** available by default. A `.jth` program opts in with an import directive, which the compiler passes through so the package registers its ops at module load:
 
 ```jth
-::import "jth-html";
+::import "@johnhenry/jth-html";
 
 #[ "Hello" h-text ] "h1" h-tag h-render peek;
 ```
@@ -23,7 +25,7 @@ jth run page.jth
 # <h1>Hello</h1>
 ```
 
-From JavaScript, `import "jth-html"` (or call `registerHTML()` explicitly).
+From JavaScript, `import "@johnhenry/jth-html"` (or call `registerHTML()` explicitly).
 
 ## Registered operators
 
@@ -50,7 +52,7 @@ Any name matching `h-<lowercase-tag>` that is not one of the static ops works as
 ## JavaScript API
 
 ```ts
-import { registerHTML, render, createElement, createText, createRaw, createFragment } from "jth-html";
+import { registerHTML, render, createElement, createText, createRaw, createFragment } from "@johnhenry/jth-html";
 ```
 
 Also exported: the operator implementations (`hTag`, `hText`, `hRaw`, `hFrag`, `hVoid`, `hAttrs`, `hRender`), node type interfaces (`ElementNode`, `TextNode`, `RawNode`, `FragmentNode`, `HtmlNode`), and `escapeHtml`.

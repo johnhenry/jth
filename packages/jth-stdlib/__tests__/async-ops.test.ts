@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { Stack, op, processN } from "jth-runtime";
+import { Stack, op, processN } from "@johnhenry/jth-runtime";
 import { wait, waitAll } from "../src/async-ops.ts";
-import { run } from "jth-compiler";
+import { run } from "@johnhenry/jth-compiler";
 import "../src/index.ts";
 
 describe("async-ops: wait (_)", () => {
@@ -70,7 +70,7 @@ describe("async-ops: registered ops via processN / programs", () => {
   });
 
   it("__ resolves all promises via a jth program", async () => {
-    const { run: runJth } = await import("jth-compiler");
+    const { run: runJth } = await import("@johnhenry/jth-compiler");
     // no promises on the stack: __ is a no-op passthrough
     const { stack } = await runJth("1 2 3 __;");
     expect(stack.toArray()).toEqual([1, 2, 3]);

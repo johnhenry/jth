@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { registry, Stack } from "jth-runtime";
+import { registry, Stack } from "@johnhenry/jth-runtime";
 import { registerAll } from "../src/register.ts";
 
 // Ensure all operators are registered
