@@ -46,8 +46,10 @@ jth compile program.jth output.mjs
 ### Start the REPL
 
 ```bash
-jth
+jth repl
 ```
+
+(Bare `jth` with no arguments prints help.)
 
 REPL dot-commands: `.help`, `.peek`, `.count`, `.clear`, `.stack`, `.exit`
 
@@ -522,10 +524,13 @@ Prefix any number to an arithmetic operator. Semantics: `N op x` (N is left oper
 ```
 jth run <file>              # Compile and execute a .jth file
 jth run -c '<code>'         # Run inline jth code
-jth compile <file> [output] # Compile .jth to .mjs
-jth compile -c '<code>'     # Compile inline code to stdout
+jth compile <file> [output] # Compile .jth to a self-contained .mjs bundle
+jth compile --no-bundle <file> [output]
+                            # Compile with bare @johnhenry/jth-* imports
+jth compile -c '<code>'     # Compile inline code to stdout (unbundled)
+jth repl                    # Start the interactive REPL
 jth --version, -v           # Show version
-jth --help, -h              # Show help
+jth --help, -h              # Show help (also printed by bare `jth`)
 ```
 
 ---
@@ -570,6 +575,9 @@ npm run test:watch
 
 # Run end-to-end tests
 npm run test:e2e
+
+# Run every example program through the built CLI (see examples/README.md)
+npm run examples
 
 # Typecheck (requires a previous build: cross-package types resolve
 # through each package's dist/*.d.ts)

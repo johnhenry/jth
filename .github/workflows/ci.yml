@@ -33,3 +33,7 @@ jobs:
 
       - name: Test
         run: npm run test:unit
+
+      # Every shipped example must run cleanly through the built CLI.
+      - name: Examples smoke
+        run: npm run examples

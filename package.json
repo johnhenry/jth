@@ -29,7 +29,19 @@
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "vitest run test/e2e/",
-    "typecheck": "turbo run build && tsc -b"
+    "typecheck": "turbo run build && tsc -b",
+    "example:01": "node packages/jth-cli/dist/bin/jth.js run examples/01-hello.jth",
+    "example:02": "node packages/jth-cli/dist/bin/jth.js run examples/02-arithmetic.jth",
+    "example:03": "node packages/jth-cli/dist/bin/jth.js run examples/03-arrays.jth",
+    "example:04": "node packages/jth-cli/dist/bin/jth.js run examples/04-definitions.jth",
+    "example:05": "node packages/jth-cli/dist/bin/jth.js run examples/05-dynamic-ops.jth",
+    "example:06": "node packages/jth-cli/dist/bin/jth.js run examples/06-error-handling.jth",
+    "example:07": "node packages/jth-cli/dist/bin/jth.js run examples/07-fibonacci.jth",
+    "example:08": "node packages/jth-cli/dist/bin/jth.js run examples/08-factorial.jth",
+    "example:09": "node packages/jth-cli/dist/bin/jth.js run examples/09-fizzbuzz.jth",
+    "example:10": "node packages/jth-cli/dist/bin/jth.js run examples/10-statistics.jth",
+    "example:11": "node packages/jth-cli/dist/bin/jth.js run examples/11-html.jth",
+    "examples": "for f in examples/[0-9]*.jth; do echo \"== $f\"; node packages/jth-cli/dist/bin/jth.js run \"$f\" || exit 1; done"
   },
   "allowScripts": {
     "esbuild@0.27.3": true
