@@ -120,6 +120,16 @@ async function handleRepl(): Promise<void> {
 }
 
 async function handleRun(argv: string[]): Promise<void> {
+  // `run` always bundles (see src/run.ts) — there is no unbundled mode to
+  // opt out of. Reject --no-bundle explicitly with a clear error instead
+  // of silently letting it fall through to positional-arg parsing, where
+  // it would previously be mis-parsed as the input filename/code.
+  if (argv.includes("--no-bundle")) {
+    console.error(
+      "Error: --no-bundle is not supported for `jth run` (run always bundles). Use `jth compile --no-bundle` instead."
+    );
+    process.exit(1);
+  }
   const { isCode, input } = parseInput(argv, "run");
   try {
     const exitCode = await run(input, { isCode });

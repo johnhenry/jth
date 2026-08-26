@@ -192,4 +192,101 @@ describe("createEvaluator", () => {
     await ev.evaluate("1 2 3 drop;");
     expect(ev.toArray()).toEqual([1, 2]);
   });
+
+  // ── Registry isolation between independent evaluators (issue #48) ──
+  // createEvaluator() previously fell back to jth-compiler's shared
+  // module-level registry when no `registry` option was passed to run(),
+  // so two independently-created evaluators in the same process saw each
+  // other's `:name` definitions.
+  describe("registry isolation between evaluators", () => {
+    it("a :name definition in one evaluator is not visible in another", async () => {
+      const a = createEvaluator();
+      const b = createEvaluator();
+
+      await a.evaluate("#[ 1 ] :eval-isolation-unique-xyz;");
+      await expect(b.evaluate("eval-isolation-unique-xyz;")).rejects.toThrow();
+    });
+
+    it("each evaluator still sees its own definitions across calls", async () => {
+      const a = createEvaluator();
+      const b = createEvaluator();
+
+      await a.evaluate("#[ 1 + ] :inc;");
+      await b.evaluate("#[ 2 * ] :inc;");
+
+      await a.evaluate("3 inc;");
+      await b.evaluate("3 inc;");
+
+      expect(a.toArray()).toEqual([4]);
+      expect(b.toArray()).toEqual([6]);
+    });
+
+    it("both evaluators still resolve shared stdlib operators normally", async () => {
+      const a = createEvaluator();
+      const b = createEvaluator();
+      await a.evaluate("1 2 +;");
+      await b.evaluate("10 3 -;");
+      expect(a.toArray()).toEqual([3]);
+      expect(b.toArray()).toEqual([7]);
+    });
+  });
+
+  // ── Sandboxed evaluator opt-in (issue #47) ──
+  // By default (sandbox: false, unset), createEvaluator() is unsandboxed —
+  // this matches jth run -c / the interactive REPL's existing behavior and
+  // is NOT a breaking change. Passing a sandbox option routes evaluate()
+  // through jth-eval's JthContext instead.
+  describe("sandboxed evaluator (opt-in)", () => {
+    it("default (no sandbox option) still allows inline JS -- unchanged behavior", async () => {
+      const ev = createEvaluator();
+      await ev.evaluate("((s) => { s.push(99); });");
+      expect(ev.toArray()).toEqual([99]);
+    });
+
+    it("sandbox: true rejects inline JS at compile time", async () => {
+      const ev = createEvaluator({ sandbox: true });
+      await expect(ev.evaluate("((s) => { s.push(99); });")).rejects.toMatchObject({
+        code: "OP_NOT_ALLOWED",
+      });
+    });
+
+    it("sandbox: true rejects ::name value-definitions", async () => {
+      const ev = createEvaluator({ sandbox: true });
+      await expect(ev.evaluate("42 ::x;")).rejects.toMatchObject({
+        code: "OP_NOT_ALLOWED",
+      });
+    });
+
+    it("sandbox: true blocks stdlib operators (bare mode)", async () => {
+      const ev = createEvaluator({ sandbox: true });
+      await expect(ev.evaluate("1 2 +;")).rejects.toThrow();
+    });
+
+    it('sandbox: "restricted" allows pure stdlib but blocks I/O ops like peek', async () => {
+      const ev = createEvaluator({ sandbox: "restricted" });
+      await ev.evaluate("1 2 +;");
+      expect(ev.toArray()).toEqual([3]);
+      await expect(ev.evaluate("peek;")).rejects.toMatchObject({
+        code: "OP_NOT_ALLOWED",
+      });
+    });
+
+    it("sandboxed evaluator maintains stack state across evaluate() calls", async () => {
+      const ev = createEvaluator({ sandbox: "restricted" });
+      await ev.evaluate("1;");
+      await ev.evaluate("2;");
+      await ev.evaluate("+;");
+      expect(ev.toArray()).toEqual([3]);
+    });
+
+    it("sandboxed evaluator supports peek()/length/clear()", async () => {
+      const ev = createEvaluator({ sandbox: "restricted" });
+      await ev.evaluate("1 2 3;");
+      expect(ev.peek()).toBe(3);
+      expect(ev.length).toBe(3);
+      ev.clear();
+      expect(ev.toArray()).toEqual([]);
+      expect(ev.length).toBe(0);
+    });
+  });
 });

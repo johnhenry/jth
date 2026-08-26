@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { createEvaluator } from "./evaluator.ts";
 
 export { createEvaluator } from "./evaluator.ts";
+export type { CreateEvaluatorOptions, Evaluator } from "./evaluator.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

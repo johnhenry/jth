@@ -31,7 +31,8 @@
     "@johnhenry/jth-types": "^0.0.0",
     "@johnhenry/jth-runtime": "^0.0.0",
     "@johnhenry/jth-compiler": "^0.0.0",
-    "@johnhenry/jth-stdlib": "^0.0.0"
+    "@johnhenry/jth-stdlib": "^0.0.0",
+    "@johnhenry/jth-eval": "^0.0.0"
   },
   "license": "MIT"
 }
