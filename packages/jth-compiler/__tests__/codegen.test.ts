@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { lex } from "../src/lexer.ts";
 import { parse } from "../src/parser.ts";
 import { generate } from "../src/codegen.ts";
+import { JthParserError, JthRuntimeError } from "@johnhenry/jth-types";
 
 /** Helper: source → AST → JS (no preamble for cleaner assertions) */
 function gen(source) {
@@ -183,6 +184,10 @@ describe("JS object literals", () => {
     expect(js).toContain('"a"');
     expect(js).toContain('"b"');
   });
+
+  it("throws JthParserError (not a silent array fallback) on an odd number of expressions", () => {
+    expect(() => gen('{ "a" 1 "b" };')).toThrow(JthParserError);
+  });
 });
 
 // ── Inline JS ─────────────────────────────────────────────────
@@ -239,6 +244,14 @@ describe(":name definitions", () => {
     expect(js).toContain("const empty_p");
     expect(js).toContain('registry.set("empty?"');
   });
+
+  it("throws JthParserError for a definition name that is a reserved JS word", () => {
+    expect(() => gen("#[ 1 ] :class;")).toThrow(JthParserError);
+  });
+
+  it("throws JthParserError for reserved-word definitions with no body", () => {
+    expect(() => gen(":return;")).toThrow(JthParserError);
+  });
 });
 
 // ── Value definitions ::name ──────────────────────────────────
@@ -259,6 +272,41 @@ describe("::name value definitions", () => {
     const js = gen("1 2 + ::result;");
     expect(js).toContain('registry.resolve("+")');
     expect(js).toContain("const result = stack.pop()");
+  });
+
+  it("throws JthParserError for a ::name that is a reserved JS word", () => {
+    expect(() => gen("42 ::class;")).toThrow(JthParserError);
+  });
+
+  // ── Sandbox mode (forbidInlineJS): ::name must be rejected entirely ──
+  // ::name mid-statement compiles to an unconditional `globalThis[name] =
+  // s.pop()` write, and terminal-position ::name declares `const <name> =
+  // stack.pop()` which can shadow runtime bindings like `registry` for the
+  // rest of the program. Both bypass the sandbox operator allowlist, so
+  // forbidInlineJS must reject ::name the same way it rejects inline JS.
+  describe("sandbox mode (forbidInlineJS)", () => {
+    it("rejects terminal-position ::name", () => {
+      expect(() => generate(parse(lex("42 ::x;")), { preamble: false, forbidInlineJS: true })).toThrow(
+        JthRuntimeError
+      );
+    });
+
+    it("rejects mid-statement ::name (globalThis write)", () => {
+      expect(() =>
+        generate(parse(lex('"pwned" ::__jthPoc 1;')), { preamble: false, forbidInlineJS: true })
+      ).toThrow(JthRuntimeError);
+    });
+
+    it("rejects a ::name that would shadow the registry binding", () => {
+      expect(() =>
+        generate(parse(lex('{ "a" 1 } ::registry;')), { preamble: false, forbidInlineJS: true })
+      ).toThrow(JthRuntimeError);
+    });
+
+    it("still allows ::name when forbidInlineJS is false (default/trusted mode)", () => {
+      const js = gen("42 ::x;");
+      expect(js).toContain("const x = stack.pop()");
+    });
   });
 });
 
@@ -285,6 +333,59 @@ describe("imports", () => {
     const js = gen('::import "./math.jth" { square cube };');
     expect(js).toContain("import { square, cube }");
     expect(js).toContain('"./math.mjs"');
+  });
+
+  it("sanitizes hyphenated import bindings via `as`", () => {
+    const js = gen('::import "./foo.jth" { my-word };');
+    expect(js).toContain('import { "my-word" as my_word }');
+    expect(js).not.toContain("import { my-word }");
+  });
+
+  it("mixes sanitized and plain import bindings", () => {
+    const js = gen('::import "./foo.jth" { plain my-word };');
+    expect(js).toContain('import { plain, "my-word" as my_word }');
+  });
+
+  // ── resolveImportPath: re-resolving relative imports for a different
+  // output location (issue #45) ──
+  describe("resolveImportPath hook", () => {
+    it("calls resolveImportPath for relative specifiers (after .jth -> .mjs rewrite)", () => {
+      const calls: string[] = [];
+      generate(parse(lex('::import "./lib.jth";')), {
+        preamble: false,
+        resolveImportPath: (p) => {
+          calls.push(p);
+          return p;
+        },
+      });
+      expect(calls).toEqual(["./lib.mjs"]);
+    });
+
+    it("uses the resolver's return value as the emitted specifier", () => {
+      const js = generate(parse(lex('::import "./lib.jth";')), {
+        preamble: false,
+        resolveImportPath: () => "../src/lib.mjs",
+      });
+      expect(js).toContain('import "../src/lib.mjs"');
+    });
+
+    it("does NOT call resolveImportPath for bare package specifiers", () => {
+      const calls: string[] = [];
+      const js = generate(parse(lex('::import "@johnhenry/jth-html";')), {
+        preamble: false,
+        resolveImportPath: (p) => {
+          calls.push(p);
+          return "should-not-be-used";
+        },
+      });
+      expect(calls).toEqual([]);
+      expect(js).toContain('import "@johnhenry/jth-html"');
+    });
+
+    it("without a resolver, relative imports pass through unchanged (default behavior)", () => {
+      const js = gen('::import "./lib.jth";');
+      expect(js).toContain('import "./lib.mjs"');
+    });
   });
 });
 

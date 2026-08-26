@@ -454,4 +454,17 @@ describe("parser: errors", () => {
   it("should throw on unterminated object", () => {
     expect(() => parseSrc('{ "a"')).toThrow(JthParserError);
   });
+
+  it("should throw JthParserError (not a raw RangeError) on deeply nested blocks", () => {
+    const depth = 5000;
+    const source = "#[ ".repeat(depth) + "1" + " ]".repeat(depth) + ";";
+    expect(() => parseSrc(source)).toThrow(JthParserError);
+    expect(() => parseSrc(source)).not.toThrow(RangeError);
+  });
+
+  it("should throw JthParserError (not a raw RangeError) on deeply nested arrays", () => {
+    const depth = 5000;
+    const source = "[".repeat(depth) + "1" + "]".repeat(depth) + ";";
+    expect(() => parseSrc(source)).toThrow(JthParserError);
+  });
 });

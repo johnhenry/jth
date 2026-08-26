@@ -64,6 +64,14 @@ describe("lexer: numbers", () => {
     expect(tok.value).toBe(26);
   });
 
+  it("should throw JthLexerError on malformed hex literal with no digits (0x)", () => {
+    expect(() => lex("0x ;")).toThrow(JthLexerError);
+  });
+
+  it("should throw JthLexerError on malformed hex literal 0X with no digits", () => {
+    expect(() => lex("0X;")).toThrow(JthLexerError);
+  });
+
   it("should treat minus as operator when preceded by a number", () => {
     const tokens = lexNoEof("5 - 3");
     expect(tokens[0].type).toBe(TokenType.NUMBER);
@@ -542,6 +550,40 @@ describe("lexer: inline JS", () => {
 
   it("should throw on unterminated inline JS", () => {
     expect(() => lex("((x) => x * 2")).toThrow(JthLexerError);
+  });
+
+  it("should not miscount parens inside a double-quoted string", () => {
+    const source = '(( console.log(")") ))';
+    const tok = first(source);
+    expect(tok.type).toBe(TokenType.INLINE_JS);
+    expect(tok.value).toBe(source);
+    // No leftover/stray tokens after the inline JS token (+ EOF).
+    expect(lexNoEof(source).length).toBe(1);
+  });
+
+  it("should not miscount parens inside a single-quoted string", () => {
+    const source = "(( console.log('(') ))";
+    const tok = first(source);
+    expect(tok.type).toBe(TokenType.INLINE_JS);
+    expect(tok.value).toBe(source);
+  });
+
+  it("should not miscount parens inside a template literal", () => {
+    const source = "(( console.log(`)`) ))";
+    const tok = first(source);
+    expect(tok.type).toBe(TokenType.INLINE_JS);
+    expect(tok.value).toBe(source);
+  });
+
+  it("should not miscount parens inside a line comment", () => {
+    const source = "(( // has a ) in a comment\n  1 + 1 ))";
+    const tok = first(source);
+    expect(tok.type).toBe(TokenType.INLINE_JS);
+    expect(tok.value).toBe(source);
+  });
+
+  it("should throw JthLexerError on an inline JS string left unterminated", () => {
+    expect(() => lex('(( console.log(") ))')).toThrow(JthLexerError);
   });
 });
 

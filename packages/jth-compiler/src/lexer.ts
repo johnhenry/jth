@@ -127,10 +127,21 @@ export function lex(source: string): Token[] {
 
     // Hex
     if (current() === "0" && (peek(1) === "x" || peek(1) === "X")) {
+      const hexStartLine = startLine;
+      const hexStartCol = startCol;
       num += advance(); // 0
       num += advance(); // x
+      let digitCount = 0;
       while (pos < source.length && /[0-9a-fA-F]/.test(current())) {
         num += advance();
+        digitCount++;
+      }
+      if (digitCount === 0) {
+        throw new JthLexerError(
+          `Invalid hex literal: expected at least one hex digit after "${num}"`,
+          hexStartLine,
+          hexStartCol
+        );
       }
       const value = parseInt(num, 16);
       // Check for dynamic operator (number immediately followed by operator/ident char)
@@ -265,26 +276,59 @@ export function lex(source: string): Token[] {
   }
 
   function readInlineJS(startLine: number, startCol: number): void {
-    // We've confirmed we're at (( — read balanced parens
+    // We've confirmed we're at (( — read balanced parens. Parens/braces
+    // inside string/template literals or line comments in the embedded JS
+    // must NOT affect the depth count, so we track quote state (with
+    // backslash-escape handling) the same way readString does, and skip
+    // `//` line comments up to the next newline.
     let depth = 0;
     let code = "";
+    let quote: string | null = null; // '"' | "'" | "`" | null
     while (pos < source.length) {
-      if (current() === "(") {
+      const ch = current();
+
+      if (quote) {
+        // Inside a string/template literal: copy verbatim, honor escapes,
+        // exit on the matching unescaped quote. Parens don't count here.
+        if (ch === "\\") {
+          code += advance();
+          if (pos < source.length) code += advance();
+          continue;
+        }
+        if (ch === quote) {
+          quote = null;
+        }
+        code += advance();
+        continue;
+      }
+
+      if (ch === "'" || ch === '"' || ch === "`") {
+        quote = ch;
+        code += advance();
+        continue;
+      }
+
+      // Line comment: skip counting until the next newline (but keep the
+      // comment text in the emitted code so behavior/output is unchanged).
+      if (ch === "/" && peek(1) === "/") {
+        while (pos < source.length && current() !== "\n") {
+          code += advance();
+        }
+        continue;
+      }
+
+      if (ch === "(") {
         depth++;
         code += advance();
-      } else if (current() === ")") {
+      } else if (ch === ")") {
         depth--;
         code += advance();
         if (depth === 0) break;
       } else {
-        if (current() === "\n") {
-          code += advance();
-        } else {
-          code += advance();
-        }
+        code += advance();
       }
     }
-    if (depth !== 0) {
+    if (depth !== 0 || quote) {
       throw new JthLexerError("Unterminated inline JS expression", startLine, startCol);
     }
     addToken(TokenType.INLINE_JS, code, startLine, startCol);
