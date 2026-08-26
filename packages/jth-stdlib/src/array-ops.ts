@@ -2,6 +2,36 @@ import { op, variadic, processN } from "@johnhenry/jth-runtime";
 import { Stack } from "@johnhenry/jth-runtime";
 import { JthRuntimeError } from "@johnhenry/jth-types";
 import { MAX_ITERATIONS } from "./control-flow.ts";
+import { typeName } from "./stack-ops.ts";
+
+/**
+ * Type-check helper shared by map/filter/reduce: these previously threw raw,
+ * unhelpful TypeErrors (e.g. `arr.length` on a non-array) on malformed
+ * input instead of the codebase's own JthRuntimeError convention (see
+ * `apply` in stack-ops.ts). Stack underflow itself is now handled by
+ * Stack.pop() (throws STACK_UNDERFLOW) -- this only guards popped *types*.
+ */
+function assertBlock(value: unknown, opName: string): asserts value is (...args: any[]) => any {
+  if (typeof value !== "function") {
+    throw new JthRuntimeError(
+      `${opName}: expected a block/function on top of the stack (got ${typeName(value)})`,
+      undefined,
+      undefined,
+      "TYPE_ERROR"
+    );
+  }
+}
+
+function assertArray(value: unknown, opName: string): asserts value is any[] {
+  if (!Array.isArray(value)) {
+    throw new JthRuntimeError(
+      `${opName}: expected an array (got ${typeName(value)})`,
+      undefined,
+      undefined,
+      "TYPE_ERROR"
+    );
+  }
+}
 
 // push: push item onto array (bottom=arr, top=item)
 export const push = op(2)((arr, item) => {
@@ -89,7 +119,9 @@ const isThenable = (v: unknown): v is Promise<Stack> =>
 // block turns out to be async, in which case a Promise is returned.
 export const mapOp = (stack: Stack): void | Promise<void> => {
   const block = stack.pop();
-  const arr = stack.pop() as any[];
+  const arr = stack.pop();
+  assertBlock(block, "map");
+  assertArray(arr, "map");
   const result: unknown[] = [];
   for (let i = 0; i < arr.length; i++) {
     const r = runBlock(block, arr[i]);
@@ -113,7 +145,9 @@ export const mapOp = (stack: Stack): void | Promise<void> => {
 // block turns out to be async, in which case a Promise is returned.
 export const filterOp = (stack: Stack): void | Promise<void> => {
   const block = stack.pop();
-  const arr = stack.pop() as any[];
+  const arr = stack.pop();
+  assertBlock(block, "filter");
+  assertArray(arr, "filter");
   const result: unknown[] = [];
   for (let i = 0; i < arr.length; i++) {
     const r = runBlock(block, arr[i]);
@@ -137,7 +171,9 @@ export const filterOp = (stack: Stack): void | Promise<void> => {
 export const reduceOp = (stack: Stack): void | Promise<void> => {
   const block = stack.pop();
   const init = stack.pop();
-  const arr = stack.pop() as any[];
+  const arr = stack.pop();
+  assertBlock(block, "reduce");
+  assertArray(arr, "reduce");
   let acc = init;
   for (let i = 0; i < arr.length; i++) {
     const r = runBlock(block, acc, arr[i]);

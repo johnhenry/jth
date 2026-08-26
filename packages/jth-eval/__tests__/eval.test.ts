@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { op, variadic } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import { evalJth } from "../src/eval.ts";
 
 describe("evalJth", () => {
@@ -177,10 +178,13 @@ describe("evalJth", () => {
       );
     });
 
-    it("stack underflow produces NaN (no throw)", async () => {
-      // jth's popN doesn't throw on empty stack — it returns undefined
-      const result = await evalJth("+;");
-      expect(result.value).toBeNaN();
+    it("stack underflow throws JthRuntimeError (STACK_UNDERFLOW) instead of silently producing NaN", async () => {
+      // Stack.popN now throws on underflow instead of silently returning a
+      // short array (which previously let `+` compute e.g. undefined + 5).
+      await expect(evalJth("+;")).rejects.toMatchObject({
+        code: "STACK_UNDERFLOW",
+      });
+      await expect(evalJth("+;")).rejects.toBeInstanceOf(JthRuntimeError);
     });
   });
 

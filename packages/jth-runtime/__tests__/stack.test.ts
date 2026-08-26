@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Stack } from "../src/stack.ts";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 describe("Stack", () => {
   it("should start empty", () => {
@@ -31,9 +32,15 @@ describe("Stack", () => {
     expect(s.toArray()).toEqual([10, 20]);
   });
 
-  it("pop on empty stack returns undefined", () => {
+  it("pop on empty stack throws JthRuntimeError with STACK_UNDERFLOW", () => {
     const s = new Stack();
-    expect(s.pop()).toBeUndefined();
+    expect(() => s.pop()).toThrow(JthRuntimeError);
+    try {
+      s.pop();
+      expect.fail("expected pop() to throw");
+    } catch (e: any) {
+      expect(e.code).toBe("STACK_UNDERFLOW");
+    }
   });
 
   it("popN removes n items in original stack order", () => {
@@ -44,12 +51,18 @@ describe("Stack", () => {
     expect(s.toArray()).toEqual([1, 2]);
   });
 
-  it("popN with n larger than stack length returns all items", () => {
+  it("popN with n larger than stack length throws JthRuntimeError with STACK_UNDERFLOW", () => {
     const s = new Stack();
     s.push(1, 2);
-    const result = s.popN(5);
-    expect(result).toEqual([1, 2]);
-    expect(s.isEmpty()).toBe(true);
+    expect(() => s.popN(5)).toThrow(JthRuntimeError);
+    // The stack must be left untouched — no partial pop on underflow.
+    expect(s.toArray()).toEqual([1, 2]);
+    try {
+      s.popN(5);
+      expect.fail("expected popN(5) to throw");
+    } catch (e: any) {
+      expect(e.code).toBe("STACK_UNDERFLOW");
+    }
   });
 
   it("popN with 0 returns empty array", () => {
@@ -122,15 +135,21 @@ describe("Stack", () => {
     expect(s.toArray()).toEqual([1, 3, 2]);
   });
 
-  it("swap on stack with fewer than 2 items does nothing", () => {
+  it("swap on stack with fewer than 2 items throws JthRuntimeError with STACK_UNDERFLOW", () => {
     const s = new Stack();
     s.push(1);
-    s.swap();
+    expect(() => s.swap()).toThrow(JthRuntimeError);
+    // No corruption: the single item is untouched.
     expect(s.toArray()).toEqual([1]);
 
     const empty = new Stack();
-    empty.swap();
-    expect(empty.toArray()).toEqual([]);
+    expect(() => empty.swap()).toThrow(JthRuntimeError);
+    try {
+      empty.swap();
+      expect.fail("expected swap() to throw");
+    } catch (e: any) {
+      expect(e.code).toBe("STACK_UNDERFLOW");
+    }
   });
 
   it("dup duplicates the top item", () => {
@@ -141,10 +160,16 @@ describe("Stack", () => {
     expect(s.length).toBe(3);
   });
 
-  it("dup on empty stack does nothing", () => {
+  it("dup on empty stack throws JthRuntimeError with STACK_UNDERFLOW", () => {
     const s = new Stack();
-    s.dup();
+    expect(() => s.dup()).toThrow(JthRuntimeError);
     expect(s.isEmpty()).toBe(true);
+    try {
+      s.dup();
+      expect.fail("expected dup() to throw");
+    } catch (e: any) {
+      expect(e.code).toBe("STACK_UNDERFLOW");
+    }
   });
 
   it("clone creates an independent copy", () => {

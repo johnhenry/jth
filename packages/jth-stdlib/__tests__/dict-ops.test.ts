@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import {
   get,
   set,
@@ -19,6 +20,30 @@ describe("dict-ops", () => {
     s.push({ a: 1, b: 2 });
     get("a")(s);
     expect(s.toArray()).toEqual([1]);
+  });
+
+  it("get throws JthRuntimeError (TYPE_ERROR) on a null target instead of a raw TypeError", () => {
+    const s = new Stack();
+    s.push(null);
+    try {
+      get("x")(s);
+      expect.fail("expected get to throw");
+    } catch (e: any) {
+      expect(e).toBeInstanceOf(JthRuntimeError);
+      expect(e.code).toBe("TYPE_ERROR");
+    }
+  });
+
+  it("get throws JthRuntimeError (TYPE_ERROR) on an undefined target instead of a raw TypeError", () => {
+    const s = new Stack();
+    s.push(undefined);
+    try {
+      get("x")(s);
+      expect.fail("expected get to throw");
+    } catch (e: any) {
+      expect(e).toBeInstanceOf(JthRuntimeError);
+      expect(e.code).toBe("TYPE_ERROR");
+    }
   });
 
   it("set sets value by key", () => {

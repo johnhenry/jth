@@ -1,7 +1,18 @@
 import { op, variadic } from "@johnhenry/jth-runtime";
 import { JthRuntimeError } from "@johnhenry/jth-types";
 
-export const get = (key: string) => op(1)((obj: any) => [obj[key]]);
+export const get = (key: string) =>
+  op(1)((obj: any) => {
+    if (obj == null) {
+      throw new JthRuntimeError(
+        `get("${key}"): cannot read property of ${obj === null ? "null" : "undefined"}`,
+        undefined,
+        undefined,
+        "TYPE_ERROR"
+      );
+    }
+    return [obj[key]];
+  });
 export const set = (key: string, value: any) =>
   op(1)((obj: any) => {
     obj[key] = value;
