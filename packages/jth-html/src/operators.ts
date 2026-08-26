@@ -1,5 +1,5 @@
-import { Stack, op } from "jth-runtime";
-import type { StackOperator } from "jth-runtime";
+import { Stack, op } from "@johnhenry/jth-runtime";
+import type { StackOperator } from "@johnhenry/jth-runtime";
 import { createElement, createText, createRaw, createFragment } from "./nodes.ts";
 import { render } from "./render.ts";
 

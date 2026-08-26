@@ -1,17 +1,19 @@
 # jth-repl
 
+> Previously published as `jth-repl@0.4.0`.
+
 Interactive REPL (Read-Eval-Print Loop) for the jth language. Maintains a persistent stack across inputs so you can build up computations interactively.
 
 ## Installation
 
 ```bash
-npm install jth-repl
+npm install @johnhenry/jth-repl
 ```
 
 ## Starting the REPL
 
 ```js
-import { startRepl } from "jth-repl";
+import { startRepl } from "@johnhenry/jth-repl";
 
 startRepl();
 ```
@@ -51,7 +53,7 @@ jth> .exit
 The package also exports `createEvaluator()` for embedding jth evaluation in your own tools.
 
 ```js
-import { createEvaluator } from "jth-repl/evaluator";
+import { createEvaluator } from "@johnhenry/jth-repl/evaluator";
 
 const ev = createEvaluator();
 await ev.evaluate("10 20 +;");

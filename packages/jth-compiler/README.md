@@ -1,11 +1,13 @@
 # jth-compiler
 
+> Previously published as `jth-compiler@0.4.0`.
+
 Compiler pipeline for the jth language. Transforms jth source code into executable JavaScript through three stages: lexing, parsing, and code generation.
 
 ## Installation
 
 ```bash
-npm install jth-compiler
+npm install @johnhenry/jth-compiler
 ```
 
 ## API
@@ -15,7 +17,7 @@ npm install jth-compiler
 Convenience pipeline that runs all three stages in sequence. Returns JavaScript source code.
 
 Options:
-- `preamble` (boolean, default `true`) -- when `true`, emits import boilerplate for `jth-runtime` and `jth-stdlib` and a `const stack = new Stack()` declaration at the top of the output.
+- `preamble` (boolean, default `true`) -- when `true`, emits import boilerplate for `@johnhenry/jth-runtime` and `@johnhenry/jth-stdlib` and a `const stack = new Stack()` declaration at the top of the output.
 
 ### `lex(source) -> Token[]`
 
@@ -36,7 +38,7 @@ Emit JavaScript source from an AST. Accepts the same `preamble` option as `trans
 ## Usage
 
 ```js
-import { lex, parse, generate, transform } from "jth-compiler";
+import { lex, parse, generate, transform } from "@johnhenry/jth-compiler";
 
 // Full pipeline (one step)
 const js = transform('1 2 + peek;', { preamble: true });

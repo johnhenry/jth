@@ -12,7 +12,7 @@ import { resolve, dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { transform } from "jth-compiler";
+import { transform } from "@johnhenry/jth-compiler";
 import { bundleProgram } from "./bundle.ts";
 
 interface RunOptions {

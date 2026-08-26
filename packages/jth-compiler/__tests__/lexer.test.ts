@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { lex } from "../src/lexer.ts";
-import { TokenType } from "jth-types/tokens";
-import { JthLexerError } from "jth-types/errors";
+import { TokenType } from "@johnhenry/jth-types/tokens";
+import { JthLexerError } from "@johnhenry/jth-types/errors";
 
 /**
  * Helper: lex source and return tokens without the trailing EOF.

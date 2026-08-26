@@ -1,6 +1,6 @@
 import { getMeta, annotate } from "./meta.ts";
 import type { Stack } from "./stack.ts";
-import type { MetaAnnotations } from "jth-types";
+import type { MetaAnnotations } from "@johnhenry/jth-types";
 
 type AnyFunction = (...args: unknown[]) => unknown;
 

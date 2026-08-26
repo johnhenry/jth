@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { Stack } from "jth-runtime";
+import { Stack } from "@johnhenry/jth-runtime";
 import {
   noop,
   clear,

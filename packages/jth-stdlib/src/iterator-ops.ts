@@ -1,4 +1,4 @@
-import { op } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
 
 export const next = op(1)((obj) => {
   if (!obj?.next) return [obj];

@@ -30,7 +30,7 @@ function getVersion(): string {
     const candidate = resolve(__dirname, rel, "package.json");
     if (existsSync(candidate)) {
       const pkg = JSON.parse(readFileSync(candidate, "utf-8"));
-      if (pkg.name === "jth-lang") return pkg.version;
+      if (pkg.name === "@johnhenry/jth") return pkg.version;
     }
   }
   return "unknown";
@@ -47,7 +47,7 @@ Usage:
                               plain \`node output.mjs\` anywhere)
   jth compile --no-bundle <file> [output]
                               Compile without bundling: output imports
-                              "jth-runtime"/"jth-stdlib" as bare specifiers
+                              "@johnhenry/jth-runtime"/"@johnhenry/jth-stdlib" as bare specifiers
                               (requires those packages to be installed)
   jth compile -c '<code>'     Compile inline jth code (prints unbundled
                               output to stdout)
@@ -115,7 +115,7 @@ function reportError(err: any): void {
 // ── Command handlers ────────────────────────────────────────────────
 
 async function handleRepl(): Promise<void> {
-  const { startRepl } = await import("jth-repl");
+  const { startRepl } = await import("@johnhenry/jth-repl");
   await startRepl();
 }
 

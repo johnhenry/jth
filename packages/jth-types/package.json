@@ -1,6 +1,12 @@
 {
-  "name": "jth-types",
-  "version": "0.4.0",
+  "name": "@johnhenry/jth-types",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnhenry/jth.git",
+    "directory": "packages/jth-types"
+  },
+  "homepage": "https://github.com/johnhenry/jth#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

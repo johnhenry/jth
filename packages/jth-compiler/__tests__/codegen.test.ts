@@ -18,8 +18,8 @@ function genFull(source) {
 describe("preamble", () => {
   it("emits runtime imports, stdlib import, and stack declaration", () => {
     const js = genFull("");
-    expect(js).toContain('import { Stack, processN, registry } from "jth-runtime"');
-    expect(js).toContain('import "jth-stdlib"');
+    expect(js).toContain('import { Stack, processN, registry } from "@johnhenry/jth-runtime"');
+    expect(js).toContain('import "@johnhenry/jth-stdlib"');
     expect(js).toContain("const stack = new Stack()");
   });
 

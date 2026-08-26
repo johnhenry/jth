@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { Stack, registry } from "jth-runtime";
+import { Stack, registry } from "@johnhenry/jth-runtime";
 import { hyperoperation } from "../src/hyperoperations.ts";
-import { run } from "jth-compiler";
+import { run } from "@johnhenry/jth-compiler";
 import "../src/index.ts";
 
 describe("hyperoperation(n) semantics", () => {

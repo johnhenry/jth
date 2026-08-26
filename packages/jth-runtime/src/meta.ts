@@ -1,4 +1,4 @@
-import type { MetaAnnotations } from "jth-types/interfaces";
+import type { MetaAnnotations } from "@johnhenry/jth-types/interfaces";
 
 type AnyFunction = (...args: unknown[]) => unknown;
 

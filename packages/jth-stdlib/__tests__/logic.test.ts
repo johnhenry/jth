@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Stack } from "jth-runtime";
+import { Stack } from "@johnhenry/jth-runtime";
 import { and, or, xor, nand, nor, not } from "../src/logic.ts";
 
 describe("logic", () => {

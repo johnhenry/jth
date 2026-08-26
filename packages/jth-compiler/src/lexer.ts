@@ -1,6 +1,6 @@
-import { TokenType, token } from "jth-types/tokens";
-import type { Token, TokenTypeValue } from "jth-types/tokens";
-import { JthLexerError } from "jth-types/errors";
+import { TokenType, token } from "@johnhenry/jth-types/tokens";
+import type { Token, TokenTypeValue } from "@johnhenry/jth-types/tokens";
+import { JthLexerError } from "@johnhenry/jth-types/errors";
 
 /**
  * Operator characters used for single/multi-char operators.

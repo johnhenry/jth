@@ -7,11 +7,11 @@
  * the ONLY `new Function` execution site for jth programs.
  *
  * Note: run() does not register the standard library. Callers that want
- * stdlib words must `import "jth-stdlib"` themselves (all current callers
+ * stdlib words must `import "@johnhenry/jth-stdlib"` themselves (all current callers
  * do), or pass a pre-populated registry.
  */
 
-import { Stack, processN, registry as globalRegistry } from "jth-runtime";
+import { Stack, processN, registry as globalRegistry } from "@johnhenry/jth-runtime";
 import { transform } from "./transform.ts";
 
 /** Minimal registry surface the generated code needs (`registry.resolve`). */

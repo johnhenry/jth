@@ -1,5 +1,5 @@
-import { op } from "jth-runtime";
-import type { Stack } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
+import type { Stack } from "@johnhenry/jth-runtime";
 
 // _condStack: side-channel on the stack object to track if/elseif/else match state.
 // It's an array to handle nesting (inner if/elseif/else chains inside blocks).

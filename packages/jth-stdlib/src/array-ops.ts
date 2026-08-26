@@ -1,6 +1,6 @@
-import { op, variadic, processN } from "jth-runtime";
-import { Stack } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { op, variadic, processN } from "@johnhenry/jth-runtime";
+import { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import { MAX_ITERATIONS } from "./control-flow.ts";
 
 // push: push item onto array (bottom=arr, top=item)

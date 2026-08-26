@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Stack } from "jth-runtime";
+import { Stack } from "@johnhenry/jth-runtime";
 import {
   equal,
   coercedEqual,

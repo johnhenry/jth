@@ -1,6 +1,12 @@
 {
-  "name": "jth-repl",
-  "version": "0.4.0",
+  "name": "@johnhenry/jth-repl",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnhenry/jth.git",
+    "directory": "packages/jth-repl"
+  },
+  "homepage": "https://github.com/johnhenry/jth#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,10 +28,10 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "jth-types": "^0.4.0",
-    "jth-runtime": "^0.4.0",
-    "jth-compiler": "^0.4.0",
-    "jth-stdlib": "^0.4.0"
+    "@johnhenry/jth-types": "^0.0.0",
+    "@johnhenry/jth-runtime": "^0.0.0",
+    "@johnhenry/jth-compiler": "^0.0.0",
+    "@johnhenry/jth-stdlib": "^0.0.0"
   },
   "license": "MIT"
 }

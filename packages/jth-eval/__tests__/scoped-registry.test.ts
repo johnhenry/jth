@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { registry } from "jth-runtime";
-import "jth-stdlib";
+import { registry } from "@johnhenry/jth-runtime";
+import "@johnhenry/jth-stdlib";
 import { ScopedRegistry } from "../src/scoped-registry.ts";
 
 describe("ScopedRegistry", () => {

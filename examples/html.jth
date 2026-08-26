@@ -1,5 +1,5 @@
 // HTML page builder example
-::import "jth-html";
+::import "@johnhenry/jth-html";
 
 #[
   #[

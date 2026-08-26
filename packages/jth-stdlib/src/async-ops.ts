@@ -1,4 +1,4 @@
-import type { Stack } from "jth-runtime";
+import type { Stack } from "@johnhenry/jth-runtime";
 
 // wait (_): await a promise on top of stack
 export const wait = (stack: Stack) => {

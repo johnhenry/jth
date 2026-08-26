@@ -1,5 +1,5 @@
-import { registry, op } from "jth-runtime";
-import { Stack } from "jth-runtime";
+import { registry, op } from "@johnhenry/jth-runtime";
+import { Stack } from "@johnhenry/jth-runtime";
 import { createElement } from "./nodes.ts";
 import { hTag, hText, hRaw, hFrag, hVoid, hAttrs, hRender } from "./operators.ts";
 

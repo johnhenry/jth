@@ -31,7 +31,7 @@ describe("Sandbox modes", () => {
     });
 
     it("allows injected operators", async () => {
-      const { op } = await import("jth-runtime");
+      const { op } = await import("@johnhenry/jth-runtime");
       const double = op(1)((x) => [x * 2]);
       const result = await evalJth("21 double;", {
         sandbox: true,
@@ -128,7 +128,7 @@ describe("Sandbox modes", () => {
       // The inline JS appears after a valid statement; compile-time
       // rejection means even the first statement must not run.
       let leaked = false;
-      const { op } = await import("jth-runtime");
+      const { op } = await import("@johnhenry/jth-runtime");
       const markLeak = op(0)(() => {
         leaked = true;
         return [];

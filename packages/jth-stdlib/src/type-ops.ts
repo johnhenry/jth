@@ -1,4 +1,4 @@
-import { op } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
 
 export const typeOf = op(1)((a) => [typeof a]);
 export const isNumber = op(1)((a) => [typeof a === "number"]);

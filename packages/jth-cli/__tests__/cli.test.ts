@@ -16,8 +16,8 @@ describe("compile: inline code", () => {
 
   it("includes preamble imports by default", () => {
     const js = compile("1 2 +;", { isCode: true });
-    expect(js).toContain('import { Stack, processN, registry } from "jth-runtime"');
-    expect(js).toContain('import "jth-stdlib"');
+    expect(js).toContain('import { Stack, processN, registry } from "@johnhenry/jth-runtime"');
+    expect(js).toContain('import "@johnhenry/jth-stdlib"');
     expect(js).toContain("const stack = new Stack()");
   });
 
@@ -68,8 +68,8 @@ describe("compile: inline code", () => {
   });
 
   it("passes through bare package imports (opt-in op packages like jth-html)", () => {
-    const js = compile('::import "jth-html";', { isCode: true });
-    expect(js).toContain('import "jth-html";');
+    const js = compile('::import "@johnhenry/jth-html";', { isCode: true });
+    expect(js).toContain('import "@johnhenry/jth-html";');
   });
 
   it("compiles export statements", () => {

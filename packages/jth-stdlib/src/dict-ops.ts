@@ -1,5 +1,5 @@
-import { op, variadic } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { op, variadic } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 export const get = (key: string) => op(1)((obj: any) => [obj[key]]);
 export const set = (key: string, value: any) =>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Stack, processN, registry } from "jth-runtime";
+import { Stack, processN, registry } from "@johnhenry/jth-runtime";
 import { ELEMENT, TEXT, RAW, FRAGMENT } from "../src/nodes.ts";
 import { registerHTML } from "../src/register.ts";
 

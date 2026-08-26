@@ -1,11 +1,13 @@
 # jth-eval
 
-Embeddable jth evaluation for JavaScript hosts: one-shot `evalJth()`, a persistent `JthContext`, and a `ScopedRegistry` that lets each evaluation define/override operators without touching the global registry. Execution goes through the shared `jth-compiler` `run()` pipeline.
+> Previously published as `jth-eval@0.4.0`.
+
+Embeddable jth evaluation for JavaScript hosts: one-shot `evalJth()`, a persistent `JthContext`, and a `ScopedRegistry` that lets each evaluation define/override operators without touching the global registry. Execution goes through the shared `@johnhenry/jth-compiler` `run()` pipeline.
 
 ## Installation
 
 ```bash
-npm install jth-eval
+npm install @johnhenry/jth-eval
 ```
 
 ## `evalJth(code, options?)`
@@ -13,7 +15,7 @@ npm install jth-eval
 One-shot evaluation. Returns `{ value, stack, output }` — top of stack, full stack array, and captured `console.log` output.
 
 ```ts
-import { evalJth } from "jth-eval";
+import { evalJth } from "@johnhenry/jth-eval";
 
 const { value } = await evalJth("1 2 +;");            // 3
 const r = await evalJth("x y +;", { values: { x: 10, y: 20 } }); // 30
@@ -24,7 +26,7 @@ Options:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `values` | `Record<string, unknown>` | `{}` | Injected as zero-arity operators |
-| `operators` | `Record<string, StackOperator>` | `{}` | Custom operators (build with `op(arity)(fn)` from jth-runtime) |
+| `operators` | `Record<string, StackOperator>` | `{}` | Custom operators (build with `op(arity)(fn)` from @johnhenry/jth-runtime) |
 | `stack` | `unknown[]` | `[]` | Pre-load the stack |
 | `timeout` | `number` | `5000` | Max execution time in ms (rejects on expiry) |
 | `sandbox` | `boolean \| "restricted" \| string[]` | `false` | See below |
@@ -60,7 +62,7 @@ await evalJth("((s)=>s.push(1));", { sandbox: "restricted" }); // throws OP_NOT_
 Persistent stack + registry across multiple `eval()` calls.
 
 ```ts
-import { JthContext } from "jth-eval";
+import { JthContext } from "@johnhenry/jth-eval";
 
 const ctx = new JthContext({ timeout: 2000 });
 await ctx.eval("1 2 +;");
@@ -78,11 +80,11 @@ Also on the context: `push(...)`, `pop()`, `peek()`, `clear()`, `toArray()`, `le
 Local overlay over the global operator registry: writes stay local, reads fall back to global (optionally filtered through an allowlist). Useful for building your own evaluation environments.
 
 ```ts
-import { ScopedRegistry } from "jth-eval";
+import { ScopedRegistry } from "@johnhenry/jth-eval";
 const reg = new ScopedRegistry({ allowlist: new Set(["+", "-"]) });
 ```
 
 ## Notes
 
-- Importing `jth-eval` loads `jth-stdlib` (registers the standard library globally).
+- Importing `@johnhenry/jth-eval` loads `@johnhenry/jth-stdlib` (registers the standard library globally).
 - Timeouts use `Promise.race` — a timed-out evaluation rejects, but a hot synchronous loop cannot be preempted mid-statement.

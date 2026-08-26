@@ -1,6 +1,6 @@
-import { Stack } from "jth-runtime";
-import { run } from "jth-compiler";
-import "jth-stdlib";
+import { Stack } from "@johnhenry/jth-runtime";
+import { run } from "@johnhenry/jth-compiler";
+import "@johnhenry/jth-stdlib";
 
 /**
  * Create a persistent jth evaluator that maintains stack state

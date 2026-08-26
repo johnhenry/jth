@@ -1,5 +1,5 @@
-import { op, registry } from "jth-runtime";
-import { JthRuntimeError } from "jth-types";
+import { op, registry } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 const bigH = (n: bigint, a: bigint, b: bigint): bigint => {
   if (n < 0n || a < 0n || b < 0n)

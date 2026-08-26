@@ -1,4 +1,4 @@
-import { JthRuntimeError } from "jth-types";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import type { StackOperator } from "./op.ts";
 
 /** Levenshtein distance, used to suggest the nearest known operator. */

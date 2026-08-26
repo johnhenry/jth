@@ -7,9 +7,9 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { Stack, registry } from "jth-runtime";
-import { run, transform } from "jth-compiler";
-import "jth-stdlib";
+import { Stack, registry } from "@johnhenry/jth-runtime";
+import { run, transform } from "@johnhenry/jth-compiler";
+import "@johnhenry/jth-stdlib";
 
 // ---------------------------------------------------------------------------
 // Helper: evaluate jth source and return the resulting stack as an array.
@@ -431,9 +431,9 @@ describe("E2E: Transform output verification", () => {
   it("preamble includes correct imports", () => {
     const js = transform("1 2 +;");
     expect(js).toContain(
-      'import { Stack, processN, registry } from "jth-runtime"'
+      'import { Stack, processN, registry } from "@johnhenry/jth-runtime"'
     );
-    expect(js).toContain('import "jth-stdlib"');
+    expect(js).toContain('import "@johnhenry/jth-stdlib"');
     expect(js).toContain("const stack = new Stack()");
   });
 

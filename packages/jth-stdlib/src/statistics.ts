@@ -1,4 +1,4 @@
-import { variadic } from "jth-runtime";
+import { variadic } from "@johnhenry/jth-runtime";
 
 export const mean = variadic(
   (...args) => [args.reduce((a, b) => a + b, 0) / args.length]

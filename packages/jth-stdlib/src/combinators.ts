@@ -1,5 +1,5 @@
-import { op } from "jth-runtime";
-import { Stack } from "jth-runtime";
+import { op } from "@johnhenry/jth-runtime";
+import { Stack } from "@johnhenry/jth-runtime";
 
 // zip: [array1] [array2] zip — pair elements element-wise: [[a1,b1], [a2,b2], ...]
 // Truncates to shorter array length.

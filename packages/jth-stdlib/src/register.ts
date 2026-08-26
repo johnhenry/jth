@@ -1,4 +1,4 @@
-import { registry, annotate } from "jth-runtime";
+import { registry, annotate } from "@johnhenry/jth-runtime";
 // Import from all modules and register
 import * as stackOps from "./stack-ops.ts";
 import * as arithmetic from "./arithmetic.ts";

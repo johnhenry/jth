@@ -17,10 +17,12 @@ In jth, values are pushed onto a stack. Operators pop their arguments off the st
 ### Install
 
 ```bash
-npm install -g jth-lang
+npm install -g @johnhenry/jth
 ```
 
-(The npm package is `jth-lang`; the installed binary is `jth`.)
+(The npm package is `@johnhenry/jth`; the installed binary is `jth`.
+Previously published as `jth-lang@0.4.0`, itself renamed from
+`jth-cli@0.1.0`.)
 
 ### Run a program
 
@@ -530,19 +532,21 @@ jth --help, -h              # Show help
 
 ## Project Structure
 
-jth is organized as a monorepo with 9 packages:
+jth is organized as a monorepo with 9 packages, published under the
+`@johnhenry` npm scope (each was previously published unscoped at `0.4.0`;
+see each package's own README for its exact prior name):
 
 | Package | Description |
 |---------|-------------|
-| **jth-runtime** | Stack VM, `processN`, `op()` helper, operator registry |
-| **jth-compiler** | Lexer, parser, code generator, transform pipeline |
-| **jth-stdlib** | Standard library (~110 operators) |
-| **jth-lang** | Command-line interface for running and compiling (binary: `jth`; directory: `packages/jth-cli`) |
-| **jth-repl** | Interactive REPL |
-| **jth-ai** | Ollama AI integration |
-| **jth-html** | HTML generation operators |
-| **jth-eval** | Evaluation utilities |
-| **jth-types** | Internal type definitions |
+| **@johnhenry/jth-runtime** | Stack VM, `processN`, `op()` helper, operator registry |
+| **@johnhenry/jth-compiler** | Lexer, parser, code generator, transform pipeline |
+| **@johnhenry/jth-stdlib** | Standard library (~110 operators) |
+| **@johnhenry/jth** | Command-line interface for running and compiling (binary: `jth`; directory: `packages/jth-cli`; previously `jth-lang`, itself renamed from `jth-cli`) |
+| **@johnhenry/jth-repl** | Interactive REPL |
+| **@johnhenry/jth-ai** | Ollama AI integration |
+| **@johnhenry/jth-html** | HTML generation operators |
+| **@johnhenry/jth-eval** | Evaluation utilities |
+| **@johnhenry/jth-types** | Internal type definitions |
 
 ---
 
@@ -576,9 +580,9 @@ npm run typecheck
 
 Every publishable package points its `main`/`types`/`exports` at `dist/`
 (built by `tsup` from `src/`, config in each package's `tsup.config.ts` +
-`tsconfig.build.json`). Cross-package imports (`jth-runtime`,
-`jth-types/ast`, …) therefore resolve to **built output** — in tests, in
-`tsc -b`, and at runtime. To keep that coherent:
+`tsconfig.build.json`). Cross-package imports (`@johnhenry/jth-runtime`,
+`@johnhenry/jth-types/ast`, …) therefore resolve to **built output** — in
+tests, in `tsc -b`, and at runtime. To keep that coherent:
 
 - `npm test` **always builds first**, so tests and the spawned CLI binary
   (`packages/jth-cli/dist/bin/jth.js`) exercise fresh output.
@@ -586,10 +590,11 @@ Every publishable package points its `main`/`types`/`exports` at `dist/`
   `npm run test:unit` / `npm run typecheck`, or you'll see stale code.
 - Relative imports within a package (`../src/foo.ts`) still resolve to
   source under vitest/tsx, so pure unit tests iterate without a rebuild.
-- The CLI is published as **jth-lang** (binary `jth`), built as plain
-  node JS — `tsx` is a dev-only dependency. `jth compile` emits a
-  self-contained bundle by default (`--no-bundle` for the bare form), and
-  `jth run` executes a bundled temp module with plain node.
+- The CLI is published as **@johnhenry/jth** (binary `jth`; previously
+  `jth-lang`, itself renamed from `jth-cli`), built as plain node JS —
+  `tsx` is a dev-only dependency. `jth compile` emits a self-contained
+  bundle by default (`--no-bundle` for the bare form), and `jth run`
+  executes a bundled temp module with plain node.
 - A slow smoke test (`test/smoke/pack-install.test.ts`) npm-packs
-  jth-lang + deps, installs them in a temp dir outside the repo, and runs
-  the installed binary.
+  @johnhenry/jth + deps, installs them in a temp dir outside the repo, and
+  runs the installed binary.

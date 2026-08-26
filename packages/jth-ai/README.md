@@ -1,13 +1,15 @@
 # jth-ai
 
+> Previously published as `jth-ai@0.4.0`.
+
 AI integration helpers for the jth runtime via Ollama — a **JavaScript-only helper library**, not a jth op package.
 
-> **Scope: JS-only.** Unlike `jth-html`, importing `jth-ai` does **not** register any operator names in the jth registry — there are no `infer`/`chat` words callable from a `.jth` program, and `::import "jth-ai";` registers nothing. Network access is deliberately kept out of the default jth vocabulary. The exports below are factory functions that *produce* stack operators for you to drive explicitly from JavaScript via `processN` (or to register yourself under names of your choosing).
+> **Scope: JS-only.** Unlike `jth-html`, importing `jth-ai` does **not** register any operator names in the jth registry — there are no `infer`/`chat` words callable from a `.jth` program, and `::import "@johnhenry/jth-ai";` registers nothing. Network access is deliberately kept out of the default jth vocabulary. The exports below are factory functions that *produce* stack operators for you to drive explicitly from JavaScript via `processN` (or to register yourself under names of your choosing).
 
 ## Installation
 
 ```bash
-npm install jth-ai
+npm install @johnhenry/jth-ai
 ```
 
 Requires the `ollama` npm package as a peer dependency and a running Ollama instance.
@@ -37,8 +39,8 @@ A unary stack operator that extracts the content string from an Ollama chat resp
 
 ```js
 import { Ollama } from "ollama";
-import { Stack, processN } from "jth-runtime";
-import { createInfer, conversation, extractContent } from "jth-ai";
+import { Stack, processN } from "@johnhenry/jth-runtime";
+import { createInfer, conversation, extractContent } from "@johnhenry/jth-ai";
 
 const ollama = new Ollama();
 const infer = createInfer(ollama);
