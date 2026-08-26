@@ -1,5 +1,7 @@
 # jth
 
+Full documentation: [opensource.johnhenry.me/jth](https://opensource.johnhenry.me/jth/)
+
 [![CI](https://github.com/johnhenry/jth/actions/workflows/ci.yml/badge.svg)](https://github.com/johnhenry/jth/actions/workflows/ci.yml)
 
 <img src="scorecard.png" width="100%">
