@@ -55,6 +55,13 @@ jth repl
 
 REPL dot-commands: `.help`, `.peek`, `.count`, `.clear`, `.stack`, `.exit`
 
+The REPL and `jth run -c` are **unsandboxed by default** — inline JS
+(`((...))`) has full access to `process`, the filesystem, and the network.
+Embedding jth evaluation programmatically for untrusted input? Use
+`createEvaluator({ sandbox: ... })` from `@johnhenry/jth-repl`, or
+`@johnhenry/jth-eval` directly — see [jth-repl's
+README](packages/jth-repl/README.md#sandboxing-opt-in) for details.
+
 ---
 
 ## Language Tutorial
