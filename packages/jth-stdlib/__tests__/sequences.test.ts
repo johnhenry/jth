@@ -19,7 +19,7 @@ describe("sequences: fibonacci", () => {
     expect(s.toArray()).toEqual([1, 0, 1]);
   });
 
-  it("iterates with the `swap drop` trim idiom (as in examples/fibonacci.jth)", () => {
+  it("iterates with the `swap drop` trim idiom (as in examples/07-fibonacci.jth)", () => {
     const s = new Stack();
     s.push(0, 1);
     for (let i = 0; i < 5; i++) {

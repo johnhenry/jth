@@ -1,7 +1,7 @@
 /**
  * End-to-end tests that run shipped example programs through the REAL CLI
  * (spawned process), proving the opt-in op-package load path works:
- * examples/html.jth declares `::import "@johnhenry/jth-html";`, which the compiler
+ * examples/11-html.jth declares `::import "@johnhenry/jth-html";`, which the compiler
  * passes through so jth-html side-effect-registers its `h-*` ops.
  */
 
@@ -23,9 +23,9 @@ function jth(...args: string[]) {
   });
 }
 
-describe("E2E: jth run examples/html.jth (opt-in jth-html import)", () => {
+describe("E2E: jth run examples/11-html.jth (opt-in jth-html import)", () => {
   it("renders the expected HTML with no manual setup", () => {
-    const result = jth("run", "examples/html.jth");
+    const result = jth("run", "examples/11-html.jth");
     expect(result.status).toBe(0);
     expect(result.stdout.trim()).toBe(
       "<html>" +
@@ -45,9 +45,9 @@ describe("E2E: jth run examples/html.jth (opt-in jth-html import)", () => {
   });
 });
 
-describe("E2E: jth run examples/hello.jth", () => {
+describe("E2E: jth run examples/01-hello.jth", () => {
   it("prints the greeting", () => {
-    const result = jth("run", "examples/hello.jth");
+    const result = jth("run", "examples/01-hello.jth");
     expect(result.status).toBe(0);
     expect(result.stdout.trim()).toBe("Hello, World!");
   });

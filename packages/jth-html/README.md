@@ -59,4 +59,4 @@ Also exported: the operator implementations (`hTag`, `hText`, `hRaw`, `hFrag`, `
 
 ## Example
 
-See [`examples/html.jth`](../../examples/html.jth) in the repo root — it builds a full page and is covered by an end-to-end CLI test.
+See [`examples/11-html.jth`](../../examples/11-html.jth) in the repo root — it builds a full page and is covered by an end-to-end CLI test.
