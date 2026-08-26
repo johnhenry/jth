@@ -43,6 +43,56 @@ describe("error-handling", () => {
       tryOp(s);
       expect(s.toArray()).toEqual([]);
     });
+
+    it("discards values pushed by the block before it threw (issue #42)", () => {
+      const s = new Stack();
+      const block = (stack: Stack) => {
+        stack.push(1, 2, 3);
+        throw new Error("boom");
+      };
+      s.push(block);
+      tryOp(s);
+      const result = s.toArray();
+      // Only the Error should remain -- not [1, 2, 3, Error].
+      expect(result).toHaveLength(1);
+      expect(result[0]).toBeInstanceOf(Error);
+      expect((result[0] as Error).message).toBe("boom");
+    });
+
+    it("preserves pre-existing stack contents beneath the block's own debris", () => {
+      const s = new Stack();
+      s.push("kept-below");
+      const block = (stack: Stack) => {
+        stack.push("debris");
+        throw new Error("boom");
+      };
+      s.push(block);
+      tryOp(s);
+      const result = s.toArray();
+      expect(result).toHaveLength(2);
+      expect(result[0]).toBe("kept-below");
+      expect(result[1]).toBeInstanceOf(Error);
+    });
+
+    it("nested try does not compound stack debris", () => {
+      const s = new Stack();
+      const innerBlock = (stack: Stack) => {
+        stack.push("inner-debris");
+        throw new Error("inner");
+      };
+      const outerBlock = (stack: Stack) => {
+        stack.push("outer-debris");
+        stack.push(innerBlock);
+        tryOp(stack); // leaves [outer-debris, Error("inner")]
+        throw new Error("outer");
+      };
+      s.push(outerBlock);
+      tryOp(s);
+      const result = s.toArray();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toBeInstanceOf(Error);
+      expect((result[0] as Error).message).toBe("outer");
+    });
   });
 
   describe("throwOp", () => {

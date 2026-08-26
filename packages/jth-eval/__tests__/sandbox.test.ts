@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { evalJth } from "../src/eval.ts";
 import { JthContext } from "../src/context.ts";
 
@@ -202,6 +202,70 @@ describe("Sandbox modes", () => {
         sandbox: ["dupe", "+"],
       });
       expect(result.value).toBe(10);
+    });
+  });
+
+  describe("::name value-definitions are blocked in every sandbox mode (issue #49)", () => {
+    // ::name previously compiled to an unconditional `globalThis[name] =
+    // s.pop()` write (mid-statement) that was never checked by
+    // forbidInlineJS or the operator allowlist, and a terminal-position
+    // `const <name> = stack.pop()` that could shadow the runtime's
+    // `registry` binding for the rest of the compiled program. Both must
+    // be rejected at compile time in every sandbox mode.
+
+    afterEach(() => {
+      delete (globalThis as any).__jthPoc;
+    });
+
+    it("sandbox: true blocks mid-statement ::name (globalThis write)", async () => {
+      await expect(
+        evalJth('"pwned" ::__jthPoc 1;', { sandbox: true })
+      ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+      expect((globalThis as any).__jthPoc).toBeUndefined();
+    });
+
+    it("sandbox: true blocks terminal-position ::name", async () => {
+      await expect(
+        evalJth("42 ::x;", { sandbox: true })
+      ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+    });
+
+    it('sandbox: "restricted" blocks mid-statement ::name (globalThis write)', async () => {
+      await expect(
+        evalJth('"pwned" ::__jthPoc 1;', { sandbox: "restricted" })
+      ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+      expect((globalThis as any).__jthPoc).toBeUndefined();
+    });
+
+    it('sandbox: "restricted" blocks a ::name that would shadow `registry`', async () => {
+      // Previously: compiling this shadowed the `registry` parameter for
+      // the rest of the program, breaking subsequent allowlist checks
+      // with "registry.resolve is not a function" instead of a clean
+      // compile-time rejection.
+      await expect(
+        evalJth('{ "a" 1 } ::registry;\n2 3 +;', { sandbox: "restricted" })
+      ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+    });
+
+    it("sandbox: string[] allowlist blocks ::name", async () => {
+      await expect(
+        evalJth('"pwned" ::__jthPoc 1;', { sandbox: ["+", "-"] })
+      ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+      expect((globalThis as any).__jthPoc).toBeUndefined();
+    });
+
+    it("JthContext restricted mode blocks ::name", async () => {
+      const ctx = new JthContext({ sandbox: "restricted" });
+      await expect(ctx.eval('"pwned" ::__jthPoc 1;')).rejects.toMatchObject({
+        code: "OP_NOT_ALLOWED",
+      });
+      expect((globalThis as any).__jthPoc).toBeUndefined();
+      ctx.dispose();
+    });
+
+    it("control: ::name still works in full-access (sandbox: false) mode", async () => {
+      await evalJth('"trusted" ::__jthPoc 1;', { sandbox: false });
+      expect((globalThis as any).__jthPoc).toBe("trusted");
     });
   });
 

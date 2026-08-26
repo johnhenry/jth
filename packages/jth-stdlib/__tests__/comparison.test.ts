@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import {
   equal,
   coercedEqual,
@@ -188,4 +189,36 @@ describe("predicate-style comparisons", () => {
     gte(s);
     expect(s.toArray()).toEqual([true]);
   });
+});
+
+// ── Underflow: comparisons must not silently "succeed" on a short stack ──
+// `equal` etc. previously computed directly on whatever op(2) popped, so on
+// an empty stack `undefined === undefined` evaluated to `true` — a false
+// positive with no error. Stack.popN now throws on underflow (see
+// jth-runtime/__tests__/stack.test.ts), so op(2) throws before the
+// comparison ever runs on undefined operands.
+describe("comparisons throw on stack underflow instead of silently comparing undefined", () => {
+  const ops: Array<[string, (s: Stack) => void]> = [
+    ["equal", equal],
+    ["coercedEqual", coercedEqual],
+    ["notEqual", notEqual],
+    ["lt", lt],
+    ["lte", lte],
+    ["gt", gt],
+    ["gte", gte],
+    ["spaceship", spaceship],
+  ];
+
+  for (const [name, fn] of ops) {
+    it(`${name} throws JthRuntimeError on an empty stack (not undefined === undefined)`, () => {
+      const s = new Stack();
+      expect(() => fn(s)).toThrow(JthRuntimeError);
+    });
+
+    it(`${name} throws JthRuntimeError with only one item on the stack`, () => {
+      const s = new Stack();
+      s.push(1);
+      expect(() => fn(s)).toThrow(JthRuntimeError);
+    });
+  }
 });

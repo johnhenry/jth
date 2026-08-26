@@ -7,8 +7,19 @@ import { JthParserError } from "@johnhenry/jth-types/errors";
 /**
  * Parse an array of tokens into a jth AST.
  */
+/**
+ * Maximum expression-nesting depth. parseExpression is the shared entry
+ * point for every recursive construct (blocks, arrays, object literals,
+ * configured-operator args), so bounding recursion there bounds recursion
+ * everywhere. Without this, deeply nested input (e.g. thousands of nested
+ * `#[ ... ]`) overflows the native call stack with a raw, uncatchable-by-
+ * jth-callers RangeError instead of a normal JthParserError.
+ */
+const MAX_PARSE_DEPTH = 500;
+
 export function parse(tokens: Token[]): ProgramNodeType {
   let pos = 0;
+  let depth = 0;
 
   function current(): Token {
     return tokens[pos];
@@ -70,6 +81,23 @@ export function parse(tokens: Token[]): ProgramNodeType {
   }
 
   function parseExpression(): any {
+    depth++;
+    if (depth > MAX_PARSE_DEPTH) {
+      const tok = current();
+      throw new JthParserError(
+        `Maximum expression nesting depth (${MAX_PARSE_DEPTH}) exceeded`,
+        tok?.line,
+        tok?.column
+      );
+    }
+    try {
+      return parseExpressionInner();
+    } finally {
+      depth--;
+    }
+  }
+
+  function parseExpressionInner(): any {
     const tok = current();
 
     switch (tok.type) {

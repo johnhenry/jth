@@ -17,6 +17,7 @@
     { "path": "../jth-types" },
     { "path": "../jth-runtime" },
     { "path": "../jth-compiler" },
-    { "path": "../jth-stdlib" }
+    { "path": "../jth-stdlib" },
+    { "path": "../jth-eval" }
   ]
 }

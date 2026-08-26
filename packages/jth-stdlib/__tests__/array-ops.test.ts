@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Stack } from "@johnhenry/jth-runtime";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import {
   push,
   pop,
@@ -155,6 +156,37 @@ describe("array-ops", () => {
       mapOp(s);
       expect(s.toArray()).toEqual([42, [11, 12]]);
     });
+
+    it("throws JthRuntimeError (STACK_UNDERFLOW) on an empty stack, not a raw TypeError", () => {
+      const s = new Stack();
+      expect(() => mapOp(s)).toThrow(JthRuntimeError);
+    });
+
+    it("throws JthRuntimeError (TYPE_ERROR) when the array position isn't an array", () => {
+      const s = new Stack();
+      s.push("not-an-array");
+      s.push((stack) => stack.push(1));
+      try {
+        mapOp(s);
+        expect.fail("expected mapOp to throw");
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(JthRuntimeError);
+        expect(e.code).toBe("TYPE_ERROR");
+      }
+    });
+
+    it("throws JthRuntimeError (TYPE_ERROR) when the block position isn't a function", () => {
+      const s = new Stack();
+      s.push([1, 2, 3]);
+      s.push("not-a-block");
+      try {
+        mapOp(s);
+        expect.fail("expected mapOp to throw");
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(JthRuntimeError);
+        expect(e.code).toBe("TYPE_ERROR");
+      }
+    });
   });
 
   describe("filterOp (block-aware)", () => {
@@ -180,6 +212,24 @@ describe("array-ops", () => {
       s.push(block);
       filterOp(s);
       expect(s.toArray()).toEqual([[]]);
+    });
+
+    it("throws JthRuntimeError (STACK_UNDERFLOW) on an empty stack, not a raw TypeError", () => {
+      const s = new Stack();
+      expect(() => filterOp(s)).toThrow(JthRuntimeError);
+    });
+
+    it("throws JthRuntimeError (TYPE_ERROR) when the array position isn't an array", () => {
+      const s = new Stack();
+      s.push(null);
+      s.push((stack) => stack.push(true));
+      try {
+        filterOp(s);
+        expect.fail("expected filterOp to throw");
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(JthRuntimeError);
+        expect(e.code).toBe("TYPE_ERROR");
+      }
     });
   });
 
@@ -208,6 +258,37 @@ describe("array-ops", () => {
       s.push(block);
       reduceOp(s);
       expect(s.toArray()).toEqual(["abc"]);
+    });
+
+    it("throws JthRuntimeError (STACK_UNDERFLOW) on an empty stack, not a raw TypeError", () => {
+      const s = new Stack();
+      expect(() => reduceOp(s)).toThrow(JthRuntimeError);
+    });
+
+    it("throws JthRuntimeError (TYPE_ERROR) when the array position isn't an array", () => {
+      const s = new Stack();
+      s.push("not-an-array", 0);
+      s.push((stack) => stack.push(1));
+      try {
+        reduceOp(s);
+        expect.fail("expected reduceOp to throw");
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(JthRuntimeError);
+        expect(e.code).toBe("TYPE_ERROR");
+      }
+    });
+
+    it("throws JthRuntimeError (TYPE_ERROR) when the block position isn't a function", () => {
+      const s = new Stack();
+      s.push([1, 2, 3], 0);
+      s.push("not-a-block");
+      try {
+        reduceOp(s);
+        expect.fail("expected reduceOp to throw");
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(JthRuntimeError);
+        expect(e.code).toBe("TYPE_ERROR");
+      }
     });
   });
 

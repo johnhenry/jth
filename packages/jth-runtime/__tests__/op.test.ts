@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { op, variadic } from "../src/op.ts";
 import { Stack } from "../src/stack.ts";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 
 describe("op(arity)", () => {
   it("op(2) creates a binary operator", () => {
@@ -62,13 +63,13 @@ describe("op(arity)", () => {
     expect(fn._name).toBeUndefined();
   });
 
-  it("op on stack with fewer items than arity pops what is available", () => {
+  it("op on stack with fewer items than arity throws JthRuntimeError (STACK_UNDERFLOW) instead of silently producing NaN/undefined", () => {
     const add = op(2)((a, b) => [a + b]);
     const s = new Stack();
     s.push(5);
-    add(s);
-    // popN(2) on a stack with 1 item returns [5], fn gets (5, undefined)
-    expect(s.toArray()).toEqual([NaN]);
+    expect(() => add(s)).toThrow(JthRuntimeError);
+    // Underflow must not silently corrupt the stack (no NaN, no partial pop).
+    expect(s.toArray()).toEqual([5]);
   });
 
   it("op(2) pops in correct order (bottom, top)", () => {
