@@ -27,6 +27,30 @@ jobs:
         run: npm test
 
       - name: Publish all workspace packages
-        run: npm publish --workspaces --access public
+        # `npm publish --workspaces` doesn't skip workspaces already at their
+        # published version — it just fails loudly on them. Guard each one
+        # individually instead, in dependency order (types/runtime before
+        # things that build on them, jth-cli/@johnhenry/jth last).
+        run: |
+          publish_if_new() {
+            local dir="$1"
+            local name version
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "::notice title=Already published::$name@$version is already on npm; nothing to do."
+            else
+              npm publish --workspace "$dir" --access public
+            fi
+          }
+          publish_if_new packages/jth-types
+          publish_if_new packages/jth-runtime
+          publish_if_new packages/jth-compiler
+          publish_if_new packages/jth-stdlib
+          publish_if_new packages/jth-repl
+          publish_if_new packages/jth-html
+          publish_if_new packages/jth-ai
+          publish_if_new packages/jth-eval
+          publish_if_new packages/jth-cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
