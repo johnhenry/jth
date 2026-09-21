@@ -7,7 +7,7 @@
     "url": "git+https://github.com/johnhenry/jth.git",
     "directory": "packages/jth-cli"
   },
-  "homepage": "https://github.com/johnhenry/jth#readme",
+  "homepage": "https://opensource.johnhenry.me/jth/",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

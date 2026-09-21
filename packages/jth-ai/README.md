@@ -1,5 +1,8 @@
 # jth-ai
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-ai.svg)](https://www.npmjs.com/package/@johnhenry/jth-ai)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-ai.svg)](../../LICENSE)
+
 > Previously published as `jth-ai@0.4.0`.
 
 AI integration helpers for the jth runtime via Ollama — a **JavaScript-only helper library**, not a jth op package.

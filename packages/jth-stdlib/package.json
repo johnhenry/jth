@@ -1,12 +1,13 @@
 {
   "name": "@johnhenry/jth-stdlib",
   "version": "0.0.0",
+  "description": "Standard library of operators for the jth language. Importing this package registers all built-in operators into the global @johnhenry/jth-runtime registry.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnhenry/jth.git",
     "directory": "packages/jth-stdlib"
   },
-  "homepage": "https://github.com/johnhenry/jth#readme",
+  "homepage": "https://opensource.johnhenry.me/jth/",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

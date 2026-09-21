@@ -1,12 +1,13 @@
 {
   "name": "@johnhenry/jth-ai",
   "version": "0.0.0",
+  "description": "AI integration helpers for the jth runtime via Ollama — a JavaScript-only helper library, not a jth op package.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnhenry/jth.git",
     "directory": "packages/jth-ai"
   },
-  "homepage": "https://github.com/johnhenry/jth#readme",
+  "homepage": "https://opensource.johnhenry.me/jth/",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

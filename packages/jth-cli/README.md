@@ -1,5 +1,8 @@
 # jth
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth.svg)](https://www.npmjs.com/package/@johnhenry/jth)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth.svg)](../../LICENSE)
+
 > Previously published as `jth-lang@0.4.0` (itself renamed from `jth-cli@0.1.0`).
 
 Command-line interface for compiling and running jth programs. The npm package is **`@johnhenry/jth`** (the binary it installs is `jth`).

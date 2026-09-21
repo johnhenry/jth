@@ -1,5 +1,8 @@
 # jth-html
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-html.svg)](https://www.npmjs.com/package/@johnhenry/jth-html)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-html.svg)](../../LICENSE)
+
 > Previously published as `jth-html@0.4.0`.
 
 HTML DSL for jth: build HTML trees on the stack and render them to strings. Importing the package registers its operators with the global @johnhenry/jth-runtime registry as a side effect.

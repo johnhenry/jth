@@ -1,5 +1,8 @@
 # jth-repl
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-repl.svg)](https://www.npmjs.com/package/@johnhenry/jth-repl)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-repl.svg)](../../LICENSE)
+
 > Previously published as `jth-repl@0.4.0`.
 
 Interactive REPL (Read-Eval-Print Loop) for the jth language. Maintains a persistent stack across inputs so you can build up computations interactively.

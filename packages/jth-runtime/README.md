@@ -1,5 +1,8 @@
 # jth-runtime
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-runtime.svg)](https://www.npmjs.com/package/@johnhenry/jth-runtime)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-runtime.svg)](../../LICENSE)
+
 > Previously published as `jth-runtime@0.4.0`.
 
 Core runtime engine for the jth stack-based language. Provides the stack data structure, item processing pipeline, operator construction helpers, function metadata annotations, and a global operator registry.

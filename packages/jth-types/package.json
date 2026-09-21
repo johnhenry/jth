@@ -1,12 +1,13 @@
 {
   "name": "@johnhenry/jth-types",
   "version": "0.0.0",
+  "description": "Shared type contract for the jth language: token definitions, AST node interfaces and constructors, meta-annotation interfaces, and the error hierarchy.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnhenry/jth.git",
     "directory": "packages/jth-types"
   },
-  "homepage": "https://github.com/johnhenry/jth#readme",
+  "homepage": "https://opensource.johnhenry.me/jth/",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

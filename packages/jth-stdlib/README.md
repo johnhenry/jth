@@ -1,5 +1,8 @@
 # jth-stdlib
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-stdlib.svg)](https://www.npmjs.com/package/@johnhenry/jth-stdlib)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-stdlib.svg)](../../LICENSE)
+
 > Previously published as `jth-stdlib@0.4.0`.
 
 Standard library of operators for the jth language. Importing this package registers all built-in operators into the global `@johnhenry/jth-runtime` registry.

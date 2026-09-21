@@ -1,6 +1,8 @@
 {
   "name": "jth-monorepo",
   "version": "0.4.0",
+  "description": "A stack-based programming language that compiles to JavaScript.",
+  "homepage": "https://opensource.johnhenry.me/jth/",
   "private": true,
   "type": "module",
   "packageManager": "npm@10.0.0",

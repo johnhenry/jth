@@ -1,5 +1,8 @@
 # jth-types
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-types.svg)](https://www.npmjs.com/package/@johnhenry/jth-types)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-types.svg)](../../LICENSE)
+
 > Previously published as `jth-types@0.4.0`.
 
 Shared type contract for the jth language: token definitions, AST node interfaces and constructors, meta-annotation interfaces, and the error hierarchy. This package is the single source of truth imported by `@johnhenry/jth-compiler` (lexer/parser/codegen) and `@johnhenry/jth-runtime` — it has no dependencies of its own.

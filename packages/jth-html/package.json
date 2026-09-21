@@ -1,12 +1,13 @@
 {
   "name": "@johnhenry/jth-html",
   "version": "0.0.0",
+  "description": "HTML DSL for jth: build HTML trees on the stack and render them to strings.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnhenry/jth.git",
     "directory": "packages/jth-html"
   },
-  "homepage": "https://github.com/johnhenry/jth#readme",
+  "homepage": "https://opensource.johnhenry.me/jth/",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

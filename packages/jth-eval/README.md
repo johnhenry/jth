@@ -1,5 +1,8 @@
 # jth-eval
 
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth-eval.svg)](https://www.npmjs.com/package/@johnhenry/jth-eval)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth-eval.svg)](../../LICENSE)
+
 > Previously published as `jth-eval@0.4.0`.
 
 Embeddable jth evaluation for JavaScript hosts: one-shot `evalJth()`, a persistent `JthContext`, and a `ScopedRegistry` that lets each evaluation define/override operators without touching the global registry. Execution goes through the shared `@johnhenry/jth-compiler` `run()` pipeline.
