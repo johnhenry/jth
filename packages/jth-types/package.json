@@ -40,5 +40,8 @@
     "build": "tsup",
     "prepublishOnly": "npm run build"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=26.0.0"
+  }
 }

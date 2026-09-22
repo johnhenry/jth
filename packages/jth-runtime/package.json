@@ -47,5 +47,8 @@
   "dependencies": {
     "@johnhenry/jth-types": "^0.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=26.0.0"
+  }
 }
