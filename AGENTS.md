@@ -64,6 +64,29 @@ locally and fail in CI.
   A language change that breaks one of these fails CI even if the unit
   suite is green.
 
+## New-package definition of done
+
+Adding a package under `packages/` means all of the following, not just
+`npm init`:
+- `tsconfig.json` (+ `tsconfig.build.json` for the `tsup` build) matching
+  an existing package's shape — see `jth-html` or `jth-ai` for the smallest
+  recent examples.
+- The package added to root `package.json`'s `workspaces` array **in
+  dependency order** (`jth-types` first, `jth-cli` last), and to this
+  file's Workspace structure table above.
+- `README.md` with the badge row, provenance note (previously published
+  unscoped at `0.4.0`, if true) and `## Family` section per the family
+  standard; `CHANGELOG.md` entry (root `CHANGELOG.md` — packages here don't
+  keep separate changelogs).
+- `"engines": { "node": ">=26.0.0" }` matching the root.
+- If the package ships an example, add it to `examples/[0-9]*.jth` and the
+  matching `example:NN` script in root `package.json` — `npm run examples`
+  enumerates by glob, but the numbered `example:NN` scripts are listed
+  explicitly and won't pick up a new file on their own.
+- Publishes under `@johnhenry/<published-name>` — confirm the published
+  name doesn't collide with an existing package directory name before
+  choosing it (see the `jth-cli` → `@johnhenry/jth` gotcha above).
+
 ## Releases
 
 See `PUBLISHING.md`. Root `CHANGELOG.md` tracks the release history; the

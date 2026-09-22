@@ -1,8 +1,10 @@
 # jth
 
-Full documentation: [opensource.johnhenry.me/jth](https://opensource.johnhenry.me/jth/)
-
+[![npm version](https://img.shields.io/npm/v/%40johnhenry%2Fjth.svg)](https://www.npmjs.com/package/@johnhenry/jth)
 [![CI](https://github.com/johnhenry/jth/actions/workflows/ci.yml/badge.svg)](https://github.com/johnhenry/jth/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/%40johnhenry%2Fjth.svg)](LICENSE)
+
+Full documentation: [opensource.johnhenry.me/jth](https://opensource.johnhenry.me/jth/)
 
 <img src="scorecard.png" width="100%">
 
@@ -13,6 +15,17 @@ A stack-based programming language that compiles to JavaScript.
 ```
 
 In jth, values are pushed onto a stack. Operators pop their arguments off the stack, do their work, and push results back. It is a simple model that turns out to be surprisingly powerful.
+
+## Contents
+
+- [Quick Start](#quick-start)
+- [Language Tutorial](#language-tutorial)
+- [Operator Reference](#operator-reference)
+- [CLI Reference](#cli-reference)
+- [Which package do I want?](#which-package-do-i-want)
+- [Project Structure](#project-structure)
+- [Security model](#security-model)
+- [Development](#development)
 
 ## Quick Start
 
@@ -544,6 +557,19 @@ jth --help, -h              # Show help (also printed by bare `jth`)
 
 ---
 
+## Which package do I want?
+
+| I want to... | Start with |
+|---|---|
+| Just run `.jth` files or use the REPL | [`jth-cli`](./packages/jth-cli) (`npm install -g @johnhenry/jth`) — everything else below is pulled in as a dependency |
+| Embed jth evaluation in my own app | [`jth-repl`](./packages/jth-repl)'s `createEvaluator()` — unsandboxed by default, pass `{ sandbox }` for untrusted input |
+| Evaluate untrusted jth source | [`jth-eval`](./packages/jth-eval) directly, or `jth-repl`'s `createEvaluator({ sandbox: ... })` — see [Security model](#security-model) before using either |
+| Compile jth to JavaScript programmatically (no CLI) | [`jth-compiler`](./packages/jth-compiler) — lexer, parser, code generator |
+| Add or call operators without the full language | [`jth-runtime`](./packages/jth-runtime) (the stack VM + `op()` helper) and [`jth-stdlib`](./packages/jth-stdlib) (the ~110 built-in operators) |
+| Add HTML-generation operators to a program | [`jth-html`](./packages/jth-html) |
+| Call an Ollama model from jth | [`jth-ai`](./packages/jth-ai) |
+| Just need the shared TypeScript types | [`jth-types`](./packages/jth-types) — everything else depends on it |
+
 ## Project Structure
 
 jth is organized as a monorepo with 9 packages, published under the
@@ -563,6 +589,58 @@ see each package's own README for its exact prior name):
 | **@johnhenry/jth-types** | Internal type definitions |
 
 ---
+
+## Security model
+
+jth compiles to JavaScript and can embed arbitrary inline JS (`((...))`)
+directly in source — the default evaluation path is trusted-input by
+design, with an explicit opt-in for untrusted input.
+
+**What jth guarantees:**
+
+- **The REPL, `jth run`, and `jth run -c` are unsandboxed by default, and
+  this is documented, not implicit.** `createEvaluator()`'s default gives
+  inline JS full access to `process`, the filesystem, and the network — the
+  same access any Node script has. jth never silently narrows or widens
+  that access between calls.
+- **Sandboxed mode rejects inline JS and `::name` definitions at compile
+  time, in every sandbox mode.** Passing `{ sandbox: true | "restricted" |
+  string[] }` to `createEvaluator()` (from [`jth-repl`](packages/jth-repl))
+  routes evaluation through [`jth-eval`](packages/jth-eval)'s `JthContext`
+  instead of the raw compiler pipeline — inline JS and value-definitions
+  that could shadow the runtime binding are rejected before any statement
+  runs, not filtered at call time. A sandbox bypass here
+  (`::name` compiling to an unconditional `globalThis` write) was found and
+  fixed — see the CHANGELOG's `Unreleased` entry (#49).
+- **`"restricted"` mode's operator allowlist is built by exclusion, not
+  opt-in guessing.** It enumerates the full operator registry and removes
+  only `RESTRICTED_OPS` (the ops that touch the world outside evaluation —
+  `peek`/`peek-all` in the default stdlib); a blocked call throws
+  `JthRuntimeError` with `code: "OP_NOT_ALLOWED"`, an unknown one throws
+  `code: "UNKNOWN_OPERATOR"`.
+- **Each `createEvaluator()` instance gets its own isolated operator
+  registry.** A `:name` definition in one evaluator is never visible to
+  another evaluator in the same process, sandboxed or not.
+
+**What is still yours:**
+
+- **The sandbox is not an OS-level isolation boundary.** Evaluation still
+  runs in-process with host JS semantics — no memory limits, and a hot
+  synchronous loop can only be cut off at statement boundaries by the
+  `timeout` option (default 5000ms), not preemptively. Don't run sandboxed
+  jth as your only defense against a hostile or resource-exhausting
+  program.
+- **There is no CLI flag to opt `jth repl` or `jth run -c` into sandboxed
+  mode.** Sandboxing is only available by embedding `createEvaluator()` /
+  `jth-eval` programmatically — if you're building something that runs
+  jth source from an untrusted source, you must wire that yourself; the
+  CLI always runs unsandboxed. (Tracked as a follow-up in
+  [`jth-repl`'s README](packages/jth-repl/README.md#sandboxing-opt-in).)
+- **Dynamic pattern operators (`3+`, `2log`, `***`, …) are denied outright
+  in restricted mode**, not partially allowed — they match open-ended name
+  families that can't be enumerated into a safe allowlist. If your program
+  needs one, sandboxing isn't the right fit; use the explicit `string[]`
+  allowlist form instead and name exactly what you need.
 
 ## Development
 
