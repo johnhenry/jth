@@ -642,6 +642,13 @@ design, with an explicit opt-in for untrusted input.
   needs one, sandboxing isn't the right fit; use the explicit `string[]`
   allowlist form instead and name exactly what you need.
 
+## Releasing
+
+Releases use [Changesets](https://github.com/changesets/changesets) and publish
+from `main` -- see [PUBLISHING.md](PUBLISHING.md). In short: add a changeset
+(`npm run changeset`) to PRs that change a package; merging the generated
+"chore: version packages" PR publishes the new versions to npm.
+
 ## Development
 
 ```bash

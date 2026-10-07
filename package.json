@@ -21,6 +21,7 @@
     "packages/jth-cli"
   ],
   "devDependencies": {
+    "@changesets/cli": "^2.31.1",
     "@types/node": "^25.3.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
@@ -35,6 +36,9 @@
     "test:watch": "vitest",
     "test:e2e": "vitest run test/e2e/",
     "typecheck": "turbo run build && tsc -b",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish",
     "example:01": "node packages/jth-cli/dist/bin/jth.js run examples/01-hello.jth",
     "example:02": "node packages/jth-cli/dist/bin/jth.js run examples/02-arithmetic.jth",
     "example:03": "node packages/jth-cli/dist/bin/jth.js run examples/03-arrays.jth",
