@@ -1,62 +1,59 @@
-name: Publish
+# Monorepo publish with Changesets. See johnhenry/workflows' README
+# ("main is the release branch", Flow B).
+#
+# PRs that change a published package include a changeset (`npm run changeset`).
+# On every push to main this workflow either (a) opens/updates the "Version
+# Packages" PR that applies the bumps, or (b) if that PR was just merged,
+# publishes every package whose version is not on npm yet (`changeset publish`
+# skips versions already on the registry, so re-runs and no-op pushes are safe)
+# and, as a by-product, pushes a git tag + GitHub Release per published package.
+name: Publish to npm
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+permissions:
+  contents: write # version-bump commit, tags, GitHub Releases
+  pull-requests: write # the "Version Packages" PR
+  id-token: write # npm provenance + trusted publishing (each package trusts this publish.yml; NPM_TOKEN is the fallback)
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # id-token: write lets npm publish through trusted publishing (each
-    # package trusts this repo's publish.yml) and sign provenance. The
-    # NPM_TOKEN below is only a fallback until it's removed.
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # changesets diffs against the base branch
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "26"
+          node-version: "26" # must equal the root engines.node major
+          registry-url: https://registry.npmjs.org
           cache: npm
-          registry-url: "https://registry.npmjs.org"
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Build
-        run: npm run build
-
-      - name: Test
-        run: npm test
-
-      - name: Publish all workspace packages
-        # `npm publish --workspaces` doesn't skip workspaces already at their
-        # published version — it just fails loudly on them. Guard each one
-        # individually instead, in dependency order (types/runtime before
-        # things that build on them, jth-cli/@johnhenry/jth last).
+      - name: Verify before publishing
         run: |
-          publish_if_new() {
-            local dir="$1"
-            local name version
-            name=$(node -p "require('./$dir/package.json').name")
-            version=$(node -p "require('./$dir/package.json').version")
-            if npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "::notice title=Already published::$name@$version is already on npm; nothing to do."
-            else
-              npm publish --workspace "$dir" --provenance --access public
-            fi
-          }
-          publish_if_new packages/jth-types
-          publish_if_new packages/jth-runtime
-          publish_if_new packages/jth-compiler
-          publish_if_new packages/jth-stdlib
-          publish_if_new packages/jth-repl
-          publish_if_new packages/jth-html
-          publish_if_new packages/jth-ai
-          publish_if_new packages/jth-eval
-          publish_if_new packages/jth-cli
+          npm run build
+          npm run typecheck
+          npm test
+
+      - name: Version PR or publish
+        uses: changesets/action@v1
+        with:
+          version: npm run version-packages
+          publish: npm run release
+          title: "chore: version packages"
+          commit: "chore: version packages"
+          createGithubReleases: true
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"

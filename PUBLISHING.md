@@ -27,14 +27,23 @@ npm login
 
 ## Release flow (CI)
 
-1. Make sure `main` is green and versions are bumped (all packages share one version; bump every `packages/*/package.json`, the root, and the inter-package `^x.y.z` ranges, then `npm install` to sync the lockfile).
-2. Create and publish a GitHub release (tag e.g. `v0.0.0` for the first scoped release, then normal semver bumps thereafter):
+Releases use [Changesets](https://github.com/changesets/changesets); `main` is
+the release branch ([publish model](https://github.com/johnhenry/workflows#the-publish-model-main-is-the-release-branch)).
 
-   ```bash
-   gh release create v0.0.0 --title "v0.0.0" --generate-notes
-   ```
+1. In a PR that changes a published package, run `npm run changeset` and commit
+   the generated file in `.changeset/`.
+2. When the PR lands on `main`, the `Publish` workflow
+   (`.github/workflows/publish.yml`) runs `npm ci` -> build -> typecheck ->
+   test, then opens or updates a "chore: version packages" PR that applies the
+   version bumps (and inter-package ranges) and changelogs.
+3. Merging that PR publishes every package whose version is not yet on npm
+   (`npm run release` = build + `changeset publish`, with provenance; versions
+   already on the registry are skipped), then pushes a git tag + GitHub Release
+   per published package.
 
-3. The `Publish` workflow (`.github/workflows/publish.yml`) triggers on the published release: `npm ci` → `npm run build` → `npm test` → `npm publish --workspaces --access public`. It can also be run manually from the Actions tab (*workflow_dispatch*).
+Pushes to `main` with no pending changesets and no new versions publish nothing.
+The workflow can also be run manually (*workflow_dispatch*). Do not create tags
+or GitHub Releases by hand to cause a publish.
 
 ## Release flow (local)
 

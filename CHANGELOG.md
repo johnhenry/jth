@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Release process:** publishing moved from `release: published` to Changesets on
+  push to `main` (see PUBLISHING.md). No version changes.
+
 - **Security fix (jth-eval sandbox bypass):** `::name` value-definitions
   now compile-time reject in sandboxed mode — previously they compiled to
   an unconditional `globalThis` write (mid-statement) or could shadow the
