@@ -8,6 +8,12 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # id-token: write lets npm publish through trusted publishing (each
+    # package trusts this repo's publish.yml) and sign provenance. The
+    # NPM_TOKEN below is only a fallback until it's removed.
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +46,7 @@ jobs:
             if npm view "$name@$version" version >/dev/null 2>&1; then
               echo "::notice title=Already published::$name@$version is already on npm; nothing to do."
             else
-              npm publish --workspace "$dir" --access public
+              npm publish --workspace "$dir" --provenance --access public
             fi
           }
           publish_if_new packages/jth-types
