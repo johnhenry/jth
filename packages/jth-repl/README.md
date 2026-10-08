@@ -103,10 +103,11 @@ Each `createEvaluator()` instance also gets its own isolated operator
 registry regardless of sandbox mode — `:name` definitions in one evaluator
 are never visible to another evaluator in the same process.
 
-Note: there is currently no CLI flag to opt the interactive `jth repl` or
-`jth run -c` into sandboxed mode — this option is only available when
-embedding `createEvaluator()` programmatically. Wiring a CLI flag through
-is tracked as a follow-up.
+From the command line, use `jth repl --sandbox[=mode]` or
+`jth run --sandbox[=mode]` (a bare `--sandbox` means `restricted`; `bare`
+and a comma-separated operator allowlist are also accepted). In sandboxed
+mode, operators you allow-list that print (such as `peek`) write to the real
+console.
 
 ---
 

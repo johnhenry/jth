@@ -93,7 +93,7 @@ function createUnsandboxedEvaluator(): Evaluator {
  * single live, mutated-in-place instance (unlike the unsandboxed path).
  */
 function createSandboxedEvaluator(sandbox: SandboxOption): Evaluator {
-  const ctx = new JthContext({ sandbox });
+  const ctx = new JthContext({ sandbox, captureOutput: false });
 
   const snapshot = (): Stack => {
     const s = new Stack();

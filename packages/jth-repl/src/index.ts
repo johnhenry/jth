@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createEvaluator } from "./evaluator.ts";
+import type { CreateEvaluatorOptions } from "./evaluator.ts";
 
 export { createEvaluator } from "./evaluator.ts";
 export type { CreateEvaluatorOptions, Evaluator } from "./evaluator.ts";
@@ -25,8 +26,9 @@ export function getVersion(): string {
  * Reads lines from stdin, evaluates them as jth source, and prints the
  * resulting stack after each evaluation.
  */
-export async function startRepl(): Promise<void> {
-  const evaluator = createEvaluator();
+export async function startRepl(options: CreateEvaluatorOptions = {}): Promise<void> {
+  const evaluator = createEvaluator(options);
+  const sandboxed = options.sandbox !== undefined && options.sandbox !== false;
 
   const rl = createInterface({
     input: process.stdin,
@@ -35,7 +37,7 @@ export async function startRepl(): Promise<void> {
   });
 
   console.log(
-    `jth ${getVersion()} REPL. Type .help for commands, .exit to quit.`
+    `jth ${getVersion()} REPL${sandboxed ? " (sandboxed)" : ""}. Type .help for commands, .exit to quit.`
   );
   rl.prompt();
 
