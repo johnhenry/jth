@@ -1,6 +1,6 @@
 {
   "name": "@johnhenry/jth-compiler",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Compiler pipeline for the jth language. Transforms jth source code into executable JavaScript through three stages: lexing, parsing, and code generation.",
   "repository": {
     "type": "git",
@@ -45,11 +45,11 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@johnhenry/jth-types": "^0.0.0",
-    "@johnhenry/jth-runtime": "^0.0.0"
+    "@johnhenry/jth-types": "^0.1.0",
+    "@johnhenry/jth-runtime": "^0.1.0"
   },
   "devDependencies": {
-    "@johnhenry/jth-stdlib": "^0.0.0"
+    "@johnhenry/jth-stdlib": "^0.1.0"
   },
   "license": "MIT",
   "engines": {

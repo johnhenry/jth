@@ -1,6 +1,6 @@
 {
   "name": "@johnhenry/jth-html",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "HTML DSL for jth: build HTML trees on the stack and render them to strings.",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@johnhenry/jth-runtime": "^0.0.0"
+    "@johnhenry/jth-runtime": "^0.1.0"
   },
   "license": "MIT",
   "engines": {

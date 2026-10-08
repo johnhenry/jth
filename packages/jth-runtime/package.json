@@ -1,6 +1,6 @@
 {
   "name": "@johnhenry/jth-runtime",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Core runtime engine for the jth stack-based language. Provides the stack data structure, item processing pipeline, operator construction helpers, function metadata annotations, and a global operator registry.",
   "repository": {
     "type": "git",
@@ -45,7 +45,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@johnhenry/jth-types": "^0.0.0"
+    "@johnhenry/jth-types": "^0.1.0"
   },
   "license": "MIT",
   "engines": {
