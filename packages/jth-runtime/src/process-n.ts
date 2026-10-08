@@ -1,4 +1,4 @@
-import { getMeta, annotate } from "./meta.ts";
+import { getTiming, annotate } from "./meta.ts";
 import type { Stack } from "./stack.ts";
 import { StackUnderflowError } from "@johnhenry/jth-types";
 import type { MetaAnnotations } from "@johnhenry/jth-types";
@@ -41,7 +41,7 @@ function step(stack: Stack, arr: unknown[], i: number): number {
     return i;
   }
 
-  const meta = getMeta(raw as AnyFunction);
+  const meta = getTiming(raw as AnyFunction);
 
   // skip: push next N items as values (not executed as functions)
   if (meta.skip !== undefined) {

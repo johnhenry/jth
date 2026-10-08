@@ -1,4 +1,5 @@
 import { registry, annotate } from "@johnhenry/jth-runtime";
+import { OP_DOCS } from "./op-docs.ts";
 import type { Stack } from "@johnhenry/jth-runtime";
 // Import from all modules and register
 import * as stackOps from "./stack-ops.ts";
@@ -35,7 +36,8 @@ export function stdlibOpNames(): string[] {
 
 function set(name: string, fn: Parameters<typeof registry.set>[1]): void {
   stdlibNames.add(name);
-  registry.set(name, fn);
+  const doc = OP_DOCS[name];
+  registry.set(name, fn, doc ? { description: doc[0], arity: doc[1] } : undefined);
 }
 
 /**

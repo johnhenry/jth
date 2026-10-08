@@ -1,4 +1,5 @@
 import { op, registry } from "@johnhenry/jth-runtime";
+import { DYNAMIC_OP_DOCS } from "./op-docs.ts";
 
 // Register dynamic patterns: N+, N-, N*, N/, N%, N**, Nlog
 export function registerDynamicOps() {
@@ -26,12 +27,13 @@ export function registerDynamicOps() {
         case "%%":
           return op(1)((a) => [n % a]);
       }
-    }
+    },
+    DYNAMIC_OP_DOCS.arithmetic
   );
 
   // Logarithms: "2log", "10log"
   registry.setDynamic(/^([+-]?(?:\d*\.)?\d+)log$/, (name, pattern) => {
     const [, base] = pattern.exec(name)!;
     return op(1)((a) => [Math.log(a) / Math.log(Number(base))]);
-  });
+  }, DYNAMIC_OP_DOCS.log);
 }

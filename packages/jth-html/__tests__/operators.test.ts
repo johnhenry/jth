@@ -377,3 +377,14 @@ describe("integration: composing operators", () => {
     expect(s1.pop()).toBe(s2.pop());
   });
 });
+
+describe("html operator documentation (issue #54)", () => {
+  it("every static h-* op and the h-<tag> family has a description", async () => {
+    const { registry } = await import("@johnhenry/jth-runtime");
+    await import("../src/index.ts");
+    const hOps = registry.names().filter((n) => n.startsWith("h-"));
+    expect(hOps.length).toBe(7);
+    for (const n of hOps) expect(registry.info(n)?.description?.trim(), n).toBeTruthy();
+    expect(registry.dynamicInfos().some((d) => d.syntax === "h-<tag>")).toBe(true);
+  });
+});
