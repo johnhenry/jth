@@ -1,6 +1,6 @@
 {
   "name": "@johnhenry/jth-stdlib",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Standard library of operators for the jth language. Importing this package registers all built-in operators into the global @johnhenry/jth-runtime registry.",
   "repository": {
     "type": "git",
@@ -25,8 +25,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@johnhenry/jth-types": "^0.0.0",
-    "@johnhenry/jth-runtime": "^0.0.0"
+    "@johnhenry/jth-types": "^0.1.0",
+    "@johnhenry/jth-runtime": "^0.1.0"
   },
   "license": "MIT",
   "engines": {

@@ -1,6 +1,6 @@
 {
   "name": "@johnhenry/jth-eval",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Embeddable jth evaluation for JavaScript hosts: one-shot evalJth(), a persistent JthContext, and a ScopedRegistry that lets each evaluation define/override operators without touching the global registry.",
   "repository": {
     "type": "git",
@@ -37,13 +37,13 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@johnhenry/jth-types": "^0.0.0",
-    "@johnhenry/jth-compiler": "^0.0.0",
-    "@johnhenry/jth-runtime": "^0.0.0",
-    "@johnhenry/jth-stdlib": "^0.0.0"
+    "@johnhenry/jth-types": "^0.1.0",
+    "@johnhenry/jth-compiler": "^0.1.0",
+    "@johnhenry/jth-runtime": "^0.1.0",
+    "@johnhenry/jth-stdlib": "^0.1.0"
   },
   "devDependencies": {
-    "@johnhenry/jth-html": "^0.0.0"
+    "@johnhenry/jth-html": "^0.1.0"
   },
   "license": "MIT",
   "engines": {

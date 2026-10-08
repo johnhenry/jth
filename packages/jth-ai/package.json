@@ -1,6 +1,6 @@
 {
   "name": "@johnhenry/jth-ai",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "AI integration helpers for the jth runtime via Ollama — a JavaScript-only helper library, not a jth op package.",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@johnhenry/jth-runtime": "^0.0.0"
+    "@johnhenry/jth-runtime": "^0.1.0"
   },
   "license": "MIT",
   "engines": {
