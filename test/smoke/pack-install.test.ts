@@ -30,6 +30,7 @@ const PACKAGES = [
   "jth-runtime",
   "jth-compiler",
   "jth-stdlib",
+  "jth-eval", // jth-repl depends on it; unpublished versions must come from the local tarball
   "jth-repl",
   "jth-cli", // directory name; the package inside is "@johnhenry/jth" (renamed from jth-lang, itself renamed from jth-cli)
 ];
