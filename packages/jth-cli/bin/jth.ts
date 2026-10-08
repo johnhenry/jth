@@ -62,6 +62,8 @@ Usage:
                               or a comma-separated operator allowlist
                               (--sandbox=peek,+,-). \`run\` prints the final
                               stack, one item per line.
+  jth help <op>               Describe an operator (name, arity, description)
+  jth help --ops              List every built-in operator
   jth --version, -v           Print version
   jth --help, -h              Print this help message
 
@@ -100,6 +102,10 @@ switch (command) {
     await handleCompile(rest);
     break;
 
+  case "help":
+    await handleHelp(rest);
+    break;
+
   case "repl":
     await handleRepl(rest);
     break;
@@ -124,6 +130,27 @@ function reportError(err: any): void {
 }
 
 // ── Command handlers ────────────────────────────────────────────────
+
+async function handleHelp(argv: string[]): Promise<void> {
+  const { registry } = await import("@johnhenry/jth-runtime");
+  await import("@johnhenry/jth-stdlib");
+  if (argv.length === 0) {
+    console.log(HELP);
+    return;
+  }
+  if (argv[0] === "--ops") {
+    for (const i of registry.infos()) console.log(`${i.name}\t(${i.arity})\t${i.description}`);
+    for (const d of registry.dynamicInfos()) console.log(`${d.syntax}\t(${d.arity})\t${d.description}`);
+    return;
+  }
+  const name = argv[0];
+  const info = registry.info(name);
+  if (!info) {
+    console.error(`No documentation for operator: ${name}. Try \`jth help --ops\`.`);
+    process.exit(1);
+  }
+  console.log(`${info.name} (arity: ${info.arity})\n${info.description}`);
+}
 
 /** Parse --sandbox from argv; on a bad value print the error and exit 1. */
 function sandboxFromArgs(argv: string[]): { sandbox: CliSandbox | undefined; rest: string[] } {

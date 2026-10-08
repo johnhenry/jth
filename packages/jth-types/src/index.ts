@@ -47,4 +47,4 @@ export {
 } from "./errors.ts";
 export type { StackUnderflowDetails } from "./errors.ts";
 export { UNLIMITED } from "./interfaces.ts";
-export type { MetaAnnotations } from "./interfaces.ts";
+export type { MetaAnnotations, OpArity, OpInfo, DynamicOpInfo } from "./interfaces.ts";

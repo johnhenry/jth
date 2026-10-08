@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { registry } from "../src/registry.ts";
+import { getMeta } from "../src/meta.ts";
+import { op, variadic } from "../src/op.ts";
 
 describe("registry", () => {
   beforeEach(() => {
@@ -131,3 +133,63 @@ describe("registry enumeration", () => {
     expect(registry.names()).toEqual([]);
   });
 });
+
+describe("registry operator documentation (issue #54)", () => {
+  beforeEach(() => {
+    registry.clear();
+  });
+
+  it("set(name, fn, doc) records name, derived arity and description", () => {
+    registry.set("double", op(1)((x) => [x * 2]), { description: "Double a number." });
+    expect(registry.info("double")).toEqual({ name: "double", arity: 1, description: "Double a number." });
+  });
+
+  it("variadic ops derive arity 'variadic'; undeclared raw ops derive 'varies'; explicit arity wins", () => {
+    registry.set("all", variadic(() => []), { description: "d" });
+    registry.set("raw", () => {}, { description: "d" });
+    registry.set("two", () => {}, { description: "d", arity: 2 });
+    expect(registry.info("all")?.arity).toBe("variadic");
+    expect(registry.info("raw")?.arity).toBe("varies");
+    expect(registry.info("two")?.arity).toBe(2);
+  });
+
+  it("ops registered without docs have no info", () => {
+    registry.set("plain", () => {});
+    expect(registry.info("plain")).toBeUndefined();
+    expect(registry.infos()).toEqual([]);
+  });
+
+  it("infos() lists documented static ops in registration order", () => {
+    registry.set("a", () => {}, { description: "A" });
+    registry.set("b", () => {}, { description: "B" });
+    expect(registry.infos().map((i) => i.name)).toEqual(["a", "b"]);
+  });
+
+  it("re-registering without docs drops the stale description; remove/clear drop info", () => {
+    registry.set("x", () => {}, { description: "old" });
+    registry.set("x", () => {});
+    expect(registry.info("x")).toBeUndefined();
+    registry.set("y", () => {}, { description: "y" });
+    registry.remove("y");
+    expect(registry.info("y")).toBeUndefined();
+    registry.set("z", () => {}, { description: "z" });
+    registry.clear();
+    expect(registry.infos()).toEqual([]);
+  });
+
+  it("getMeta() of a documented operator carries description and arity next to timing annotations", () => {
+    const fn = op(2)(() => []);
+    registry.set("two", fn, { description: "Two things." });
+    expect(getMeta(fn)).toEqual({ description: "Two things.", arity: 2 });
+  });
+
+  it("getMeta() of an undocumented function is still {}", () => {
+    expect(getMeta(() => {})).toEqual({});
+  });
+
+  it("dynamic families can be documented", () => {
+    registry.setDynamic(/^x\d$/, () => undefined, { syntax: "xN", arity: 1, description: "d" });
+    expect(registry.dynamicInfos()).toEqual([{ syntax: "xN", arity: 1, description: "d" }]);
+  });
+});
+

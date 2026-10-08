@@ -20,3 +20,5 @@ export * from "./sequences.ts";
 export * from "./statistics.ts";
 export * from "./hyperoperations.ts";
 export * from "./dynamic-ops.ts";
+export { OP_DOCS, DYNAMIC_OP_DOCS } from "./op-docs.ts";
+export { operatorReferenceMarkdown } from "./reference.ts";

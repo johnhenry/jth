@@ -9,13 +9,13 @@ const STATIC_OPS = new Set([
 
 export function registerHTML(): void {
   // Static operators
-  registry.set("h-tag", hTag);
-  registry.set("h-text", hText);
-  registry.set("h-raw", hRaw);
-  registry.set("h-frag", hFrag);
-  registry.set("h-void", hVoid);
-  registry.set("h-attrs", hAttrs);
-  registry.set("h-render", hRender);
+  registry.set("h-tag", hTag, { description: "Build an element: `#[ ... ] \"div\" h-tag` runs the block on a fresh stack and uses its output as the children.", arity: 2 });
+  registry.set("h-text", hText, { description: "Make an escaped text node.", arity: 1 });
+  registry.set("h-raw", hRaw, { description: "Make a raw (UNESCAPED) HTML node. Never feed it untrusted input.", arity: 1 });
+  registry.set("h-frag", hFrag, { description: "Collect a block's output into a fragment node (no wrapping element).", arity: 1 });
+  registry.set("h-void", hVoid, { description: "Make an empty element (no children), e.g. br or img, from a tag name.", arity: 1 });
+  registry.set("h-attrs", hAttrs, { description: "Merge an attributes object onto an element.", arity: 2 });
+  registry.set("h-render", hRender, { description: "Render a node tree to an HTML string.", arity: 1 });
 
   // Dynamic shorthand: h-div, h-h1, h-p, etc.
   // Matches h-<tagname> where tagname is lowercase alphanumeric.
@@ -37,5 +37,9 @@ export function registerHTML(): void {
       }
       stack.push(createElement(tagName, {}, childStack.toArray() as any));
     };
+  }, {
+    syntax: "h-<tag>",
+    arity: 1,
+    description: "Shorthand for a block then a tag name then h-tag: `#[ ... ] h-div` builds a <div> with the block's output as children.",
   });
 }

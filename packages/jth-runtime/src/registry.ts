@@ -1,4 +1,5 @@
 import { JthRuntimeError } from "@johnhenry/jth-types";
+import type { OpArity, OpInfo, DynamicOpInfo } from "@johnhenry/jth-types";
 import type { StackOperator } from "./op.ts";
 
 /** Levenshtein distance, used to suggest the nearest known operator. */
@@ -54,15 +55,64 @@ export function operatorName(fn: unknown): string | undefined {
   return typeof fn === "function" ? operatorNames.get(fn) : undefined;
 }
 
+/** Registered documentation, keyed by name (static) and by pattern source (dynamic). */
+const staticInfo = new Map<string, OpInfo>();
+const dynamicInfo = new Map<string, DynamicOpInfo>();
+const infoByFn = new WeakMap<object, OpInfo>();
+
+/** Documentation for the operator function `fn`, if it was registered with any. */
+export function operatorInfo(fn: unknown): OpInfo | undefined {
+  return typeof fn === "function" ? infoByFn.get(fn) : undefined;
+}
+
+export interface StaticOpDoc {
+  description: string;
+  /** Defaults to the arity declared by op()/variadic(), else "varies". */
+  arity?: OpArity;
+}
+
+function deriveArity(fn: StackOperator, declared?: OpArity): OpArity {
+  if (declared !== undefined) return declared;
+  const a = fn._arity;
+  if (a === Infinity) return "variadic";
+  return typeof a === "number" ? a : "varies";
+}
+
 type DynamicFactory = (name: string, pattern: RegExp) => StackOperator | undefined;
 
 const staticOps = new Map<string, StackOperator>();
 const dynamicOps: Array<{ pattern: RegExp; factory: DynamicFactory }> = [];
 
 export const registry = {
-  set(name: string, fn: StackOperator) {
+  set(name: string, fn: StackOperator, doc?: StaticOpDoc) {
     staticOps.set(name, fn);
     nameOperator(fn, name);
+    if (doc) {
+      const info: OpInfo = { name, arity: deriveArity(fn, doc.arity), description: doc.description };
+      staticInfo.set(name, info);
+      if (!infoByFn.has(fn)) infoByFn.set(fn, info);
+    } else {
+      // Re-registering a name without docs must not leave stale docs behind.
+      staticInfo.delete(name);
+    }
+  },
+
+  /** Documentation registered for a static operator name. */
+  info(name: string): OpInfo | undefined {
+    return staticOps.has(name) ? staticInfo.get(name) : undefined;
+  },
+
+  /** Documentation for every registered static operator that has some. */
+  infos(): OpInfo[] {
+    return [...staticOps.keys()].flatMap((n) => {
+      const i = staticInfo.get(n);
+      return i ? [i] : [];
+    });
+  },
+
+  /** Documentation for registered dynamic operator families. */
+  dynamicInfos(): DynamicOpInfo[] {
+    return [...dynamicInfo.values()];
   },
 
   get(name: string): StackOperator | undefined {
@@ -114,15 +164,19 @@ export const registry = {
   },
 
   remove(name: string): boolean {
+    staticInfo.delete(name);
     return staticOps.delete(name);
   },
 
   clear() {
     staticOps.clear();
+    staticInfo.clear();
+    dynamicInfo.clear();
     dynamicOps.length = 0;
   },
 
-  setDynamic(pattern: RegExp, factory: DynamicFactory) {
+  setDynamic(pattern: RegExp, factory: DynamicFactory, doc?: DynamicOpInfo) {
     dynamicOps.push({ pattern, factory });
+    if (doc) dynamicInfo.set(pattern.source, doc);
   },
 };

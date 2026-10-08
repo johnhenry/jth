@@ -37,6 +37,7 @@
     "test:e2e": "vitest run test/e2e/",
     "typecheck": "turbo run build && tsc -b",
     "changeset": "changeset",
+    "docs:ops": "tsx scripts/gen-operator-docs.ts",
     "version-packages": "changeset version",
     "release": "npm run build && changeset publish",
     "example:01": "node packages/jth-cli/dist/bin/jth.js run examples/01-hello.jth",

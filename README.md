@@ -318,6 +318,8 @@ Double parentheses embed raw JavaScript. The expression is treated as a value:
 
 ## Operator Reference
 
+> Every built-in operator is also described in code (name, arity, description). Run `jth help <op>` or `jth help --ops`, or see the generated [docs/operators.md](docs/operators.md) (`npm run docs:ops` regenerates it).
+
 ### Arithmetic
 
 | Operator | Description | Example |

@@ -1,6 +1,8 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { existsSync, unlinkSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { Script } from "node:vm";
 import { compile, deriveOutputPath } from "../src/compile.ts";
@@ -148,5 +150,38 @@ describe("deriveOutputPath", () => {
   it("handles files without .jth extension", () => {
     const result = deriveOutputPath("script.txt");
     expect(result).toMatch(/script\.mjs$/);
+  });
+});
+
+// ── jth help <op> (issue #54) ───────────────────────────────────────
+
+describe("jth help <op>", () => {
+  const BIN = join(dirname(fileURLToPath(import.meta.url)), "..", "dist", "bin", "jth.js");
+  const run = (args: string[]) => spawnSync(process.execPath, [BIN, ...args], { encoding: "utf-8", timeout: 60_000 });
+
+  it("prints name, arity and description for a built-in op", () => {
+    const r = run(["help", "swap"]);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("swap");
+    expect(r.stdout).toContain("arity: 2");
+    expect(r.stdout).toMatch(/top two/i);
+  });
+
+  it("--ops lists every built-in operator with a description", () => {
+    const r = run(["help", "--ops"]);
+    expect(r.status).toBe(0);
+    const lines = r.stdout.trim().split("\n");
+    expect(lines.length).toBeGreaterThan(140);
+    for (const l of lines) expect(l.split("\t")[2]?.trim(), l).toBeTruthy();
+  });
+
+  it("an unknown op exits 1", () => {
+    const r = run(["help", "no-such-op"]);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain("No documentation for operator: no-such-op");
+  });
+
+  it("bare `jth help` prints usage", () => {
+    expect(run(["help"]).stdout).toContain("Usage:");
   });
 });

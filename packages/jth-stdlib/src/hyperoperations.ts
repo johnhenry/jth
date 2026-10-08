@@ -1,3 +1,4 @@
+import { DYNAMIC_OP_DOCS } from "./op-docs.ts";
 import { op, registry } from "@johnhenry/jth-runtime";
 import { JthRuntimeError } from "@johnhenry/jth-types";
 
@@ -44,5 +45,5 @@ export function registerHyperops() {
   registry.setDynamic(/^\*{3,}$/, (name) => {
     const h = hyperoperation(name.length + 1);
     return op(2)((a, b) => [h(a, b)]);
-  });
+  }, DYNAMIC_OP_DOCS.hyperop);
 }
