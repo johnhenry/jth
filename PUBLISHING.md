@@ -42,6 +42,14 @@ the release branch ([publish model](https://github.com/johnhenry/workflows#the-p
    per published package.
 
 Pushes to `main` with no pending changesets and no new versions publish nothing.
+
+**One-time repository requirement.** `changesets/action` opens the Version Packages PR
+with `GITHUB_TOKEN`, which needs both `permissions: pull-requests: write` on the job
+(already set in the workflow) and the repo setting *Settings > Actions > General >
+"Allow GitHub Actions to create and approve pull requests"*; without it the run fails at
+`creating pull request`. Check / enable with
+`gh api repos/johnhenry/jth/actions/permissions/workflow` and
+`gh api -X PUT repos/johnhenry/jth/actions/permissions/workflow -f default_workflow_permissions=read -F can_approve_pull_request_reviews=true`.
 The workflow can also be run manually (*workflow_dispatch*). Do not create tags
 or GitHub Releases by hand to cause a publish.
 

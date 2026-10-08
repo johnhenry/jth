@@ -89,6 +89,8 @@ Adding a package under `packages/` means all of the following, not just
 
 ## Releases
 
-See `PUBLISHING.md`. Root `CHANGELOG.md` tracks the release history; the
-family's Changesets convention is not used per-package here — check
-`PUBLISHING.md` before changing that.
+Changesets, main is the release branch: add a changeset (`npm run changeset`) in the
+PR; merging opens/updates the "chore: version packages" PR, and merging that publishes
+and creates `<name>@<version>` tags + GitHub Releases. See `PUBLISHING.md` (including the
+required repo setting "Allow GitHub Actions to create and approve pull requests").
+Root `CHANGELOG.md` tracks the release history.
