@@ -271,6 +271,19 @@ describe("createEvaluator", () => {
       });
     });
 
+    it("sandboxed evaluator lets allow-listed printing ops reach the real console", async () => {
+      const logged: unknown[][] = [];
+      const orig = console.log;
+      console.log = (...a: unknown[]) => { logged.push(a); };
+      try {
+        const ev = createEvaluator({ sandbox: ["peek"] });
+        await ev.evaluate('"visible" peek;');
+      } finally {
+        console.log = orig;
+      }
+      expect(logged).toEqual([["visible"]]);
+    });
+
     it("sandboxed evaluator maintains stack state across evaluate() calls", async () => {
       const ev = createEvaluator({ sandbox: "restricted" });
       await ev.evaluate("1;");

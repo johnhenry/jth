@@ -10,6 +10,7 @@
  *   jth compile --no-bundle <file> [output]
  *                               Compile without bundling (bare jth-* imports)
  *   jth compile -c '<code>'     Compile inline jth code to stdout (unbundled)
+ *   jth run --sandbox[=mode] ...  Run sandboxed (also: jth repl --sandbox[=mode])
  *   jth repl                    Start interactive REPL
  *   jth --version | -v          Print version
  *   jth --help | -h             Print help
@@ -20,6 +21,8 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compile, compileBundled, deriveOutputPath } from "../src/compile.ts";
 import { run } from "../src/run.ts";
+import { parseSandboxFlag, runSandboxed, SandboxFlagError } from "../src/sandbox.ts";
+import type { CliSandbox } from "../src/sandbox.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -52,6 +55,13 @@ Usage:
   jth compile -c '<code>'     Compile inline jth code (prints unbundled
                               output to stdout)
   jth repl                    Start interactive REPL
+  jth run --sandbox[=mode] <file> | -c '<code>'
+  jth repl --sandbox[=mode]   Sandboxed evaluation (no inline JS, no ::name).
+                              Modes: restricted (default for a bare --sandbox:
+                              pure stdlib, no peek), bare (no stdlib),
+                              or a comma-separated operator allowlist
+                              (--sandbox=peek,+,-). \`run\` prints the final
+                              stack, one item per line.
   jth --version, -v           Print version
   jth --help, -h              Print this help message
 
@@ -61,6 +71,7 @@ Examples:
   jth compile math.jth math.mjs && node math.mjs
   jth compile --no-bundle math.jth
   jth compile -c '1 2 +;'
+  jth run --sandbox -c '1 2 + 3 *;'
 `.trim();
 
 // ── Argument parsing ────────────────────────────────────────────────
@@ -90,7 +101,7 @@ switch (command) {
     break;
 
   case "repl":
-    await handleRepl();
+    await handleRepl(rest);
     break;
 
   default:
@@ -114,9 +125,27 @@ function reportError(err: any): void {
 
 // ── Command handlers ────────────────────────────────────────────────
 
-async function handleRepl(): Promise<void> {
+/** Parse --sandbox from argv; on a bad value print the error and exit 1. */
+function sandboxFromArgs(argv: string[]): { sandbox: CliSandbox | undefined; rest: string[] } {
+  try {
+    return parseSandboxFlag(argv);
+  } catch (err) {
+    if (err instanceof SandboxFlagError) {
+      console.error(`Error: ${err.message}`);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
+async function handleRepl(argv: string[]): Promise<void> {
+  const { sandbox, rest } = sandboxFromArgs(argv);
+  if (rest.length > 0) {
+    console.error(`Unexpected argument for \`jth repl\`: ${rest[0]}`);
+    process.exit(1);
+  }
   const { startRepl } = await import("@johnhenry/jth-repl");
-  await startRepl();
+  await startRepl({ sandbox });
 }
 
 async function handleRun(argv: string[]): Promise<void> {
@@ -130,9 +159,13 @@ async function handleRun(argv: string[]): Promise<void> {
     );
     process.exit(1);
   }
-  const { isCode, input } = parseInput(argv, "run");
+  const { sandbox, rest } = sandboxFromArgs(argv);
+  const { isCode, input } = parseInput(rest, "run");
   try {
-    const exitCode = await run(input, { isCode });
+    const exitCode =
+      sandbox !== undefined
+        ? await runSandboxed(input, isCode, sandbox)
+        : await run(input, { isCode });
     process.exit(exitCode);
   } catch (err: any) {
     reportError(err);
@@ -141,6 +174,10 @@ async function handleRun(argv: string[]): Promise<void> {
 }
 
 async function handleCompile(argv: string[]): Promise<void> {
+  if (argv.some((a) => a === "--sandbox" || a.startsWith("--sandbox="))) {
+    console.error("Error: --sandbox is not supported for `jth compile` (it applies to `jth run` and `jth repl`).");
+    process.exit(1);
+  }
   const bundle = !argv.includes("--no-bundle");
   const filtered = argv.filter((a) => a !== "--no-bundle");
   const { isCode, input, extra } = parseInput(filtered, "compile");

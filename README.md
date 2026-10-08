@@ -70,6 +70,21 @@ REPL dot-commands: `.help`, `.peek`, `.count`, `.clear`, `.stack`, `.exit`
 
 The REPL and `jth run -c` are **unsandboxed by default** — inline JS
 (`((...))`) has full access to `process`, the filesystem, and the network.
+Pass `--sandbox` to opt in from the command line:
+
+```bash
+jth run --sandbox -c '1 2 + 3 *;'     # prints the final stack: 9
+jth run --sandbox=bare -c '1;'        # no stdlib operators at all
+jth run --sandbox=peek,+ -c '1 2 + peek;'   # explicit operator allowlist
+jth repl --sandbox
+```
+
+`--sandbox` (alone) means `--sandbox=restricted`: pure stdlib only (no
+`peek`/`peek-all`), inline JS and `::name` rejected at compile time. Because
+`peek` is unavailable there, `jth run --sandbox` prints the final stack, one
+item per line. An invalid mode (for example an empty `--sandbox=`) is an
+error, never a silent fallback to unsandboxed execution.
+
 Embedding jth evaluation programmatically for untrusted input? Use
 `createEvaluator({ sandbox: ... })` from `@johnhenry/jth-repl`, or
 `@johnhenry/jth-eval` directly — see [jth-repl's
@@ -630,12 +645,10 @@ design, with an explicit opt-in for untrusted input.
   `timeout` option (default 5000ms), not preemptively. Don't run sandboxed
   jth as your only defense against a hostile or resource-exhausting
   program.
-- **There is no CLI flag to opt `jth repl` or `jth run -c` into sandboxed
-  mode.** Sandboxing is only available by embedding `createEvaluator()` /
-  `jth-eval` programmatically — if you're building something that runs
-  jth source from an untrusted source, you must wire that yourself; the
-  CLI always runs unsandboxed. (Tracked as a follow-up in
-  [`jth-repl`'s README](packages/jth-repl/README.md#sandboxing-opt-in).)
+- **The CLI is unsandboxed unless you pass `--sandbox`.** `jth run` and
+  `jth repl` accept `--sandbox[=restricted|bare|op,op,...]` (see
+  [Start the REPL](#start-the-repl)); without it, nothing is restricted.
+  The same caveat applies: it is not an OS-level isolation boundary.
 - **Dynamic pattern operators (`3+`, `2log`, `***`, …) are denied outright
   in restricted mode**, not partially allowed — they match open-ended name
   families that can't be enumerated into a safe allowlist. If your program
