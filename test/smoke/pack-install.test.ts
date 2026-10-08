@@ -37,7 +37,7 @@ const PACKAGES = [
 const INSTALL_TIMEOUT = 300_000;
 
 function sh(cmd: string, args: string[], cwd: string) {
-  return spawnSync(cmd, args, { cwd, encoding: "utf-8", timeout: INSTALL_TIMEOUT });
+  return spawnSync(cmd, args, { cwd, encoding: "utf-8", timeout: INSTALL_TIMEOUT, maxBuffer: 10 * 1024 * 1024 });
 }
 
 describe("smoke: npm pack + install + run outside the repo", () => {

@@ -36,6 +36,24 @@ function suggestOperator(name: string): string | undefined {
   return best;
 }
 
+/**
+ * Operator function -> the name it was first registered under. Lets the
+ * runtime driver attribute failures (e.g. stack underflow) to a jth
+ * operator name. First registration wins, so aliases report the primary
+ * name.
+ */
+const operatorNames = new WeakMap<object, string>();
+
+/** Record `name` as the display name of `fn` (no-op if already named). */
+export function nameOperator(fn: unknown, name: string): void {
+  if (typeof fn === "function" && !operatorNames.has(fn)) operatorNames.set(fn, name);
+}
+
+/** The jth name `fn` was registered under, if any. */
+export function operatorName(fn: unknown): string | undefined {
+  return typeof fn === "function" ? operatorNames.get(fn) : undefined;
+}
+
 type DynamicFactory = (name: string, pattern: RegExp) => StackOperator | undefined;
 
 const staticOps = new Map<string, StackOperator>();
@@ -44,12 +62,17 @@ const dynamicOps: Array<{ pattern: RegExp; factory: DynamicFactory }> = [];
 export const registry = {
   set(name: string, fn: StackOperator) {
     staticOps.set(name, fn);
+    nameOperator(fn, name);
   },
 
   get(name: string): StackOperator | undefined {
     if (staticOps.has(name)) return staticOps.get(name);
     for (const { pattern, factory } of dynamicOps) {
-      if (pattern.test(name)) return factory(name, pattern);
+      if (pattern.test(name)) {
+        const made = factory(name, pattern);
+        nameOperator(made, name);
+        return made;
+      }
     }
     return undefined;
   },

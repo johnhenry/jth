@@ -1,6 +1,6 @@
-import { registerAll } from "./register.ts";
+import { registerAll, stdlibOpNames } from "./register.ts";
 registerAll();
-export { registerAll };
+export { registerAll, stdlibOpNames };
 export * from "./stack-ops.ts";
 export * from "./arithmetic.ts";
 export * from "./comparison.ts";

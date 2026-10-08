@@ -293,3 +293,72 @@ describe("Sandbox modes", () => {
     });
   });
 });
+
+describe("Sandbox fails CLOSED (audit #28)", () => {
+  const bogus: unknown[] = ["Restricted", "bogus", "", "RESTRICTED", null, 0, 1, {}, 42];
+
+  for (const value of bogus) {
+    it(`evalJth rejects unrecognized sandbox value ${JSON.stringify(value)} instead of granting full access`, async () => {
+      await expect(
+        evalJth('"leak" peek;', { sandbox: value as any })
+      ).rejects.toMatchObject({ code: "INVALID_SANDBOX" });
+    });
+
+    it(`JthContext rejects unrecognized sandbox value ${JSON.stringify(value)}`, () => {
+      expect(() => new JthContext({ sandbox: value as any })).toThrow(
+        expect.objectContaining({ code: "INVALID_SANDBOX" })
+      );
+    });
+  }
+
+  it("buildAllowlist never returns null for anything but sandbox === false", async () => {
+    const { buildAllowlist } = await import("../src/eval.ts");
+    expect(buildAllowlist(false)).toBeNull();
+    expect(() => buildAllowlist("Restricted" as any)).toThrow();
+    expect(() => buildAllowlist(undefined as any)).toThrow();
+  });
+
+  it("an undefined sandbox option still defaults to unsandboxed (option omitted)", async () => {
+    const r = await evalJth("1 2 +;", {});
+    expect(r.value).toBe(3);
+    const r2 = await evalJth("1 2 +;", { sandbox: undefined });
+    expect(r2.value).toBe(3);
+  });
+});
+
+describe("restricted mode only admits jth-stdlib ops (audit #28 item 2)", () => {
+  it("blocks jth-html's raw-HTML ops even when jth-html is loaded in the same process", async () => {
+    await import("@johnhenry/jth-html");
+    await expect(
+      evalJth('"<img src=x onerror=alert(1)>" h-raw h-render;', { sandbox: "restricted" })
+    ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+  });
+
+  it("jth-html dynamic shorthand ops stay blocked too", async () => {
+    await import("@johnhenry/jth-html");
+    await expect(
+      evalJth("#[ ] h-div;", { sandbox: "restricted" })
+    ).rejects.toThrow();
+  });
+
+  it("an arbitrary non-stdlib static op registered globally is blocked in restricted mode", async () => {
+    const { registry, op } = await import("@johnhenry/jth-runtime");
+    registry.set("evil-io", op(0)(() => ["pwned"]));
+    try {
+      await expect(
+        evalJth("evil-io;", { sandbox: "restricted" })
+      ).rejects.toMatchObject({ code: "OP_NOT_ALLOWED" });
+      // ...but still reachable when explicitly allow-listed
+      const r = await evalJth("evil-io;", { sandbox: ["evil-io"] });
+      expect(r.value).toBe("pwned");
+    } finally {
+      registry.remove("evil-io");
+    }
+  });
+
+  it("pure stdlib ops still work in restricted mode", async () => {
+    const r = await evalJth("[1 2 3] #[ 2 * ] map;", { sandbox: "restricted" });
+    expect(r.value).toEqual([2, 4, 6]);
+  });
+});
+

@@ -1,19 +1,23 @@
 import { Stack, registry, op } from "@johnhenry/jth-runtime";
 import type { StackOperator } from "@johnhenry/jth-runtime";
 import { run } from "@johnhenry/jth-compiler";
-import "@johnhenry/jth-stdlib";
+import { stdlibOpNames } from "@johnhenry/jth-stdlib";
+import { JthRuntimeError } from "@johnhenry/jth-types";
 import { ScopedRegistry } from "./scoped-registry.ts";
 
 /**
  * Restricted-op policy for `sandbox: "restricted"`:
  *
- * The allowlist is built from `registry.names()` (every statically
- * registered operator) MINUS this set. Excluded here is every op that
- * touches the world outside the evaluation (I/O, process, network,
- * filesystem). jth-stdlib is almost entirely pure/computational; its only
- * side-effecting ops are the console printers:
+ * The allowlist is the set of static ops registered by jth-stdlib itself
+ * (`stdlibOpNames()`) that are still registered, MINUS this set. Ops
+ * registered into the process-global registry by OTHER packages (e.g.
+ * jth-html's `h-raw`/`h-render`) are never admitted by "restricted" — they
+ * must be allow-listed explicitly with `sandbox: [...]`. Excluded here is
+ * every stdlib op that touches the world outside the evaluation. jth-stdlib
+ * is almost entirely pure/computational; its only side-effecting ops are
+ * the printers:
  *
- *   - `peek` / `peek-all` — write to the host console (console.log)
+ *   - `peek` / `peek-all` — write to the host console
  *
  * Additionally, and independently of this set:
  *   - Inline JS (`((...))`) is rejected at compile time in every sandbox
@@ -22,9 +26,8 @@ import { ScopedRegistry } from "./scoped-registry.ts";
  *     in restricted mode because patterns cannot be enumerated into an
  *     allowlist. Only the statically named ops resolve.
  *
- * If an op package that performs I/O or network access (none in the
- * default registry today; jth-ai deliberately registers no jth words)
- * ever registers globally, its op names must be added here.
+ * Any `sandbox` value that is not `false`, `true`, `"restricted"` or an
+ * array is rejected (INVALID_SANDBOX): the sandbox fails closed.
  */
 const RESTRICTED_OPS = new Set<string>(["peek", "peek-all"]);
 
@@ -129,9 +132,10 @@ export function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
     // Default-deny: every statically registered op name, minus the
     // restricted (side-effecting) set. Dynamic pattern ops are not
     // enumerable and therefore stay denied.
-    const all = new Set(registry.names());
-    for (const name of RESTRICTED_OPS) {
-      all.delete(name);
+    const registered = new Set(registry.names());
+    const all = new Set<string>();
+    for (const name of stdlibOpNames()) {
+      if (registered.has(name) && !RESTRICTED_OPS.has(name)) all.add(name);
     }
     return all;
   }
@@ -141,5 +145,21 @@ export function buildAllowlist(sandbox: SandboxOption): Set<string> | null {
     return new Set(sandbox);
   }
 
-  return null;
+  // Fail CLOSED: anything unrecognized (typo, wrong case, null, a value read
+  // from config/JSON) must never fall through to "full access".
+  throw new JthRuntimeError(
+    `Invalid sandbox option: ${describeSandbox(sandbox)}. ` +
+      'Expected false, true, "restricted", or an array of operator names.',
+    undefined,
+    undefined,
+    "INVALID_SANDBOX"
+  );
+}
+
+function describeSandbox(value: unknown): string {
+  try {
+    return typeof value === "string" ? JSON.stringify(value) : String(JSON.stringify(value) ?? value);
+  } catch {
+    return typeof value;
+  }
 }

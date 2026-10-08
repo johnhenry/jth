@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { JthRuntimeError } from "@johnhenry/jth-types";
+import { JthRuntimeError, StackUnderflowError } from "@johnhenry/jth-types";
 import { run } from "../src/run.ts";
 import "@johnhenry/jth-stdlib";
 
@@ -61,5 +61,37 @@ describe("runtime errors carry codes and source positions", () => {
   it("errors keep the position of the statement that threw, not later ones", async () => {
     const err = await captureError('"x" throw;\n1 2 +;');
     expect(err.line).toBe(1);
+  });
+});
+
+describe("stack underflow names the operator and source position (issue #40)", () => {
+  it("swap on a one-item stack: StackUnderflowError, operator swap, position", async () => {
+    const err = await captureError("1 swap;");
+    expect(err).toBeInstanceOf(StackUnderflowError);
+    expect(err.code).toBe("STACK_UNDERFLOW");
+    expect(err.operator).toBe("swap");
+    expect(err.expected).toBe(2);
+    expect(err.actual).toBe(1);
+    expect(err.line).toBe(1);
+    expect(err.message).toContain("swap");
+  });
+
+  it("arithmetic underflow names the operator and the failing line", async () => {
+    const err = await captureError("1 2 +;\nclear 3 +;");
+    expect(err).toBeInstanceOf(StackUnderflowError);
+    expect(err.operator).toBe("+");
+    expect(err.line).toBe(2);
+  });
+
+  it("underflow inside a block is attributed to the inner operator", async () => {
+    const err = await captureError("[1 2] #[ + ] map;");
+    expect(err).toBeInstanceOf(StackUnderflowError);
+    expect(err.operator).toBe("+");
+  });
+
+  it("an empty program with drop reports operator drop", async () => {
+    const err = await captureError("drop;");
+    expect(err).toBeInstanceOf(StackUnderflowError);
+    expect(err.operator).toBe("drop");
   });
 });
