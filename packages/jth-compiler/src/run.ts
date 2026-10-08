@@ -11,7 +11,7 @@
  * do), or pass a pre-populated registry.
  */
 
-import { Stack, processN, registry as globalRegistry } from "@johnhenry/jth-runtime";
+import { Stack, processN, captureOutput, registry as globalRegistry } from "@johnhenry/jth-runtime";
 import { transform } from "./transform.ts";
 
 /** Minimal registry surface the generated code needs (`registry.resolve`). */
@@ -33,7 +33,12 @@ export interface RunOptions {
   stack?: Stack;
   /** Max execution time in ms. 0 (default) disables the timeout. */
   timeoutMs?: number;
-  /** Capture console.log lines emitted during execution. */
+  /**
+   * Capture output written by printing operators (`peek`, `peek-all`) during
+   * execution into RunResult.output. Scoped to this run; the global
+   * console.log is never replaced (so inline-JS `console.log` calls are not
+   * captured).
+   */
   captureLog?: boolean;
   /**
    * Reject inline JS (`((...))`) at compile time with OP_NOT_ALLOWED.
@@ -78,33 +83,26 @@ export async function run(source: string, opts: RunOptions = {}): Promise<RunRes
   ) as (stack: Stack, processN: unknown, registry: RegistryLike) => Promise<void>;
 
   const outputLines: string[] = [];
-  const origLog = console.log;
-  if (captureLog) {
-    console.log = (...args: unknown[]) => {
-      outputLines.push(args.map(String).join(" "));
-    };
-  }
 
-  try {
-    const execution = fn(stack, processN, registry);
+  // Output is captured per evaluation (AsyncLocalStorage inside jth-runtime),
+  // never by replacing the global console.log, so concurrent run() calls and
+  // unrelated host logging cannot interfere with each other.
+  const execution = captureLog
+    ? captureOutput((line) => outputLines.push(line), () => fn(stack, processN, registry))
+    : fn(stack, processN, registry);
 
-    if (timeoutMs > 0) {
-      await Promise.race([
-        execution,
-        new Promise((_, reject) =>
-          setTimeout(
-            () => reject(new Error(`Evaluation timed out after ${timeoutMs}ms`)),
-            timeoutMs
-          )
-        ),
-      ]);
-    } else {
-      await execution;
-    }
-  } finally {
-    if (captureLog) {
-      console.log = origLog;
-    }
+  if (timeoutMs > 0) {
+    await Promise.race([
+      execution,
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`Evaluation timed out after ${timeoutMs}ms`)),
+          timeoutMs
+        )
+      ),
+    ]);
+  } else {
+    await execution;
   }
 
   const arr = stack.toArray();

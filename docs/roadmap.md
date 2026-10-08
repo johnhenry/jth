@@ -1,6 +1,14 @@
 # jth Roadmap
 
-## 0.3.0 (current)
+## 0.4.0 (current)
+
+- [x] jth-eval consolidation, runtime error codes with source positions
+- [x] Sandbox hardening (`sandbox: true | "restricted" | string[]`; unrecognized values fail closed)
+- [x] Per-evaluation output capture (no global `console.log` replacement)
+- [x] Typed `StackUnderflowError` naming the failing operator
+- [x] CI and npm publish from `main` via Changesets
+
+## 0.3.0 (done)
 
 ### Syntax swap: blocks and objects
 - [x] `#[ ]` for blocks, `{ }` for objects

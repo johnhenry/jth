@@ -118,13 +118,17 @@ function generateProgram(ast: ProgramNodeType, preamble: boolean): string {
     lines.push('import { Stack, processN, registry } from "@johnhenry/jth-runtime";');
     lines.push('import "@johnhenry/jth-stdlib";');
     lines.push("const stack = new Stack();");
-    // Standalone execution (node): print "line:col: message" for jth errors
-    // instead of a raw stack trace, so the CLI reports source positions.
+    // Standalone execution only: when this module is the process entry point
+    // (`node out.mjs`), print "Name at line:col: message" for jth errors
+    // instead of a raw stack trace. A compiled module that is merely
+    // imported by a host never installs a process-wide handler (it would
+    // stack per import and could hijack the host's own error handling).
+    // Only jth's own errors (name starts with "Jth") are reported this way.
     lines.push(
-      'if (typeof process !== "undefined" && typeof process.on === "function") {\n' +
+      'if (import.meta.main === true && typeof process !== "undefined" && typeof process.on === "function") {\n' +
         '  process.on("uncaughtException", (err) => {\n' +
-        '    if (err && err.line != null) {\n' +
-        '      console.error(`${err.name ?? "Error"} at ${err.line}:${err.column ?? 0}: ${err.message}`);\n' +
+        '    if (err && typeof err.name === "string" && err.name.startsWith("Jth") && err.line != null) {\n' +
+        '      console.error(`${err.name} at ${err.line}:${err.column ?? 0}: ${err.message}`);\n' +
         "      process.exit(1);\n" +
         "    }\n" +
         "    throw err;\n" +

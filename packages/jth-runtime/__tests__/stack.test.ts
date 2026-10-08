@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Stack } from "../src/stack.ts";
-import { JthRuntimeError } from "@johnhenry/jth-types";
+import { JthRuntimeError, StackUnderflowError } from "@johnhenry/jth-types";
 
 describe("Stack", () => {
   it("should start empty", () => {
@@ -197,5 +197,38 @@ describe("Stack", () => {
       result.push(item);
     }
     expect(result).toEqual(["a", "b", "c"]);
+  });
+});
+
+describe("Stack underflow is a typed StackUnderflowError (issue #40)", () => {
+  it("pop on empty throws StackUnderflowError with expected/actual", () => {
+    const s = new Stack();
+    let err: any;
+    try { s.pop(); } catch (e) { err = e; }
+    expect(err).toBeInstanceOf(StackUnderflowError);
+    expect(err).toBeInstanceOf(JthRuntimeError);
+    expect(err.code).toBe("STACK_UNDERFLOW");
+    expect(err.expected).toBe(1);
+    expect(err.actual).toBe(0);
+    expect(err.operator).toBeNull();
+  });
+
+  it("popN underflow reports expected and actual counts and leaves the stack intact", () => {
+    const s = new Stack();
+    s.push(1, 2);
+    let err: any;
+    try { s.popN(5); } catch (e) { err = e; }
+    expect(err).toBeInstanceOf(StackUnderflowError);
+    expect(err.expected).toBe(5);
+    expect(err.actual).toBe(2);
+    expect(s.toArray()).toEqual([1, 2]);
+  });
+
+  it("swap and dup underflow are StackUnderflowError", () => {
+    const s = new Stack();
+    s.push(1);
+    expect(() => s.swap()).toThrow(StackUnderflowError);
+    const e = new Stack();
+    expect(() => e.dup()).toThrow(StackUnderflowError);
   });
 });

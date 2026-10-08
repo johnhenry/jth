@@ -96,7 +96,9 @@ describe("compile: inline code", () => {
     const body = js
       .split("\n")
       .filter((line) => !line.startsWith("import "))
-      .join("\n");
+      .join("\n")
+      // `import.meta` is module-only syntax; a plain Script cannot parse it.
+      .replaceAll("import.meta.main", "false");
     expect(() => new Script(`(async () => { ${body} })`)).not.toThrow();
   });
 });

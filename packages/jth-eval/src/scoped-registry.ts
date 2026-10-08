@@ -1,4 +1,4 @@
-import { registry } from "@johnhenry/jth-runtime";
+import { registry, nameOperator } from "@johnhenry/jth-runtime";
 import type { StackOperator } from "@johnhenry/jth-runtime";
 import { JthRuntimeError } from "@johnhenry/jth-types";
 
@@ -36,6 +36,7 @@ export class ScopedRegistry {
    */
   set(name: string, fn: StackOperator): void {
     this.#local.set(name, fn);
+    nameOperator(fn, name);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { JthRuntimeError } from "@johnhenry/jth-types";
+import { StackUnderflowError } from "@johnhenry/jth-types";
 
 export class Stack {
   #data: unknown[] = [];
@@ -9,19 +9,14 @@ export class Stack {
   }
 
   /**
-   * Pop and return the top item. Throws JthRuntimeError (STACK_UNDERFLOW)
+   * Pop and return the top item. Throws StackUnderflowError (code STACK_UNDERFLOW)
    * if the stack is empty, rather than silently returning `undefined` and
    * letting that corruption (NaN, false-positive comparisons, etc.)
    * propagate through downstream operators.
    */
   pop(): unknown {
     if (this.#data.length === 0) {
-      throw new JthRuntimeError(
-        "Stack underflow: pop() called on an empty stack",
-        undefined,
-        undefined,
-        "STACK_UNDERFLOW"
-      );
+      throw new StackUnderflowError({ expected: 1, actual: 0 });
     }
     return this.#data.pop();
   }
@@ -39,12 +34,7 @@ export class Stack {
    */
   popN(n: number): unknown[] {
     if (this.#data.length < n) {
-      throw new JthRuntimeError(
-        `Stack underflow: expected ${n} item(s), got ${this.#data.length}`,
-        undefined,
-        undefined,
-        "STACK_UNDERFLOW"
-      );
+      throw new StackUnderflowError({ expected: n, actual: this.#data.length });
     }
     const result: unknown[] = [];
     for (let i = 0; i < n; i++) {
@@ -80,12 +70,7 @@ export class Stack {
   swap() {
     const len = this.#data.length;
     if (len < 2) {
-      throw new JthRuntimeError(
-        `Stack underflow: swap requires 2 item(s), got ${len}`,
-        undefined,
-        undefined,
-        "STACK_UNDERFLOW"
-      );
+      throw new StackUnderflowError({ expected: 2, actual: len });
     }
     const tmp = this.#data[len - 1];
     this.#data[len - 1] = this.#data[len - 2];
@@ -94,12 +79,7 @@ export class Stack {
 
   dup() {
     if (this.#data.length === 0) {
-      throw new JthRuntimeError(
-        "Stack underflow: dup requires 1 item(s), got 0",
-        undefined,
-        undefined,
-        "STACK_UNDERFLOW"
-      );
+      throw new StackUnderflowError({ expected: 1, actual: 0 });
     }
     this.#data.push(this.#data[this.#data.length - 1]);
   }

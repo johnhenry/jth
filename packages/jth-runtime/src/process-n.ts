@@ -1,6 +1,8 @@
 import { getMeta, annotate } from "./meta.ts";
 import type { Stack } from "./stack.ts";
+import { StackUnderflowError } from "@johnhenry/jth-types";
 import type { MetaAnnotations } from "@johnhenry/jth-types";
+import { operatorName } from "./registry.ts";
 
 type AnyFunction = (...args: unknown[]) => unknown;
 
@@ -67,16 +69,34 @@ function step(stack: Stack, arr: unknown[], i: number): number {
   }
 
   // Execute
-  const result = (raw as AnyFunction)(stack);
+  let result: unknown;
+  try {
+    result = (raw as AnyFunction)(stack);
+  } catch (e) {
+    attribute(e, raw);
+    throw e;
+  }
 
   // If the result is a thenable, defer the post-execution phase until awaited
   if (result && typeof (result as Promise<unknown>).then === "function") {
-    pendingSlot = { promise: result as Promise<unknown>, fn: raw as AnyFunction, meta, saved };
+    const promise = (result as Promise<unknown>).then(undefined, (e: unknown) => {
+      attribute(e, raw);
+      throw e;
+    });
+    pendingSlot = { promise, fn: raw as AnyFunction, meta, saved };
     return i;
   }
 
   finishStep(stack, arr, i, raw as AnyFunction, meta, saved);
   return i;
+}
+
+/** Tag a stack underflow with the jth operator that raised it. */
+function attribute(e: unknown, fn: unknown): void {
+  if (e instanceof StackUnderflowError && e.operator === null) {
+    const name = operatorName(fn);
+    if (name !== undefined) e.withOperator(name);
+  }
 }
 
 /**

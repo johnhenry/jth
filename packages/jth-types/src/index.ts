@@ -43,6 +43,8 @@ export {
   JthLexerError,
   JthParserError,
   JthRuntimeError,
+  StackUnderflowError,
 } from "./errors.ts";
+export type { StackUnderflowDetails } from "./errors.ts";
 export { UNLIMITED } from "./interfaces.ts";
 export type { MetaAnnotations } from "./interfaces.ts";
