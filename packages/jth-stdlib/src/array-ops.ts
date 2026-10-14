@@ -104,8 +104,8 @@ export const flatten = variadic((...args) => {
 // processN, so thenable results are detected/awaited with exactly the same
 // sync-fast-path / async-promotion semantics as the rest of the language.
 // Returns the isolated stack, or a Promise of it if the block was async.
-const runBlock = (block: unknown, ...seed: unknown[]): Stack | Promise<Stack> => {
-  const s = new Stack();
+const runBlock = (parent: Stack, block: unknown, ...seed: unknown[]): Stack | Promise<Stack> => {
+  const s = parent.child();
   s.push(...seed);
   if (typeof block !== "function") return s;
   return processN(s, [block]) as Stack | Promise<Stack>;
@@ -124,13 +124,13 @@ export const mapOp = (stack: Stack): void | Promise<void> => {
   assertArray(arr, "map");
   const result: unknown[] = [];
   for (let i = 0; i < arr.length; i++) {
-    const r = runBlock(block, arr[i]);
+    const r = runBlock(stack, block, arr[i]);
     if (isThenable(r)) {
       // Async promotion: finish this element and the rest asynchronously
       return (async () => {
         result.push((await r).pop());
         for (i++; i < arr.length; i++) {
-          result.push((await runBlock(block, arr[i])).pop());
+          result.push((await runBlock(stack, block, arr[i])).pop());
         }
         stack.push(result);
       })();
@@ -150,12 +150,12 @@ export const filterOp = (stack: Stack): void | Promise<void> => {
   assertArray(arr, "filter");
   const result: unknown[] = [];
   for (let i = 0; i < arr.length; i++) {
-    const r = runBlock(block, arr[i]);
+    const r = runBlock(stack, block, arr[i]);
     if (isThenable(r)) {
       return (async () => {
         if ((await r).pop()) result.push(arr[i]);
         for (i++; i < arr.length; i++) {
-          if ((await runBlock(block, arr[i])).pop()) result.push(arr[i]);
+          if ((await runBlock(stack, block, arr[i])).pop()) result.push(arr[i]);
         }
         stack.push(result);
       })();
@@ -176,12 +176,12 @@ export const reduceOp = (stack: Stack): void | Promise<void> => {
   assertArray(arr, "reduce");
   let acc = init;
   for (let i = 0; i < arr.length; i++) {
-    const r = runBlock(block, acc, arr[i]);
+    const r = runBlock(stack, block, acc, arr[i]);
     if (isThenable(r)) {
       return (async () => {
         acc = (await r).pop();
         for (i++; i < arr.length; i++) {
-          acc = (await runBlock(block, acc, arr[i])).pop();
+          acc = (await runBlock(stack, block, acc, arr[i])).pop();
         }
         stack.push(acc);
       })();
@@ -233,13 +233,13 @@ export const bendOp = (stack: Stack): void | Promise<void> => {
       if (phase === "predicate") {
         if (!(await pending).pop()) break;
         phase = "step";
-        pending = Promise.resolve(runBlock(step, seed));
+        pending = Promise.resolve(runBlock(stack, step, seed));
         continue;
       }
       applyStep(await pending);
       if (iterations++ >= MAX_ITERATIONS) throw iterationLimit();
       phase = "predicate";
-      pending = Promise.resolve(runBlock(predicate, seed));
+      pending = Promise.resolve(runBlock(stack, predicate, seed));
     }
     stack.push(result);
   };
@@ -249,12 +249,12 @@ export const bendOp = (stack: Stack): void | Promise<void> => {
     if (iterations++ >= MAX_ITERATIONS) throw iterationLimit();
 
     // Test predicate
-    const pr = runBlock(predicate, seed);
+    const pr = runBlock(stack, predicate, seed);
     if (isThenable(pr)) return continueAsync(pr, "predicate", iterations);
     if (!pr.pop()) break;
 
     // Execute step
-    const sr = runBlock(step, seed);
+    const sr = runBlock(stack, step, seed);
     if (isThenable(sr)) return continueAsync(sr, "step", iterations);
     applyStep(sr);
   }
