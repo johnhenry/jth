@@ -26,7 +26,7 @@ export const each = (stack: Stack) => {
   const items = stack.toArray();
   stack.clear();
   for (const item of items) {
-    const s = new Stack();
+    const s = stack.child();
     s.push(item);
     if (typeof block === "function") block(s);
     // Collect all results from the isolated stack (block may produce 0, 1, or many)
@@ -60,7 +60,7 @@ export const fanout = (stack: Stack) => {
 
   // Run value through each block
   for (const block of blocks) {
-    const s = new Stack();
+    const s = stack.child();
     s.push(value);
     (block as any)(s);
     stack.push(...s.toArray());

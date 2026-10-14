@@ -84,12 +84,28 @@ export async function run(source: string, opts: RunOptions = {}): Promise<RunRes
 
   const outputLines: string[] = [];
 
-  // Output is captured per evaluation (AsyncLocalStorage inside jth-runtime),
-  // never by replacing the global console.log, so concurrent run() calls and
-  // unrelated host logging cannot interfere with each other.
-  const execution = captureLog
-    ? captureOutput((line) => outputLines.push(line), () => fn(stack, processN, registry))
-    : fn(stack, processN, registry);
+  // Output is captured per evaluation, never by replacing the global
+  // console.log, so concurrent run() calls and unrelated host logging cannot
+  // interfere with each other. The sink is attached explicitly to the run's
+  // stack (inherited by child stacks) so it survives `await` even where
+  // AsyncLocalStorage is shimmed (browsers, Workers); AsyncLocalStorage inside
+  // jth-runtime remains as a fallback for operators that use a fresh Stack.
+  const sink = (line: string) => void outputLines.push(line);
+  const prevSink = stack._sink;
+  if (captureLog) stack._sink = sink;
+  let execution: Promise<void>;
+  try {
+    execution = captureLog
+      ? captureOutput(sink, () => fn(stack, processN, registry))
+      : fn(stack, processN, registry);
+  } catch (e) {
+    if (captureLog) stack._sink = prevSink;
+    throw e;
+  }
+  if (captureLog) {
+    const restore = () => { stack._sink = prevSink; };
+    execution.then(restore, restore);
+  }
 
   if (timeoutMs > 0) {
     await Promise.race([

@@ -1,4 +1,4 @@
-import { op, variadic, emit } from "@johnhenry/jth-runtime";
+import { op, variadic, emitTo } from "@johnhenry/jth-runtime";
 import type { Stack } from "@johnhenry/jth-runtime";
 import { JthRuntimeError } from "@johnhenry/jth-types";
 
@@ -139,12 +139,12 @@ export const collect = variadic((...args) => [args]);
 
 // peek: console.log top item, don't consume (replaces @)
 export const peek = (stack: Stack) => {
-  emit(stack.peek());
+  emitTo(stack, stack.peek());
 };
 
 // peekAll: console.log entire stack, don't consume (replaces @@)
 export const peekAll = (stack: Stack) => {
-  emit(...stack.toArray());
+  emitTo(stack, ...stack.toArray());
 };
 
 // view: alias for peekAll (backward compat for internal use)

@@ -3,6 +3,12 @@ import { StackUnderflowError } from "@johnhenry/jth-types";
 export class Stack {
   #data: unknown[] = [];
   _condStack?: unknown[];
+  /**
+   * Output sink for the run this stack belongs to (set by `run({captureLog})`).
+   * Explicit, per-run scoping that works where AsyncLocalStorage cannot be
+   * relied on (browser/Worker shims lose the store at the first `await`).
+   */
+  _sink?: (line: string) => void;
 
   push(...vals: unknown[]) {
     this.#data.push(...vals);
@@ -84,8 +90,15 @@ export class Stack {
     this.#data.push(this.#data[this.#data.length - 1]);
   }
 
-  clone(): Stack {
+  /** A fresh, empty stack that inherits this stack's output sink. */
+  child(): Stack {
     const s = new Stack();
+    s._sink = this._sink;
+    return s;
+  }
+
+  clone(): Stack {
+    const s = this.child();
     s.push(...this.#data);
     return s;
   }
