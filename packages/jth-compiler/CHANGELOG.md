@@ -1,5 +1,13 @@
 # @johnhenry/jth-compiler
 
+## 0.1.1
+
+### Patch Changes
+
+- 5f090df: Fix `run(..., { captureLog: true })` losing output after the first `await` in browsers and Workers, where AsyncLocalStorage is shimmed. The capture sink is now attached explicitly to the run's stack (`Stack._sink`, inherited by the new `Stack#child()`), `peek`/`peek-all` write through the new `emitTo(stack, ...)`, and AsyncLocalStorage remains only as a fallback. Closes #68.
+- Updated dependencies [5f090df]
+  - @johnhenry/jth-runtime@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
